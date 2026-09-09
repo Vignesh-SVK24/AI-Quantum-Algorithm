@@ -445,14 +445,13 @@ export async function runGrover(targetState: string, shots = 1024): Promise<Grov
 
 export async function askAITutor(question: string, context: TutorContext): Promise<TutorResponse> {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/tutor`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question, context })
-    });
-    if (res.ok) return await res.json();
+    const chatRes = await sendTutorChat(question, 'beginner', context);
+    return {
+      answer: chatRes.reply,
+      source: chatRes.sources && chatRes.sources.length > 0 ? chatRes.sources[0].name : 'Gemini Quantum Knowledge Engine'
+    };
   } catch {
-    // Fallback
+    // Graceful offline fallback
   }
 
   // Intelligent Context-Aware Socratic Response

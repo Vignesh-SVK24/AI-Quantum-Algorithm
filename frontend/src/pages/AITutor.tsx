@@ -78,22 +78,22 @@ export const AITutor: React.FC = () => {
   const selected = SAMPLE_SCENARIOS.find(s => s.id === activeScenario) || SAMPLE_SCENARIOS[0];
 
   return (
-    <div className="min-h-screen quantum-grid-bg text-slate-200">
+    <div className="min-h-screen quantum-grid-bg text-black-olive">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6">
           <div className="space-y-1">
-            <Link to="/" className="inline-flex items-center gap-1.5 text-xs text-teal-400 hover:text-teal-300 transition-colors">
+            <Link to="/" className="inline-flex items-center gap-1.5 text-xs text-slate-gray hover:text-slate-gray transition-colors shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray rounded-xl">
               <ArrowLeft className="w-3.5 h-3.5" /> Back to Home
             </Link>
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-purple-500/20">
-                <Bot className="w-5 h-5 text-white" />
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center">
+                <Bot className="w-5 h-5 text-black-olive" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white tracking-tight">AI Quantum Teaching Assistant</h1>
-                <p className="text-xs text-slate-400">
+                <h1 className="text-2xl font-bold text-black-olive tracking-tight">AI Quantum Teaching Assistant</h1>
+                <p className="text-xs text-black-olive/70">
                   Powered by Google Gemini Flash API with rate limiting and secure proxy
                 </p>
               </div>
@@ -101,25 +101,25 @@ export const AITutor: React.FC = () => {
           </div>
 
           {/* Mode Switcher Tabs */}
-          <div className="flex items-center bg-slate-900/90 p-1 rounded-xl border border-slate-800">
+          <div className="flex items-center bg-floral-white p-1 rounded-xl">
             <button
               onClick={() => setActiveTab('chat')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
                 activeTab === 'chat'
-                  ? 'bg-gradient-to-r from-indigo-600 to-teal-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                  ? '   text-black-olive '
+                  : 'text-black-olive/70 hover:text-black-olive hover:bg-floral-white'
               }`}
             >
               <Zap className="w-3.5 h-3.5" />
               <span>Gemini Flash Chat</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-floral-white animate-pulse" />
             </button>
             <button
               onClick={() => setActiveTab('circuit')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
                 activeTab === 'circuit'
-                  ? 'bg-gradient-to-r from-indigo-600 to-teal-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                  ? '   text-black-olive '
+                  : 'text-black-olive/70 hover:text-black-olive hover:bg-floral-white'
               }`}
             >
               <BookOpen className="w-3.5 h-3.5" />
@@ -136,53 +136,53 @@ export const AITutor: React.FC = () => {
             </div>
 
             <div className="lg:col-span-4 space-y-4">
-              <div className="p-5 rounded-2xl bg-slate-900/70 border border-slate-800 space-y-4">
+              <div className="p-5 rounded-2xl bg-floral-white space-y-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+                  <div className="w-7 h-7 rounded-xl bg-floral-white flex items-center justify-center text-slate-gray">
                     <Sparkles className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="text-xs font-bold text-white uppercase tracking-wider">About Gemini Tutor</h3>
-                    <p className="text-[11px] text-slate-400">Google Gemini Flash LLM</p>
+                    <h3 className="text-xs font-bold text-black-olive uppercase tracking-wider">About Gemini Tutor</h3>
+                    <p className="text-[11px] text-black-olive/70">Google Gemini Flash LLM</p>
                   </div>
                 </div>
 
-                <p className="text-xs text-slate-300 leading-relaxed">
+                <p className="text-xs text-black-olive leading-relaxed">
                   The AI Tutor acts as a quantum computing teaching assistant for beginners, grounded in Dirac bra-ket notation, probability amplitudes, and quantum logic gates.
                 </p>
 
-                <div className="space-y-2 border-t border-slate-800 pt-3">
-                  <h4 className="text-[11px] font-semibold text-teal-400 uppercase tracking-wider">Features</h4>
-                  <ul className="space-y-1.5 text-xs text-slate-400">
+                <div className="space-y-2 pt-3">
+                  <h4 className="text-[11px] font-semibold text-slate-gray uppercase tracking-wider">Features</h4>
+                  <ul className="space-y-1.5 text-xs text-black-olive/70">
                     <li className="flex items-start gap-2">
-                      <span className="text-emerald-400 font-bold">•</span>
+                      <span className="text-slate-gray font-bold">•</span>
                       <span>Beginner-friendly explanations without confusing jargon</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-emerald-400 font-bold">•</span>
+                      <span className="text-slate-gray font-bold">•</span>
                       <span>Strict scientific accuracy (avoids "0 and 1 at same time" trope)</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-emerald-400 font-bold">•</span>
+                      <span className="text-slate-gray font-bold">•</span>
                       <span>Exponential backoff on 429 rate limit errors (1s, 2s, 4s)</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-emerald-400 font-bold">•</span>
+                      <span className="text-slate-gray font-bold">•</span>
                       <span>Server-side API key protection with sliding-window rate limit</span>
                     </li>
                   </ul>
                 </div>
               </div>
 
-              <div className="p-5 rounded-2xl bg-slate-900/70 border border-slate-800 space-y-3">
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <ShieldAlert className="w-3.5 h-3.5 text-indigo-400" /> Security &amp; Rate Limits
+              <div className="p-5 rounded-2xl bg-floral-white space-y-3">
+                <h3 className="text-xs font-bold text-black-olive/70 uppercase tracking-wider flex items-center gap-1.5">
+                  <ShieldAlert className="w-3.5 h-3.5 text-slate-gray" /> Security &amp; Rate Limits
                 </h3>
-                <div className="text-xs text-slate-400 space-y-2">
+                <div className="text-xs text-black-olive/70 space-y-2">
                   <p>
                     Your API key is never transmitted or exposed to browser clients. Requests pass through the local FastAPI backend with rate limiting to prevent quota exhaustion.
                   </p>
-                  <div className="bg-slate-950 p-2.5 rounded-lg border border-slate-800 font-mono text-[10px] text-teal-300">
+                  <div className="bg-floral-white p-2.5 rounded-xl font-mono text-[10px] text-slate-gray">
                     Limit: 15 req/min per IP<br />
                     Backoff: 1s, 2s, 4s retry on 429
                   </div>
@@ -198,17 +198,17 @@ export const AITutor: React.FC = () => {
             
             {/* Left Column: Context Scenario Switcher */}
             <div className="lg:col-span-5 space-y-5">
-              <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4">
+              <div className="p-5 rounded-2xl bg-floral-white space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-                    <BookOpen className="w-4 h-4 text-purple-400" /> Active Learning Scenario
+                  <h3 className="text-xs font-bold text-black-olive uppercase tracking-wider flex items-center gap-1.5">
+                    <BookOpen className="w-4 h-4 text-slate-gray" /> Active Learning Scenario
                   </h3>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20">
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-floral-white text-slate-gray">
                     Real Context
                   </span>
                 </div>
                 
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-black-olive/70">
                   Select a simulated quantum scenario to load its exact circuit wires, gates, and simulation results into the AI tutor:
                 </p>
 
@@ -220,19 +220,19 @@ export const AITutor: React.FC = () => {
                       <button
                         key={scen.id}
                         onClick={() => setActiveScenario(scen.id)}
-                        className={`w-full text-left p-3.5 rounded-xl border transition-all ${
+                        className={`w-full text-left p-3.5 rounded-xl  transition-all ${
                           isActive
-                            ? 'bg-purple-950/40 border-purple-500 shadow-md shadow-purple-500/10'
-                            : 'bg-slate-950/40 border-slate-800 hover:border-slate-700'
+                            ? 'bg-floral-white   '
+                            : 'bg-floral-white  hover:'
                         }`}
                       >
                         <div className="flex items-center gap-2.5 mb-1">
-                          <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${isActive ? 'bg-purple-600 text-white' : 'bg-slate-800 text-slate-400'}`}>
+                          <div className={`w-6 h-6 rounded-xl flex items-center justify-center ${isActive ? 'bg-floral-white text-black-olive' : 'bg-floral-white text-black-olive/70'}`}>
                             <Icon className="w-3.5 h-3.5" />
                           </div>
-                          <span className="text-xs font-bold text-slate-200">{scen.name}</span>
+                          <span className="text-xs font-bold text-black-olive">{scen.name}</span>
                         </div>
-                        <p className="text-[11px] text-slate-400 pl-8.5">{scen.desc}</p>
+                        <p className="text-[11px] text-black-olive/70 pl-8.5">{scen.desc}</p>
                       </button>
                     );
                   })}
@@ -240,9 +240,9 @@ export const AITutor: React.FC = () => {
               </div>
 
               {/* Context Telemetry Card */}
-              <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Context Telemetry Passed to AI</h3>
-                <pre className="p-3.5 bg-slate-950 rounded-xl border border-slate-800 font-mono text-[10px] text-teal-300 overflow-x-auto">
+              <div className="p-5 rounded-2xl bg-floral-white space-y-3">
+                <h3 className="text-xs font-bold text-black-olive/70 uppercase tracking-wider">Context Telemetry Passed to AI</h3>
+                <pre className="p-3.5 bg-floral-white rounded-xl font-mono text-[10px] text-slate-gray overflow-x-auto">
                   {JSON.stringify(selected.context, null, 2)}
                 </pre>
               </div>

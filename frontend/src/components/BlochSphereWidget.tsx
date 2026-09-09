@@ -15,14 +15,14 @@ interface BlochSphereWidgetProps {
 export const BlochSphereWidget: React.FC<BlochSphereWidgetProps> = ({ statevector, numQubits }) => {
   if (numQubits > 1) {
     return (
-      <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-center space-y-2">
-        <div className="flex items-center justify-center gap-2 text-indigo-400 text-xs font-semibold uppercase tracking-wider">
+      <div className="p-4 rounded-xl bg-floral-white text-center space-y-2">
+        <div className="flex items-center justify-center gap-2 text-slate-gray text-xs font-semibold uppercase tracking-wider">
           <Globe2 className="w-4 h-4" /> Bloch Sphere (Single Qubit)
         </div>
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-black-olive/70">
           The Bloch sphere represents <strong>single-qubit pure states</strong>. For {numQubits}-qubit circuits (such as entangled Bell states), the global state exists in a higher-dimensional Hilbert space ($2^{numQubits} = {Math.pow(2, numQubits)}$ dimensions).
         </p>
-        <div className="text-[11px] font-mono text-teal-400/80 bg-slate-950/60 p-2 rounded-lg border border-slate-800/60">
+        <div className="text-[11px] font-mono text-slate-gray bg-floral-white p-2 rounded-2xl">
           Tip: Switch to 1 Qubit in the circuit builder to explore single-qubit Bloch rotations!
         </div>
       </div>
@@ -65,12 +65,12 @@ export const BlochSphereWidget: React.FC<BlochSphereWidgetProps> = ({ statevecto
   const phiDeg = ((phi * 180) / Math.PI).toFixed(1);
 
   return (
-    <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3">
+    <div className="p-4 rounded-xl bg-floral-white space-y-3">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-          <Globe2 className="w-3.5 h-3.5 text-teal-400" /> Bloch Sphere
+        <span className="text-xs font-bold text-black-olive uppercase tracking-wider flex items-center gap-1.5">
+          <Globe2 className="w-3.5 h-3.5 text-slate-gray" /> Bloch Sphere
         </span>
-        <div className="flex gap-2 text-[10px] font-mono text-slate-400">
+        <div className="flex gap-2 text-[10px] font-mono text-black-olive/70">
           <span>&theta; = {thetaDeg}&deg;</span>
           <span>&phi; = {phiDeg}&deg;</span>
         </div>
@@ -128,21 +128,21 @@ export const BlochSphereWidget: React.FC<BlochSphereWidgetProps> = ({ statevecto
           />
 
           {/* Glowing Vector tip */}
-          <circle cx={x2d} cy={y2d} r={5} className="fill-teal-300 shadow-lg" />
+          <circle cx={x2d} cy={y2d} r={5} className="fill-teal-300 shadow-neu-raised" />
           <circle cx={x2d} cy={y2d} r={9} className="stroke-teal-400/50 stroke-1 fill-none animate-ping" />
         </svg>
       </div>
 
-      <div className="bg-slate-950/80 p-2.5 rounded-lg border border-slate-800 text-[11px] font-mono text-slate-300 space-y-1">
+      <div className="bg-floral-white p-2.5 rounded-2xl text-[11px] font-mono text-black-olive/70 space-y-1">
         <div className="flex justify-between">
-          <span className="text-slate-500">Coordinates:</span>
-          <span className="text-teal-300">
+          <span className="text-black-olive/70">Coordinates:</span>
+          <span className="text-slate-gray">
             ({Math.sin(theta) * Math.cos(phi) >= 0 ? '+' : ''}{(Math.sin(theta) * Math.cos(phi)).toFixed(2)},{' '}
             {Math.sin(theta) * Math.sin(phi) >= 0 ? '+' : ''}{(Math.sin(theta) * Math.sin(phi)).toFixed(2)},{' '}
             {Math.cos(theta) >= 0 ? '+' : ''}{(Math.cos(theta)).toFixed(2)})
           </span>
         </div>
-        <div className="text-[10px] text-slate-400 text-center pt-1 border-t border-slate-800/80">
+        <div className="text-[10px] text-black-olive/70 text-center pt-1 -t">
           |&psi;⟩ = cos(&theta;/2)|0⟩ + e^{'{i\u03C6}'}sin(&theta;/2)|1⟩
         </div>
       </div>

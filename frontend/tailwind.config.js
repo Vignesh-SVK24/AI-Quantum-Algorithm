@@ -7,21 +7,15 @@ export default {
   theme: {
     extend: {
       colors: {
-        quantum: {
-          950: '#070b19',
-          900: '#0c132c',
-          850: '#111a3d',
-          800: '#16234d',
-          700: '#233878',
-          600: '#3452b0',
-          500: '#4f70e8',
-          400: '#718ff0',
-          300: '#9cb1f7',
-          cyan: '#06d6a0',
-          teal: '#00f5d4',
-          neon: '#7b2cbf',
-          purple: '#9d4edd'
-        }
+        'floral-white': '#FAF7EE',
+        'black-olive': '#31372B',
+        'slate-gray': '#203C3D',
+      },
+      boxShadow: {
+        'neu-raised': '8px 8px 16px rgba(49, 55, 43, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.8)',
+        'neu-pressed': 'inset 6px 6px 12px rgba(49, 55, 43, 0.15), inset -6px -6px 12px rgba(255, 255, 255, 0.8)',
+        'neu-sm-raised': '4px 4px 8px rgba(49, 55, 43, 0.12), -4px -4px 8px rgba(255, 255, 255, 0.9)',
+        'neu-sm-pressed': 'inset 3px 3px 6px rgba(49, 55, 43, 0.12), inset -3px -3px 6px rgba(255, 255, 255, 0.9)',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],

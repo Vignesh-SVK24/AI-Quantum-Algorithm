@@ -1,39 +1,33 @@
 ﻿@import "tailwindcss";
 
 @theme {
-  --color-quantum-950: #070b19;
-  --color-quantum-900: #0c132c;
-  --color-quantum-850: #111a3d;
-  --color-quantum-800: #16234d;
-  --color-quantum-700: #233878;
-  --color-quantum-600: #3452b0;
-  --color-quantum-500: #4f70e8;
-  --color-quantum-400: #718ff0;
-  --color-quantum-300: #9cb1f7;
-  --color-quantum-cyan: #06d6a0;
-  --color-quantum-teal: #00f5d4;
-  --color-quantum-neon: #7b2cbf;
-  --color-quantum-purple: #9d4edd;
+  --color-floral-white: #FAF7EE;
+  --color-black-olive: #31372B;
+  --color-slate-gray: #203C3D;
+  
+  --shadow-neu-raised: 8px 8px 16px rgba(49, 55, 43, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.8);
+  --shadow-neu-pressed: inset 6px 6px 12px rgba(49, 55, 43, 0.15), inset -6px -6px 12px rgba(255, 255, 255, 0.8);
+  --shadow-neu-sm-raised: 4px 4px 8px rgba(49, 55, 43, 0.12), -4px -4px 8px rgba(255, 255, 255, 0.9);
+  --shadow-neu-sm-pressed: inset 3px 3px 6px rgba(49, 55, 43, 0.12), inset -3px -3px 6px rgba(255, 255, 255, 0.9);
 }
 
 body {
-  background-color: var(--color-quantum-950);
-  color: rgb(241 245 249);
+  background-color: var(--color-floral-white);
+  color: var(--color-black-olive);
   -webkit-font-smoothing: antialiased;
 }
 
-/* Subtle glowing circuit grid */
-.quantum-grid-bg {
-  background-image: radial-gradient(rgba(79, 112, 232, 0.12) 1px, transparent 1px),
-                    radial-gradient(rgba(0, 245, 212, 0.05) 1px, transparent 1px);
-  background-size: 32px 32px, 96px 96px;
-  background-position: 0 0, 16px 16px;
+/* Base Neumorphic utility classes to make sure they're available */
+@utility neu-raised {
+  box-shadow: var(--shadow-neu-raised);
+}
+@utility neu-pressed {
+  box-shadow: var(--shadow-neu-pressed);
+}
+@utility neu-sm-raised {
+  box-shadow: var(--shadow-neu-sm-raised);
+}
+@utility neu-sm-pressed {
+  box-shadow: var(--shadow-neu-sm-pressed);
 }
 
-.quantum-glow {
-  box-shadow: 0 0 25px -5px rgba(79, 112, 232, 0.3);
-}
-
-.quantum-glow-cyan {
-  box-shadow: 0 0 30px -5px rgba(0, 245, 212, 0.25);
-}

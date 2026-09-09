@@ -208,31 +208,31 @@ export const Practice: React.FC = () => {
   const scorePct = Math.round((score / QUESTIONS.length) * 100);
 
   return (
-    <div className="min-h-screen quantum-grid-bg text-slate-200">
+    <div className="min-h-screen quantum-grid-bg text-black-olive">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-800 pb-6">
+        <div className="flex items-center justify-between pb-6">
           <div className="space-y-1">
-            <Link to="/" className="inline-flex items-center gap-1.5 text-xs text-teal-400 hover:text-teal-300 transition-colors">
+            <Link to="/" className="inline-flex items-center gap-1.5 text-xs text-slate-gray hover:text-slate-gray transition-colors shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray rounded-xl">
               <ArrowLeft className="w-3.5 h-3.5" /> Back to Home
             </Link>
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                <Sparkles className="w-5 h-5 text-white" />
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-black-olive" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white tracking-tight">Quantum Practice & Quiz</h1>
-                <p className="text-xs text-slate-400">Test and reinforce your quantum mechanics and circuit concepts</p>
+                <h1 className="text-2xl font-bold text-black-olive tracking-tight">Quantum Practice & Quiz</h1>
+                <p className="text-xs text-black-olive/70">Test and reinforce your quantum mechanics and circuit concepts</p>
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="px-3.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono">
-              <span className="text-slate-500">Score: </span>
-              <span className="text-emerald-400 font-bold">{score}</span>
-              <span className="text-slate-500"> / {QUESTIONS.length}</span>
+            <div className="px-3.5 py-1.5 rounded-xl bg-floral-white text-xs font-mono">
+              <span className="text-black-olive/70">Score: </span>
+              <span className="text-slate-gray font-bold">{score}</span>
+              <span className="text-black-olive/70"> / {QUESTIONS.length}</span>
             </div>
           </div>
         </div>
@@ -243,26 +243,26 @@ export const Practice: React.FC = () => {
             
             {/* Progress indicator */}
             <div className="space-y-2">
-              <div className="flex justify-between text-xs font-mono text-slate-400">
+              <div className="flex justify-between text-xs font-mono text-black-olive/70">
                 <span>Question {currentIdx + 1} of {QUESTIONS.length}</span>
                 <span>Category: {q.category}</span>
               </div>
-              <div className="h-1.5 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+              <div className="h-1.5 bg-floral-white rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-teal-500 to-emerald-400 transition-all duration-300"
+                  className="h-full transition-all duration-300 shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray rounded-xl"
                   style={{ width: `${((currentIdx + 1) / QUESTIONS.length) * 100}%` }}
                 />
               </div>
             </div>
 
             {/* Question Card */}
-            <div className="p-6 md:p-8 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-6 shadow-xl">
+            <div className="p-6 md:p-8 rounded-2xl bg-floral-white space-y-6" shadow-neu-raised>
               
               <div className="space-y-2">
-                <span className="text-[10px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                <span className="text-[10px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-floral-white text-slate-gray">
                   {q.type.replace('_', ' ')}
                 </span>
-                <h2 className="text-lg md:text-xl font-semibold text-white leading-snug">
+                <h2 className="text-lg md:text-xl font-semibold text-black-olive leading-snug">
                   {q.question}
                 </h2>
               </div>
@@ -270,18 +270,18 @@ export const Practice: React.FC = () => {
               {/* Options */}
               <div className="space-y-3">
                 {q.options.map((option, idx) => {
-                  let btnStyle = "bg-slate-950/60 border-slate-800 hover:border-slate-700 text-slate-300";
+                  let btnStyle = "bg-floral-white  hover: text-black-olive";
                   let icon = null;
 
                   if (hasAnsweredCurrent) {
                     if (idx === q.correctIndex) {
-                      btnStyle = "bg-emerald-950/40 border-emerald-500 text-emerald-200 shadow-md shadow-emerald-500/10";
-                      icon = <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />;
+                      btnStyle = "bg-floral-white  text-slate-gray  ";
+                      icon = <CheckCircle2 className="w-4 h-4 text-slate-gray flex-shrink-0" />;
                     } else if (idx === selectedAnswer) {
-                      btnStyle = "bg-rose-950/40 border-rose-500 text-rose-200 shadow-md shadow-rose-500/10";
-                      icon = <XCircle className="w-4 h-4 text-rose-400 flex-shrink-0" />;
+                      btnStyle = "bg-floral-white  text-slate-gray  ";
+                      icon = <XCircle className="w-4 h-4 text-slate-gray flex-shrink-0" />;
                     } else {
-                      btnStyle = "bg-slate-950/30 border-slate-900 text-slate-500 opacity-60";
+                      btnStyle = "bg-floral-white  text-black-olive/70 opacity-60";
                     }
                   }
 
@@ -290,10 +290,10 @@ export const Practice: React.FC = () => {
                       key={idx}
                       onClick={() => handleSelectOption(idx)}
                       disabled={hasAnsweredCurrent}
-                      className={`w-full p-4 rounded-xl border text-left text-sm font-medium transition-all flex items-center justify-between gap-3 ${btnStyle}`}
+                      className={`w-full p-4 rounded-xl  text-left text-sm font-medium transition-all flex items-center justify-between gap-3 ${btnStyle}`}
                     >
                       <div className="flex items-center gap-3">
-                        <span className="w-6 h-6 rounded-lg bg-slate-900 flex items-center justify-center font-mono text-xs text-slate-400 border border-slate-800">
+                        <span className="w-6 h-6 rounded-xl bg-floral-white flex items-center justify-center font-mono text-xs text-black-olive/70">
                           {String.fromCharCode(65 + idx)}
                         </span>
                         <span>{option}</span>
@@ -306,25 +306,25 @@ export const Practice: React.FC = () => {
 
               {/* Immediate Feedback Box */}
               {hasAnsweredCurrent && (
-                <div className={`p-4 rounded-xl border text-xs leading-relaxed space-y-1.5 transition-all ${
+                <div className={`p-4 rounded-xl  text-xs leading-relaxed space-y-1.5 transition-all ${
                   selectedAnswer === q.correctIndex
-                    ? 'bg-emerald-950/20 border-emerald-800/60 text-emerald-200'
-                    : 'bg-rose-950/20 border-rose-800/60 text-rose-200'
+                    ? 'bg-floral-white  text-slate-gray'
+                    : 'bg-floral-white  text-slate-gray'
                 }`}>
                   <div className="font-bold flex items-center gap-1.5">
                     {selectedAnswer === q.correctIndex ? (
                       <>
-                        <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        <Check className="w-3.5 h-3.5 text-slate-gray" />
                         <span>Correct!</span>
                       </>
                     ) : (
                       <>
-                        <XCircle className="w-3.5 h-3.5 text-rose-400" />
+                        <XCircle className="w-3.5 h-3.5 text-slate-gray" />
                         <span>Incorrect — Let's Review:</span>
                       </>
                     )}
                   </div>
-                  <p className="text-slate-300">{q.explanation}</p>
+                  <p className="text-black-olive">{q.explanation}</p>
                 </div>
               )}
 
@@ -333,7 +333,7 @@ export const Practice: React.FC = () => {
                 <div className="flex justify-end pt-2">
                   <button
                     onClick={handleNext}
-                    className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-400 text-white font-semibold text-xs shadow-lg transition-all flex items-center gap-2"
+                    className="px-6 py-2.5 rounded-xl hover: hover: text-floral-white font-semibold text-xs transition-all flex items-center gap-2 shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray"
                   >
                     <span>{currentIdx === QUESTIONS.length - 1 ? 'View Final Results' : 'Next Question'}</span>
                     <ArrowRight className="w-4 h-4" />
@@ -345,20 +345,20 @@ export const Practice: React.FC = () => {
           </div>
         ) : (
           /* Quiz Results Summary Screen */
-          <div className="p-8 rounded-2xl bg-slate-900/60 border border-slate-800 text-center space-y-6 shadow-2xl">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center mx-auto shadow-xl shadow-emerald-500/20 text-white">
+          <div className="p-8 rounded-2xl bg-floral-white text-center space-y-6">
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto text-black-olive">
               <Award className="w-8 h-8" />
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-2xl font-bold text-white">Quiz Completed!</h2>
-              <p className="text-sm text-slate-400">
-                You scored <strong className="text-emerald-400">{score} out of {QUESTIONS.length}</strong> ({scorePct}%).
+              <h2 className="text-2xl font-bold text-black-olive">Quiz Completed!</h2>
+              <p className="text-sm text-black-olive/70">
+                You scored <strong className="text-slate-gray">{score} out of {QUESTIONS.length}</strong> ({scorePct}%).
               </p>
             </div>
 
             {/* Performance Rating */}
-            <div className="max-w-md mx-auto p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300">
+            <div className="max-w-md mx-auto p-4 rounded-xl bg-floral-white text-xs text-black-olive" shadow-neu-raised>
               {scorePct >= 80 ? (
                 <p>🎉 <strong>Outstanding grasp of quantum concepts!</strong> You are ready to design complex multi-qubit algorithms in the Lab.</p>
               ) : scorePct >= 50 ? (
@@ -371,13 +371,13 @@ export const Practice: React.FC = () => {
             <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
               <button
                 onClick={handleRestart}
-                className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs transition-colors flex items-center gap-2"
+                className="px-5 py-2.5 rounded-xl bg-floral-white hover:bg-floral-white text-black-olive font-semibold text-xs transition-colors flex items-center gap-2 shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray"
               >
                 <RotateCcw className="w-4 h-4" /> Retake Quiz
               </button>
               <Link
                 to="/dashboard"
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-teal-500 hover:from-indigo-600 hover:to-teal-400 text-white font-semibold text-xs shadow-lg transition-all flex items-center gap-2"
+                className="px-6 py-2.5 rounded-xl hover: hover: text-floral-white font-semibold text-xs transition-all flex items-center gap-2 shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray"
               >
                 <TrendingUp className="w-4 h-4" /> View on Dashboard
               </Link>

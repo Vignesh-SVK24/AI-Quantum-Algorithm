@@ -56,57 +56,57 @@ const REFERENCES = [
 ];
 
 export const About: React.FC = () => (
-  <div className="min-h-screen quantum-grid-bg text-slate-200">
+  <div className="min-h-screen quantum-grid-bg text-black-olive">
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
       
       {/* Header */}
-      <div className="space-y-2 border-b border-slate-800 pb-6">
-        <Link to="/" className="inline-flex items-center gap-1.5 text-xs text-teal-400 hover:text-teal-300 transition-colors mb-2">
+      <div className="space-y-2 pb-6">
+        <Link to="/" className="inline-flex items-center gap-1.5 text-xs text-slate-gray hover:text-slate-gray transition-colors mb-2 shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray rounded-xl">
           <ArrowLeft className="w-3.5 h-3.5" /> Back to Home
         </Link>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-500 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-teal-500/20">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-black-olive">
             <BookOpen className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-white tracking-tight">About & Scientific References</h1>
-            <p className="text-xs text-slate-400">Authoritative academic grounding, curriculum sources, and platform architecture</p>
+            <h1 className="text-3xl font-bold text-black-olive tracking-tight">About & Scientific References</h1>
+            <p className="text-xs text-black-olive/70">Authoritative academic grounding, curriculum sources, and platform architecture</p>
           </div>
         </div>
       </div>
 
       {/* Mission & Pedagogical Standards */}
-      <div className="p-6 md:p-8 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 shadow-xl">
-        <div className="flex items-center gap-2 text-teal-400 font-bold text-sm">
+      <div className="p-6 md:p-8 rounded-2xl bg-floral-white space-y-4" shadow-neu-raised>
+        <div className="flex items-center gap-2 text-slate-gray font-bold text-sm">
           <ShieldCheck className="w-5 h-5" /> Scientific Accuracy Commitment
         </div>
-        <p className="text-sm text-slate-300 leading-relaxed">
+        <p className="text-sm text-black-olive leading-relaxed">
           The <strong>Quantum Algorithm Learning Platform</strong> was developed to eliminate common misconceptions 
           in quantum computing education. Unlike popular science analogies that describe qubits as "being in two states at once", 
           our curriculum grounds every concept in rigorous quantum mechanics:
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 text-xs">
-          <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
-            <div className="font-bold text-teal-300 flex items-center gap-1.5">
+          <div className="p-3.5 rounded-xl bg-floral-white space-y-1">
+            <div className="font-bold text-slate-gray flex items-center gap-1.5">
               <Atom className="w-3.5 h-3.5" /> Probability Amplitudes
             </div>
-            <p className="text-slate-400 leading-relaxed">
+            <p className="text-black-olive/70 leading-relaxed">
               Qubits exist in definite quantum states characterized by complex probability amplitudes |ψ⟩ = α|0⟩ + β|1⟩ with |α|² + |β|² = 1.
             </p>
           </div>
-          <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
-            <div className="font-bold text-indigo-300 flex items-center gap-1.5">
+          <div className="p-3.5 rounded-xl bg-floral-white space-y-1">
+            <div className="font-bold text-slate-gray flex items-center gap-1.5">
               <Globe2 className="w-3.5 h-3.5" /> Wavefunction Collapse
             </div>
-            <p className="text-slate-400 leading-relaxed">
+            <p className="text-black-olive/70 leading-relaxed">
               Measurement irreversibly collapses the superposition into a classical bitstring according to Born's rule.
             </p>
           </div>
-          <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
-            <div className="font-bold text-cyan-300 flex items-center gap-1.5">
+          <div className="p-3.5 rounded-xl bg-floral-white space-y-1">
+            <div className="font-bold text-slate-gray flex items-center gap-1.5">
               <Cpu className="w-3.5 h-3.5" /> Pure Simulation Math
             </div>
-            <p className="text-slate-400 leading-relaxed">
+            <p className="text-black-olive/70 leading-relaxed">
               All circuits and algorithms are executed via the official Qiskit Statevector runtime rather than mock approximations.
             </p>
           </div>
@@ -116,35 +116,35 @@ export const About: React.FC = () => (
       {/* Authoritative References Section */}
       <div className="space-y-4">
         <div>
-          <h2 className="text-xl font-bold text-white">Curriculum References & Literature</h2>
-          <p className="text-xs text-slate-400 mt-1">Foundational papers, textbooks, and documentation powering this platform</p>
+          <h2 className="text-xl font-bold text-black-olive">Curriculum References & Literature</h2>
+          <p className="text-xs text-black-olive/70 mt-1">Foundational papers, textbooks, and documentation powering this platform</p>
         </div>
 
         <div className="space-y-3">
           {REFERENCES.map((ref, idx) => (
             <div 
               key={idx}
-              className="p-5 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition-all space-y-2.5"
+              className="p-5 rounded-xl bg-floral-white hover: transition-all space-y-2.5 shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray"
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
-                  <h3 className="text-sm font-bold text-white hover:text-teal-300 transition-colors">
+                  <h3 className="text-sm font-bold text-black-olive hover:text-slate-gray transition-colors shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray rounded-xl">
                     {ref.title}
                   </h3>
-                  <span className="text-xs text-slate-400">{ref.authors}</span>
+                  <span className="text-xs text-black-olive/70">{ref.authors}</span>
                 </div>
                 <a
                   href={ref.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-teal-400 text-xs font-mono transition-colors self-start sm:self-auto"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-floral-white hover:bg-floral-white text-slate-gray text-xs font-mono transition-colors self-start sm:self-auto shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray"
                 >
                   <span>Read Source</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </div>
 
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs text-black-olive leading-relaxed">
                 {ref.desc}
               </p>
 
@@ -152,7 +152,7 @@ export const About: React.FC = () => (
                 {ref.topics.map((t, i) => (
                   <span 
                     key={i}
-                    className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-950 text-slate-400 border border-slate-800"
+                    className="text-[10px] font-mono px-2 py-0.5 rounded bg-floral-white text-black-olive/70"
                   >
                     {t}
                   </span>
@@ -164,12 +164,12 @@ export const About: React.FC = () => (
       </div>
 
       {/* Tech Stack Summary */}
-      <div className="p-6 rounded-2xl bg-slate-900/40 border border-slate-800 text-xs text-slate-400 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="p-6 rounded-2xl bg-floral-white text-xs text-black-olive/70 flex flex-col md:flex-row items-center justify-between gap-4">
         <div>
-          <span className="font-bold text-slate-200 block mb-0.5">Platform Architecture:</span>
+          <span className="font-bold text-black-olive block mb-0.5">Platform Architecture:</span>
           <span>React 19 + TypeScript + Vite + Tailwind CSS v4 | Python 3.11 + FastAPI + Qiskit Statevector</span>
         </div>
-        <span className="text-[11px] font-mono text-teal-400 bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-800">
+        <span className="text-[11px] font-mono text-slate-gray bg-floral-white px-3 py-1.5 rounded-xl">
           Hackathon Demo Release v1.0
         </span>
       </div>

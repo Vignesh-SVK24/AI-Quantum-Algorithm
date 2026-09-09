@@ -36,10 +36,10 @@ interface PlacedGate {
 }
 
 const GATES: { id: GateType; name: string; desc: string; color: string; border: string; text: string }[] = [
-  { id: 'H', name: 'Hadamard', desc: 'Creates an equal superposition of |0\u27E9 and |1\u27E9.', color: 'bg-indigo-500/20', border: 'border-indigo-500/50', text: 'text-indigo-300' },
-  { id: 'X', name: 'Pauli-X (NOT)', desc: 'Flips the qubit state: |0\u27E9 \u2194 |1\u27E9.', color: 'bg-teal-500/20', border: 'border-teal-500/50', text: 'text-teal-300' },
-  { id: 'Z', name: 'Pauli-Z (Phase)', desc: 'Applies a 180\u00B0 phase flip to the |1\u27E9 state.', color: 'bg-emerald-500/20', border: 'border-emerald-500/50', text: 'text-emerald-300' },
-  { id: 'CNOT', name: 'CNOT', desc: 'Flips target qubit if control qubit is |1\u27E9. (Click control, then target)', color: 'bg-rose-500/20', border: 'border-rose-500/50', text: 'text-rose-300' }
+  { id: 'H', name: 'Hadamard', desc: 'Creates an equal superposition of |0\u27E9 and |1\u27E9.', color: 'bg-floral-white', border: '', text: 'text-slate-gray' },
+  { id: 'X', name: 'Pauli-X (NOT)', desc: 'Flips the qubit state: |0\u27E9 \u2194 |1\u27E9.', color: 'bg-floral-white', border: '', text: 'text-slate-gray' },
+  { id: 'Z', name: 'Pauli-Z (Phase)', desc: 'Applies a 180\u00B0 phase flip to the |1\u27E9 state.', color: 'bg-floral-white', border: '', text: 'text-slate-gray' },
+  { id: 'CNOT', name: 'CNOT', desc: 'Flips target qubit if control qubit is |1\u27E9. (Click control, then target)', color: 'bg-floral-white', border: '', text: 'text-slate-gray' }
 ];
 
 const NUM_STEPS = 10;
@@ -205,25 +205,25 @@ export const QuantumLab: React.FC = () => {
   const showResults = viewMode === 'split' || viewMode === 'results';
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] bg-quantum-950 text-slate-200 overflow-hidden relative">
+    <div className="flex h-[calc(100vh-4rem)] bg-floral-white text-black-olive overflow-hidden relative">
 
       {/* ========================================================================= */}
       {/* LEFT PANEL: GATE PALETTE (COLLAPSIBLE) */}
       {/* ========================================================================= */}
       <div 
-        className={`border-r border-slate-800 bg-quantum-900/40 flex flex-col flex-shrink-0 transition-all duration-300 relative z-20 ${
+        className={`  bg-floral-white flex flex-col flex-shrink-0 transition-all duration-300 relative z-20 ${
           isPaletteCollapsed ? 'w-14' : 'w-48 lg:w-56'
         }`}
       >
         {/* Palette Header */}
-        <div className="p-3 border-b border-slate-800 flex items-center justify-between">
+        <div className="p-3 flex items-center justify-between">
           {!isPaletteCollapsed && (
-            <h2 className="text-xs font-bold text-white uppercase tracking-wider">Gate Palette</h2>
+            <h2 className="text-xs font-bold text-black-olive uppercase tracking-wider">Gate Palette</h2>
           )}
           <button
             onClick={() => setIsPaletteCollapsed(!isPaletteCollapsed)}
             title={isPaletteCollapsed ? "Expand Palette" : "Collapse Palette"}
-            className="p-1 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 transition-colors mx-auto"
+            className="p-1 rounded-xl text-black-olive/70 hover:text-black-olive hover:bg-floral-white transition-colors mx-auto shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray"
           >
             {isPaletteCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
@@ -235,17 +235,17 @@ export const QuantumLab: React.FC = () => {
           {/* Tools */}
           <div className="space-y-1.5">
             {!isPaletteCollapsed && (
-              <h3 className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest px-2 mb-1">Tools</h3>
+              <h3 className="text-[10px] font-semibold text-black-olive/70 uppercase tracking-widest px-2 mb-1">Tools</h3>
             )}
             <button
               onClick={() => { setActiveTool('CURSOR'); setPendingCNOT(null); }}
               title="Select / Pointer"
-              className={`w-full flex items-center rounded-lg text-xs font-medium transition-colors ${
+              className={`w-full flex items-center rounded-xl text-xs font-medium transition-colors ${
                 isPaletteCollapsed ? 'justify-center p-2' : 'gap-2 px-2.5 py-1.5'
               } ${
                 activeTool === 'CURSOR' 
-                  ? 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/40' 
-                  : 'text-slate-400 hover:bg-slate-800/50 border border-transparent'
+                  ? 'bg-floral-white text-slate-gray  ' 
+                  : 'text-black-olive/70 hover:bg-floral-white  border-transparent'
               }`}
             >
               <MousePointer2 className="w-4 h-4 flex-shrink-0" />
@@ -254,12 +254,12 @@ export const QuantumLab: React.FC = () => {
             <button
               onClick={() => { setActiveTool('ERASER'); setPendingCNOT(null); }}
               title="Eraser"
-              className={`w-full flex items-center rounded-lg text-xs font-medium transition-colors ${
+              className={`w-full flex items-center rounded-xl text-xs font-medium transition-colors ${
                 isPaletteCollapsed ? 'justify-center p-2' : 'gap-2 px-2.5 py-1.5'
               } ${
                 activeTool === 'ERASER' 
-                  ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40' 
-                  : 'text-slate-400 hover:bg-slate-800/50 border border-transparent'
+                  ? 'bg-floral-white text-slate-gray  ' 
+                  : 'text-black-olive/70 hover:bg-floral-white  border-transparent'
               }`}
             >
               <Eraser className="w-4 h-4 flex-shrink-0" />
@@ -270,32 +270,32 @@ export const QuantumLab: React.FC = () => {
           {/* Gates */}
           <div className="space-y-2">
             {!isPaletteCollapsed && (
-              <h3 className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest px-2 mb-1">Quantum Gates</h3>
+              <h3 className="text-[10px] font-semibold text-black-olive/70 uppercase tracking-widest px-2 mb-1">Quantum Gates</h3>
             )}
             {GATES.map(gate => (
               <div key={gate.id} className="relative group">
                 <button
                   onClick={() => { setActiveTool(gate.id); setPendingCNOT(null); }}
                   title={`${gate.name}: ${gate.desc}`}
-                  className={`w-full flex items-center rounded-xl border transition-all ${
+                  className={`w-full flex items-center rounded-xl  transition-all ${
                     isPaletteCollapsed ? 'justify-center p-1.5' : 'gap-2.5 px-2.5 py-2'
                   } ${
                     activeTool === gate.id 
-                      ? `bg-slate-800 ${gate.border} shadow-lg shadow-indigo-500/10` 
-                      : 'bg-slate-900/50 border-slate-800 hover:border-slate-700'
+                      ? `bg-floral-white ${gate.border}  ` 
+                      : 'bg-floral-white  hover:'
                   }`}
                 >
-                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold font-mono text-xs border flex-shrink-0 ${gate.color} ${gate.border} ${gate.text}`}>
+                  <div className={`w-7 h-7 rounded-xl flex items-center justify-center font-bold font-mono text-xs  flex-shrink-0 ${gate.color} ${gate.border} ${gate.text}`}>
                     {gate.id}
                   </div>
                   {!isPaletteCollapsed && (
-                    <span className="text-xs font-semibold text-slate-200 truncate">{gate.name}</span>
+                    <span className="text-xs font-semibold text-black-olive truncate">{gate.name}</span>
                   )}
                 </button>
 
                 {/* Tooltip on hover */}
-                <div className="absolute left-full ml-2 top-0 w-44 p-2.5 bg-slate-800 text-[11px] text-slate-300 rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 shadow-xl border border-slate-700">
-                  <div className="font-semibold text-white mb-0.5 flex items-center gap-1"><Info className="w-3 h-3"/> {gate.name}</div>
+                <div className="absolute left-full ml-2 top-0 w-44 p-2.5 bg-floral-white text-[11px] text-black-olive rounded-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray">
+                  <div className="font-semibold text-black-olive mb-0.5 flex items-center gap-1"><Info className="w-3 h-3"/> {gate.name}</div>
                   {gate.desc}
                 </div>
               </div>
@@ -309,29 +309,29 @@ export const QuantumLab: React.FC = () => {
       {/* CENTER PANEL: CIRCUIT BUILDER CANVAS */}
       {/* ========================================================================= */}
       {showCircuit && (
-        <div className={`flex-1 flex flex-col relative bg-quantum-950 quantum-grid-bg min-w-0 transition-all ${
+        <div className={`flex-1 flex flex-col relative quantum-grid-bg min-w-0 transition-all ${
           viewMode === 'circuit' ? 'w-full' : ''
         }`}>
           
           {/* Canvas Top Bar */}
-          <div className="p-3 border-b border-slate-800/80 bg-quantum-900/50 backdrop-blur-md flex flex-wrap justify-between items-center gap-2 z-10">
+          <div className="p-3 bg-floral-white backdrop-blur-md flex flex-wrap justify-between items-center gap-2 z-10">
             
             {/* Left Controls: Title + Qubit Selector + Mode Status */}
             <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-              <h1 className="text-sm sm:text-base font-bold text-white flex items-center gap-1.5">
-                <Cpu className="w-4 h-4 text-teal-400 hidden sm:inline" /> Circuit Builder
+              <h1 className="text-sm sm:text-base font-bold text-black-olive flex items-center gap-1.5">
+                <Cpu className="w-4 h-4 text-slate-gray hidden sm:inline" /> Circuit Builder
               </h1>
               
               {/* Qubit Count Selector */}
-              <div className="flex items-center gap-1 bg-slate-900/90 p-0.5 rounded-lg border border-slate-800 text-xs">
+              <div className="flex items-center gap-1 bg-floral-white p-0.5 rounded-xl text-xs">
                 {[1, 2, 3].map(count => (
                   <button
                     key={count}
                     onClick={() => handleQubitCountChange(count)}
-                    className={`px-2 py-0.5 rounded-md font-mono text-[11px] font-semibold transition-all ${
+                    className={`px-2 py-0.5 rounded-xl font-mono text-[11px] font-semibold transition-all ${
                       numQubits === count 
-                        ? 'bg-indigo-600 text-white shadow-sm' 
-                        : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                        ? 'bg-floral-white text-black-olive ' 
+                        : 'text-black-olive/70 hover:text-black-olive hover:bg-floral-white'
                     }`}
                   >
                     {count}Q
@@ -340,19 +340,19 @@ export const QuantumLab: React.FC = () => {
               </div>
 
               {activeTool !== 'CURSOR' && (
-                <span className="px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 text-[10px] font-mono uppercase tracking-wider">
+                <span className="px-2 py-0.5 rounded-full bg-floral-white text-slate-gray text-[10px] font-mono uppercase tracking-wider">
                   {activeTool} {pendingCNOT && '(Click Target)'}
                 </span>
               )}
             </div>
 
             {/* Center: View Switcher for Laptop Convenience */}
-            <div className="hidden md:flex items-center bg-slate-900/90 p-0.5 rounded-lg border border-slate-800 text-[11px]">
+            <div className="hidden md:flex items-center bg-floral-white p-0.5 rounded-xl text-[11px]">
               <button
                 onClick={() => setViewMode('split')}
                 title="Split View (Circuit + Results)"
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-md font-medium transition-colors ${
-                  viewMode === 'split' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-xl font-medium transition-colors ${
+                  viewMode === 'split' ? 'bg-floral-white text-black-olive ' : 'text-black-olive/70 hover:text-black-olive'
                 }`}
               >
                 <Columns className="w-3 h-3" /> Split
@@ -360,8 +360,8 @@ export const QuantumLab: React.FC = () => {
               <button
                 onClick={() => setViewMode('circuit')}
                 title="Full Circuit View"
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-md font-medium transition-colors ${
-                  viewMode === 'circuit' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-xl font-medium transition-colors ${
+                  viewMode === 'circuit' ? 'bg-floral-white text-black-olive ' : 'text-black-olive/70 hover:text-black-olive'
                 }`}
               >
                 <Layers className="w-3 h-3" /> Circuit
@@ -369,11 +369,11 @@ export const QuantumLab: React.FC = () => {
               <button
                 onClick={() => setViewMode('results')}
                 title="Full Results View (Expands all charts)"
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-md font-medium transition-colors ${
-                  (viewMode as string) === 'results' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-xl font-medium transition-colors ${
+                  (viewMode as string) === 'results' ? 'bg-floral-white text-black-olive ' : 'text-black-olive/70 hover:text-black-olive'
                 }`}
               >
-                <BarChart3 className="w-3 h-3" /> Results {simResult && <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />}
+                <BarChart3 className="w-3 h-3" /> Results {simResult && <span className="w-1.5 h-1.5 rounded-full bg-floral-white animate-pulse" />}
               </button>
             </div>
 
@@ -381,14 +381,14 @@ export const QuantumLab: React.FC = () => {
             <div className="flex items-center gap-2">
               <button 
                 onClick={clearCircuit} 
-                className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors flex items-center gap-1.5"
+                className="px-2.5 py-1.5 rounded-xl text-xs font-medium text-black-olive hover:text-black-olive hover:bg-floral-white transition-colors flex items-center gap-1.5 shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray"
               >
                 <Trash2 className="w-3.5 h-3.5" /> Reset
               </button>
               <button
                 onClick={handleRunCircuit}
                 disabled={isSimulating}
-                className="px-4 py-1.5 rounded-lg text-xs font-semibold text-white bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-teal-500/20 transition-all flex items-center gap-1.5"
+                className="px-4 py-1.5 rounded-xl text-xs font-semibold text-black-olive hover: hover: disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-1.5 shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray"
               >
                 {isSimulating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5 fill-current" />}
                 {isSimulating ? 'Simulating...' : 'Run Circuit'}
@@ -402,17 +402,17 @@ export const QuantumLab: React.FC = () => {
             <div className="relative" style={{ width: `${NUM_STEPS * 60 + 90}px`, height: `${numQubits * ROW_HEIGHT}px` }}>
               {Array.from({ length: numQubits }).map((_, qIdx) => (
                 <div key={`wire-${qIdx}`} className="absolute left-0 right-0 flex items-center" style={{ top: qIdx * ROW_HEIGHT, height: ROW_HEIGHT }}>
-                  <div className="w-14 font-mono text-xs font-bold text-slate-400 flex items-center gap-1.5">
-                    |0{'\u27E9'} <span className="text-[10px] text-slate-500">q[{qIdx}]</span>
+                  <div className="w-14 font-mono text-xs font-bold text-black-olive/70 flex items-center gap-1.5">
+                    |0{'\u27E9'} <span className="text-[10px] text-black-olive/70">q[{qIdx}]</span>
                   </div>
-                  <div className="flex-1 h-px bg-slate-700 shadow-[0_0_8px_rgba(51,65,85,0.5)]"></div>
+                  <div className="flex-1 h-px bg-floral-white"></div>
                 </div>
               ))}
 
               <div className="absolute left-14 top-0 bottom-0 right-0 flex">
                 {Array.from({ length: NUM_STEPS }).map((_, sIdx) => (
-                  <div key={`col-${sIdx}`} className="flex-1 border-r border-slate-800/30 relative h-full group">
-                    <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                  <div key={`col-${sIdx}`} className="flex-1 relative h-full group">
+                    <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray rounded-xl" />
                     {Array.from({ length: numQubits }).map((_, qIdx) => {
                       const isOccupied = circuit.find(g => g.step === sIdx && (g.target === qIdx || g.control === qIdx));
                       const isPendingCNOTControl = pendingCNOT?.step === sIdx && pendingCNOT?.control === qIdx;
@@ -420,11 +420,11 @@ export const QuantumLab: React.FC = () => {
                         <div
                           key={`cell-${sIdx}-${qIdx}`}
                           onClick={() => handleCellClick(qIdx, sIdx)}
-                          className={`absolute left-0 right-0 cursor-pointer flex items-center justify-center z-20 ${!isOccupied && activeTool !== 'CURSOR' ? 'hover:bg-indigo-500/20' : ''}`}
+                          className={`absolute left-0 right-0 cursor-pointer flex items-center justify-center z-20 ${!isOccupied && activeTool !== 'CURSOR' ? 'hover:bg-floral-white' : ''}`}
                           style={{ top: qIdx * ROW_HEIGHT, height: ROW_HEIGHT }}
                         >
                           {isPendingCNOTControl && (
-                            <div className="w-3 h-3 rounded-full bg-rose-400 ring-4 ring-rose-400/20" />
+                            <div className="w-3 h-3 rounded-full bg-floral-white" />
                           )}
                         </div>
                       );
@@ -439,11 +439,11 @@ export const QuantumLab: React.FC = () => {
                         const height = Math.abs(cY - tY);
                         return (
                           <div key={gate.id} className="absolute left-0 right-0 pointer-events-none z-10">
-                            <div className="absolute left-1/2 w-0.5 bg-rose-500/80 -translate-x-1/2" style={{ top, height }} />
-                            <div className="absolute left-1/2 w-3.5 h-3.5 rounded-full bg-rose-500 -translate-x-1/2 -translate-y-1/2 shadow-[0_0_10px_rgba(244,63,94,0.5)]" style={{ top: cY }} />
-                            <div className="absolute left-1/2 w-7 h-7 rounded-full bg-quantum-900 border-2 border-rose-500 flex items-center justify-center -translate-x-1/2 -translate-y-1/2 shadow-[0_0_15px_rgba(244,63,94,0.4)]" style={{ top: tY }}>
-                              <div className="w-full h-0.5 bg-rose-500 absolute" />
-                              <div className="h-full w-0.5 bg-rose-500 absolute" />
+                            <div className="absolute left-1/2 w-0.5 bg-floral-white -translate-x-1/2" style={{ top, height }} />
+                            <div className="absolute left-1/2 w-3.5 h-3.5 rounded-full bg-floral-white -translate-x-1/2 -translate-y-1/2" style={{ top: cY }} />
+                            <div className="absolute left-1/2 w-7 h-7 rounded-full bg-floral-white border-2 flex items-center justify-center -translate-x-1/2 -translate-y-1/2" style={{ top: tY }}>
+                              <div className="w-full h-0.5 bg-floral-white absolute" />
+                              <div className="h-full w-0.5 bg-floral-white absolute" />
                             </div>
                           </div>
                         );
@@ -451,7 +451,7 @@ export const QuantumLab: React.FC = () => {
                       return (
                         <div
                           key={gate.id}
-                          className={`absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-lg flex items-center justify-center font-bold font-mono text-base border shadow-lg backdrop-blur-sm pointer-events-none z-10 ${gateDef?.color} ${gateDef?.border} ${gateDef?.text}`}
+                          className={`absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-xl flex items-center justify-center font-bold font-mono text-base   backdrop-blur-sm pointer-events-none z-10 ${gateDef?.color} ${gateDef?.border} ${gateDef?.text}`}
                           style={{ top: gate.target * ROW_HEIGHT + ROW_HEIGHT / 2 }}
                         >
                           {gate.type}
@@ -466,13 +466,13 @@ export const QuantumLab: React.FC = () => {
 
           {/* Quick Results Bar if in Circuit mode and results exist */}
           {viewMode === 'circuit' && simResult && (
-            <div className="p-2 border-t border-slate-800 bg-quantum-900/60 backdrop-blur-sm flex items-center justify-between text-xs px-4">
-              <span className="text-slate-300 font-mono flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-teal-400" /> Simulation complete: {Object.keys(simResult.probabilities).filter(k => simResult.probabilities[k] > 0).length} active basis states
+            <div className="p-2 bg-floral-white backdrop-blur-sm flex items-center justify-between text-xs px-4">
+              <span className="text-black-olive font-mono flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-floral-white" /> Simulation complete: {Object.keys(simResult.probabilities).filter(k => simResult.probabilities[k] > 0).length} active basis states
               </span>
               <button
                 onClick={() => setViewMode('results')}
-                className="px-3 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white font-medium flex items-center gap-1 text-xs transition-colors"
+                className="px-3 py-1 rounded bg-floral-white hover:bg-floral-white text-black-olive font-medium flex items-center gap-1 text-xs transition-colors shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray rounded-xl"
               >
                 View Full Results <ArrowRight className="w-3 h-3" />
               </button>
@@ -487,7 +487,7 @@ export const QuantumLab: React.FC = () => {
       {/* ========================================================================= */}
       {showResults && (
         <div 
-          className={`border-l border-slate-800 bg-quantum-900/30 flex flex-col relative overflow-hidden transition-all duration-300 ${
+          className={`  bg-floral-white flex flex-col relative overflow-hidden transition-all duration-300 ${
             viewMode === 'results' 
               ? 'flex-1 w-full' 
               : isResultsExpanded 
@@ -495,16 +495,16 @@ export const QuantumLab: React.FC = () => {
               : 'w-80 sm:w-96 lg:w-[380px] xl:w-[420px] flex-shrink-0'
           }`}
         >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/5 rounded-bl-full pointer-events-none" />
+          <div className="absolute top-0 right-0 w-32 h-32 bg-floral-white rounded-bl-full pointer-events-none" />
 
           {/* Results Header */}
-          <div className="p-3 border-b border-slate-800 flex items-center justify-between gap-2 flex-wrap bg-quantum-900/50">
+          <div className="p-3 flex items-center justify-between gap-2 flex-wrap bg-floral-white">
             <div className="flex items-center gap-2">
-              <h2 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-                <BarChart3 className="w-3.5 h-3.5 text-teal-400" /> Results & State
+              <h2 className="text-xs font-bold text-black-olive uppercase tracking-wider flex items-center gap-1.5">
+                <BarChart3 className="w-3.5 h-3.5 text-slate-gray" /> Results & State
               </h2>
               {simResult && (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-teal-500/10 text-teal-300 border border-teal-500/20">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-floral-white text-slate-gray">
                   Ready
                 </span>
               )}
@@ -513,31 +513,31 @@ export const QuantumLab: React.FC = () => {
             <div className="flex items-center gap-1.5">
               {/* Tab Selector */}
               {simResult && (
-                <div className="flex gap-0.5 bg-slate-950 p-0.5 rounded-lg border border-slate-800 text-[10px]">
+                <div className="flex gap-0.5 bg-floral-white p-0.5 rounded-xl text-[10px]">
                   <button
                     onClick={() => setActiveTab('all')}
-                    className={`px-2 py-0.5 rounded font-medium ${activeTab === 'all' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'}`}
+                    className={`px-2 py-0.5 rounded font-medium ${activeTab === 'all' ? 'bg-floral-white text-black-olive' : 'text-black-olive/70 hover:text-black-olive'}`}
                   >
                     All
                   </button>
                   <button
                     onClick={() => setActiveTab('before-after')}
                     title="Before -> After Comparison"
-                    className={`px-1.5 py-0.5 rounded font-medium ${activeTab === 'before-after' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'}`}
+                    className={`px-1.5 py-0.5 rounded font-medium ${activeTab === 'before-after' ? 'bg-floral-white text-black-olive' : 'text-black-olive/70 hover:text-black-olive'}`}
                   >
                     B/A
                   </button>
                   <button
                     onClick={() => setActiveTab('bloch')}
                     title="Bloch Sphere"
-                    className={`px-1.5 py-0.5 rounded font-medium ${activeTab === 'bloch' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'}`}
+                    className={`px-1.5 py-0.5 rounded font-medium ${activeTab === 'bloch' ? 'bg-floral-white text-black-olive' : 'text-black-olive/70 hover:text-black-olive'}`}
                   >
                     Bloch
                   </button>
                   <button
                     onClick={() => setActiveTab('histogram')}
                     title="1024-shot Measurement Histogram"
-                    className={`px-1.5 py-0.5 rounded font-medium ${activeTab === 'histogram' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'}`}
+                    className={`px-1.5 py-0.5 rounded font-medium ${activeTab === 'histogram' ? 'bg-floral-white text-black-olive' : 'text-black-olive/70 hover:text-black-olive'}`}
                   >
                     Shots
                   </button>
@@ -549,7 +549,7 @@ export const QuantumLab: React.FC = () => {
                 <button
                   onClick={() => setIsResultsExpanded(!isResultsExpanded)}
                   title={isResultsExpanded ? "Standard Width" : "Widen Results for Laptop"}
-                  className="p-1 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                  className="p-1 rounded-xl text-black-olive/70 hover:text-black-olive hover:bg-floral-white transition-colors shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray"
                 >
                   {isResultsExpanded ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
                 </button>
@@ -558,7 +558,7 @@ export const QuantumLab: React.FC = () => {
               {viewMode === 'results' && (
                 <button
                   onClick={() => setViewMode('split')}
-                  className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-[10px] font-medium flex items-center gap-1"
+                  className="px-2 py-0.5 rounded bg-floral-white hover:bg-floral-white text-black-olive hover:text-black-olive text-[10px] font-medium flex items-center gap-1 shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray rounded-xl"
                 >
                   Back to Circuit
                 </button>
@@ -570,8 +570,8 @@ export const QuantumLab: React.FC = () => {
           <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3">
             {/* Error state */}
             {simError && (
-              <div className="p-3 rounded-xl bg-rose-950/30 border border-rose-800/50 text-rose-300 text-xs">
-                <div className="flex items-center gap-1.5 mb-1 font-semibold text-rose-200">
+              <div className="p-3 rounded-xl bg-floral-white text-slate-gray text-xs">
+                <div className="flex items-center gap-1.5 mb-1 font-semibold text-slate-gray">
                   <AlertTriangle className="w-3.5 h-3.5" /> Error
                 </div>
                 <p className="whitespace-pre-wrap">{simError}</p>
@@ -581,12 +581,12 @@ export const QuantumLab: React.FC = () => {
             {/* Empty state */}
             {!simResult && !simError && !isSimulating && (
               <div className="flex-1 flex flex-col items-center justify-center text-center space-y-3 opacity-50 py-16">
-                <div className="w-14 h-14 rounded-2xl bg-slate-800/50 border border-slate-700 flex items-center justify-center">
-                  <Activity className="w-7 h-7 text-slate-500" />
+                <div className="w-14 h-14 rounded-2xl bg-floral-white flex items-center justify-center">
+                  <Activity className="w-7 h-7 text-black-olive/70" />
                 </div>
                 <div>
-                  <p className="text-xs sm:text-sm font-semibold text-slate-300">Awaiting Simulation</p>
-                  <p className="text-[11px] text-slate-500 mt-1 max-w-[220px]">
+                  <p className="text-xs sm:text-sm font-semibold text-black-olive">Awaiting Simulation</p>
+                  <p className="text-[11px] text-black-olive/70 mt-1 max-w-[220px]">
                     Place gates and click <strong>Run Circuit</strong> to visualize amplitudes, Bloch rotations, and measurement histograms.
                   </p>
                 </div>
@@ -596,8 +596,8 @@ export const QuantumLab: React.FC = () => {
             {/* Loading state */}
             {isSimulating && (
               <div className="flex-1 flex flex-col items-center justify-center text-center space-y-2 py-16">
-                <Loader2 className="w-8 h-8 text-teal-400 animate-spin" />
-                <p className="text-xs text-slate-300">Simulating quantum state...</p>
+                <Loader2 className="w-8 h-8 text-slate-gray animate-spin" />
+                <p className="text-xs text-black-olive">Simulating quantum state...</p>
               </div>
             )}
 
@@ -626,11 +626,11 @@ export const QuantumLab: React.FC = () => {
 
                 {/* 3. Formatted Statevector */}
                 {(activeTab === 'all' || activeTab === 'before-after') && (
-                  <div className="p-3 bg-slate-900/80 rounded-xl border border-slate-800 text-xs">
-                    <div className="text-[10px] uppercase font-bold text-slate-500 tracking-widest mb-1 flex items-center gap-1.5">
-                      <Sparkles className="w-3 h-3 text-teal-400" /> Dirac Ket Statevector
+                  <div className="p-3 bg-floral-white rounded-xl text-xs">
+                    <div className="text-[10px] uppercase font-bold text-black-olive/70 tracking-widest mb-1 flex items-center gap-1.5">
+                      <Sparkles className="w-3 h-3 text-slate-gray" /> Dirac Ket Statevector
                     </div>
-                    <div className="font-mono text-teal-300 break-all leading-relaxed text-xs">
+                    <div className="font-mono text-slate-gray break-all leading-relaxed text-xs">
                       |{'\u03C8\u27E9'} = {formatStatevectorString(simResult.statevector)}
                     </div>
                   </div>
@@ -638,9 +638,9 @@ export const QuantumLab: React.FC = () => {
 
                 {/* 4. Theoretical Probabilities */}
                 {(activeTab === 'all') && (
-                  <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-2">
+                  <div className="p-3.5 rounded-xl bg-floral-white space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-xs font-bold text-white uppercase tracking-wider">
+                      <span className="text-xs font-bold text-black-olive uppercase tracking-wider">
                         Probabilities (|c{'\u2099'}|²)
                       </span>
                     </div>
@@ -651,12 +651,12 @@ export const QuantumLab: React.FC = () => {
                         .map(([basis, prob]) => (
                         <div key={basis}>
                           <div className="flex justify-between text-[11px] mb-0.5">
-                            <span className="font-mono text-slate-300 font-bold">{basis}</span>
-                            <span className="text-slate-400 font-mono">{(prob * 100).toFixed(1)}%</span>
+                            <span className="font-mono text-black-olive font-bold">{basis}</span>
+                            <span className="text-black-olive/70 font-mono">{(prob * 100).toFixed(1)}%</span>
                           </div>
-                          <div className="w-full h-3.5 bg-slate-800 rounded-md overflow-hidden">
+                          <div className="w-full h-3.5 bg-floral-white rounded-xl overflow-hidden">
                             <div
-                              className="h-full bg-gradient-to-r from-indigo-500 to-teal-400 rounded-md transition-all duration-500"
+                              className="h-full rounded-xl transition-all duration-500 shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray"
                               style={{ width: `${prob * 100}%` }}
                             />
                           </div>

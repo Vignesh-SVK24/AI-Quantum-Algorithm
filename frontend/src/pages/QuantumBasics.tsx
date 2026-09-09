@@ -54,16 +54,16 @@ export const QuantumBasics: React.FC = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <Link to="/" className="inline-flex items-center gap-1.5 text-xs text-teal-400 hover:text-teal-300 transition-colors">
+            <Link to="/" className="inline-flex items-center gap-1.5 text-xs text-slate-gray hover:text-slate-gray transition-colors shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray rounded-xl">
               <ArrowLeft className="w-3.5 h-3.5" /> Home
             </Link>
-            <div className="w-px h-4 bg-slate-700" />
+            <div className="w-px h-4 bg-floral-white" />
             <div className="flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-indigo-400" />
-              <span className="text-sm font-semibold text-white">Quantum Basics</span>
+              <BookOpen className="w-4 h-4 text-slate-gray" />
+              <span className="text-sm font-semibold text-black-olive">Quantum Basics</span>
             </div>
           </div>
-          <span className="text-xs font-mono text-slate-400">
+          <span className="text-xs font-mono text-black-olive/70">
             {currentStep + 1} / {sections.length}
           </span>
         </div>
@@ -82,16 +82,16 @@ export const QuantumBasics: React.FC = () => {
                     setCurrentStep(idx);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium transition-all whitespace-nowrap ${
                     isActive
-                      ? 'bg-indigo-600/20 text-teal-300 border border-indigo-500/30'
+                      ? 'bg-floral-white text-slate-gray  '
                       : isCompleted
-                      ? 'bg-emerald-950/30 text-emerald-400 border border-emerald-800/30'
-                      : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800/40 border border-transparent'
+                      ? 'bg-floral-white text-slate-gray  '
+                      : 'text-black-olive/70 hover:text-black-olive hover:bg-floral-white  border-transparent'
                   }`}
                 >
                   {isCompleted ? (
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-slate-gray" />
                   ) : (
                     <Icon className="w-3.5 h-3.5" />
                   )}
@@ -102,9 +102,9 @@ export const QuantumBasics: React.FC = () => {
             })}
           </div>
           {/* Progress bar */}
-          <div className="mt-3 h-1 bg-slate-800 rounded-full overflow-hidden">
+          <div className="mt-3 h-1 bg-floral-white rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-indigo-500 to-teal-400 rounded-full transition-all duration-500 ease-out"
+              className="h-full rounded-full transition-all duration-500 ease-out shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray"
               style={{ width: `${((currentStep + 1) / sections.length) * 100}%` }}
             />
           </div>
@@ -121,12 +121,12 @@ export const QuantumBasics: React.FC = () => {
         {/* Completion state */}
         {currentStep === sections.length - 1 && (
           <div className="mt-8 text-center">
-            <p className="text-slate-400 text-xs font-mono">
+            <p className="text-black-olive/70 text-xs font-mono">
               Congratulations on completing Quantum Basics! Next up: the Interactive Quantum Lab.
             </p>
             <Link
               to="/lab"
-              className="inline-flex items-center gap-2 mt-4 px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-teal-500 hover:from-indigo-600 hover:to-teal-400 text-white font-semibold text-sm shadow-lg transition-all hover:scale-[1.02]"
+              className="inline-flex items-center gap-2 mt-4 px-6 py-2.5 rounded-xl hover: hover: text-floral-white font-semibold text-sm transition-all hover:scale-[1.02] shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray"
             >
               Continue to Quantum Lab →
             </Link>
