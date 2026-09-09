@@ -13,8 +13,8 @@ logging.basicConfig(level=logging.INFO)
 # 1. ENVIRONMENT & .ENV LOADER
 # =========================================================================
 
-def load_dotenv(dotenv_path=None):
-    """Simple, zero-dependency .env loader that populates os.environ without overwriting."""
+def load_dotenv(dotenv_path=None, override=True):
+    """Simple, zero-dependency .env loader that populates os.environ."""
     paths_to_check = [
         dotenv_path,
         os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env"),
@@ -31,14 +31,14 @@ def load_dotenv(dotenv_path=None):
                             k, v = line.split("=", 1)
                             k = k.strip()
                             v = v.strip().strip("'\"")
-                            if k and k not in os.environ:
+                            if k and (override or k not in os.environ or not os.environ[k]):
                                 os.environ[k] = v
                 logger.info(f"Loaded environment variables from {p}")
                 break
             except Exception as e:
                 logger.warning(f"Failed to read {p}: {e}")
 
-load_dotenv()
+load_dotenv(override=True)
 
 
 # =========================================================================
@@ -102,6 +102,7 @@ def call_gemini_api(message: str) -> str:
     Invokes the Gemini API using GEMINI_API_KEY with exponential backoff on HTTP 429.
     Never leaks API keys or internal stack traces to the caller.
     """
+    load_dotenv(override=True)
     api_key = os.environ.get("GEMINI_API_KEY", "").strip()
     
     if not api_key:
@@ -148,38 +149,50 @@ def call_gemini_api(message: str) -> str:
                     return response.text.strip()
                 raise RuntimeError("Empty response received from Gemini SDK.")
             else:
-                # Direct REST call to Gemini v1beta endpoint
-                url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
-                payload = {
-                    "systemInstruction": {
-                        "parts": [{"text": SYSTEM_PROMPT}]
-                    },
-                    "contents": [
-                        {
-                            "parts": [{"text": message}]
+                # Direct REST call to Gemini v1beta endpoint with supported models
+                candidate_models = ["gemini-flash-lite-latest", "gemini-flash-latest", "gemini-pro-latest"]
+                last_err = None
+                for model_name in candidate_models:
+                    try:
+                        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
+                        payload = {
+                            "systemInstruction": {
+                                "parts": [{"text": SYSTEM_PROMPT}]
+                            },
+                            "contents": [
+                                {
+                                    "parts": [{"text": message}]
+                                }
+                            ],
+                            "generationConfig": {
+                                "temperature": 0.7,
+                                "maxOutputTokens": 800
+                            }
                         }
-                    ],
-                    "generationConfig": {
-                        "temperature": 0.7,
-                        "maxOutputTokens": 800
-                    }
-                }
-                data_bytes = json.dumps(payload).encode("utf-8")
-                req = urllib.request.Request(
-                    url,
-                    data=data_bytes,
-                    headers={"Content-Type": "application/json"},
-                    method="POST"
-                )
+                        data_bytes = json.dumps(payload).encode("utf-8")
+                        req = urllib.request.Request(
+                            url,
+                            data=data_bytes,
+                            headers={"Content-Type": "application/json"},
+                            method="POST"
+                        )
 
-                with urllib.request.urlopen(req, timeout=20) as resp:
-                    resp_data = json.loads(resp.read().decode("utf-8"))
-                    candidates = resp_data.get("candidates", [])
-                    if candidates:
-                        parts = candidates[0].get("content", {}).get("parts", [])
-                        if parts and "text" in parts[0]:
-                            return parts[0]["text"].strip()
-                    raise RuntimeError("No text candidate returned by Gemini API.")
+                        with urllib.request.urlopen(req, timeout=15) as resp:
+                            resp_data = json.loads(resp.read().decode("utf-8"))
+                            candidates = resp_data.get("candidates", [])
+                            if candidates:
+                                parts = candidates[0].get("content", {}).get("parts", [])
+                                if parts and "text" in parts[0]:
+                                    return parts[0]["text"].strip()
+                    except urllib.error.HTTPError as me:
+                        last_err = me
+                        if me.code in (429, 503):
+                            # Try next fallback model if 503 or 429
+                            continue
+                        raise me
+                if last_err:
+                    raise last_err
+                raise RuntimeError("No text candidate returned by Gemini API.")
 
         except urllib.error.HTTPError as he:
             if he.code == 429:
