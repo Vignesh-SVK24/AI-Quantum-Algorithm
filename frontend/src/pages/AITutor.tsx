@@ -1,7 +1,8 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Bot, ArrowLeft, Sparkles, Layers, Cpu, Compass, BookOpen } from 'lucide-react';
+import { Bot, ArrowLeft, Sparkles, Layers, Cpu, Compass, BookOpen, Zap, ShieldAlert } from 'lucide-react';
 import { AITutorPanel } from '../components/AITutorPanel';
+import { GeminiChat } from '../components/GeminiChat';
 import { type TutorContext } from '../services/api';
 
 const SAMPLE_SCENARIOS: { id: string; name: string; icon: any; context: TutorContext; desc: string }[] = [
@@ -72,6 +73,7 @@ const SAMPLE_SCENARIOS: { id: string; name: string; icon: any; context: TutorCon
 ];
 
 export const AITutor: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'chat' | 'circuit'>('chat');
   const [activeScenario, setActiveScenario] = useState<string>('hadamard');
   const selected = SAMPLE_SCENARIOS.find(s => s.id === activeScenario) || SAMPLE_SCENARIOS[0];
 
@@ -92,77 +94,170 @@ export const AITutor: React.FC = () => {
               <div>
                 <h1 className="text-2xl font-bold text-white tracking-tight">AI Quantum Teaching Assistant</h1>
                 <p className="text-xs text-slate-400">
-                  Context-aware Socratic tutor grounded in your circuit states and algorithm parameters
+                  Powered by Google Gemini Flash API with rate limiting and secure proxy
                 </p>
               </div>
             </div>
           </div>
+
+          {/* Mode Switcher Tabs */}
+          <div className="flex items-center bg-slate-900/90 p-1 rounded-xl border border-slate-800">
+            <button
+              onClick={() => setActiveTab('chat')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+                activeTab === 'chat'
+                  ? 'bg-gradient-to-r from-indigo-600 to-teal-600 text-white shadow-md'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+              }`}
+            >
+              <Zap className="w-3.5 h-3.5" />
+              <span>Gemini Flash Chat</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            </button>
+            <button
+              onClick={() => setActiveTab('circuit')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+                activeTab === 'circuit'
+                  ? 'bg-gradient-to-r from-indigo-600 to-teal-600 text-white shadow-md'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>Circuit Context Assistant</span>
+            </button>
+          </div>
         </div>
 
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
-          {/* Left Column: Context Scenario Switcher */}
-          <div className="lg:col-span-5 space-y-5">
-            <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-                  <BookOpen className="w-4 h-4 text-purple-400" /> Active Learning Scenario
+        {/* Tab 1: Gemini Flash Direct AI Chat */}
+        {activeTab === 'chat' && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="lg:col-span-8">
+              <GeminiChat />
+            </div>
+
+            <div className="lg:col-span-4 space-y-4">
+              <div className="p-5 rounded-2xl bg-slate-900/70 border border-slate-800 space-y-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-white uppercase tracking-wider">About Gemini Tutor</h3>
+                    <p className="text-[11px] text-slate-400">Google Gemini Flash LLM</p>
+                  </div>
+                </div>
+
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  The AI Tutor acts as a quantum computing teaching assistant for beginners, grounded in Dirac bra-ket notation, probability amplitudes, and quantum logic gates.
+                </p>
+
+                <div className="space-y-2 border-t border-slate-800 pt-3">
+                  <h4 className="text-[11px] font-semibold text-teal-400 uppercase tracking-wider">Features</h4>
+                  <ul className="space-y-1.5 text-xs text-slate-400">
+                    <li className="flex items-start gap-2">
+                      <span className="text-emerald-400 font-bold">•</span>
+                      <span>Beginner-friendly explanations without confusing jargon</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-emerald-400 font-bold">•</span>
+                      <span>Strict scientific accuracy (avoids "0 and 1 at same time" trope)</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-emerald-400 font-bold">•</span>
+                      <span>Exponential backoff on 429 rate limit errors (1s, 2s, 4s)</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-emerald-400 font-bold">•</span>
+                      <span>Server-side API key protection with sliding-window rate limit</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-slate-900/70 border border-slate-800 space-y-3">
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <ShieldAlert className="w-3.5 h-3.5 text-indigo-400" /> Security &amp; Rate Limits
                 </h3>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20">
-                  Real Context
-                </span>
+                <div className="text-xs text-slate-400 space-y-2">
+                  <p>
+                    Your API key is never transmitted or exposed to browser clients. Requests pass through the local FastAPI backend with rate limiting to prevent quota exhaustion.
+                  </p>
+                  <div className="bg-slate-950 p-2.5 rounded-lg border border-slate-800 font-mono text-[10px] text-teal-300">
+                    Limit: 15 req/min per IP<br />
+                    Backoff: 1s, 2s, 4s retry on 429
+                  </div>
+                </div>
               </div>
-              
-              <p className="text-xs text-slate-400">
-                Select a simulated quantum scenario to load its exact circuit wires, gates, and simulation results into the AI tutor:
-              </p>
+            </div>
+          </div>
+        )}
 
-              <div className="space-y-2.5">
-                {SAMPLE_SCENARIOS.map((scen) => {
-                  const Icon = scen.icon;
-                  const isActive = activeScenario === scen.id;
-                  return (
-                    <button
-                      key={scen.id}
-                      onClick={() => setActiveScenario(scen.id)}
-                      className={`w-full text-left p-3.5 rounded-xl border transition-all ${
-                        isActive
-                          ? 'bg-purple-950/40 border-purple-500 shadow-md shadow-purple-500/10'
-                          : 'bg-slate-950/40 border-slate-800 hover:border-slate-700'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2.5 mb-1">
-                        <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${isActive ? 'bg-purple-600 text-white' : 'bg-slate-800 text-slate-400'}`}>
-                          <Icon className="w-3.5 h-3.5" />
+        {/* Tab 2: Circuit Context-Aware Tutor */}
+        {activeTab === 'circuit' && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            {/* Left Column: Context Scenario Switcher */}
+            <div className="lg:col-span-5 space-y-5">
+              <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                    <BookOpen className="w-4 h-4 text-purple-400" /> Active Learning Scenario
+                  </h3>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20">
+                    Real Context
+                  </span>
+                </div>
+                
+                <p className="text-xs text-slate-400">
+                  Select a simulated quantum scenario to load its exact circuit wires, gates, and simulation results into the AI tutor:
+                </p>
+
+                <div className="space-y-2.5">
+                  {SAMPLE_SCENARIOS.map((scen) => {
+                    const Icon = scen.icon;
+                    const isActive = activeScenario === scen.id;
+                    return (
+                      <button
+                        key={scen.id}
+                        onClick={() => setActiveScenario(scen.id)}
+                        className={`w-full text-left p-3.5 rounded-xl border transition-all ${
+                          isActive
+                            ? 'bg-purple-950/40 border-purple-500 shadow-md shadow-purple-500/10'
+                            : 'bg-slate-950/40 border-slate-800 hover:border-slate-700'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5 mb-1">
+                          <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${isActive ? 'bg-purple-600 text-white' : 'bg-slate-800 text-slate-400'}`}>
+                            <Icon className="w-3.5 h-3.5" />
+                          </div>
+                          <span className="text-xs font-bold text-slate-200">{scen.name}</span>
                         </div>
-                        <span className="text-xs font-bold text-slate-200">{scen.name}</span>
-                      </div>
-                      <p className="text-[11px] text-slate-400 pl-8.5">{scen.desc}</p>
-                    </button>
-                  );
-                })}
+                        <p className="text-[11px] text-slate-400 pl-8.5">{scen.desc}</p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Context Telemetry Card */}
+              <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Context Telemetry Passed to AI</h3>
+                <pre className="p-3.5 bg-slate-950 rounded-xl border border-slate-800 font-mono text-[10px] text-teal-300 overflow-x-auto">
+                  {JSON.stringify(selected.context, null, 2)}
+                </pre>
               </div>
             </div>
 
-            {/* Context Telemetry Card */}
-            <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Context Telemetry Passed to AI</h3>
-              <pre className="p-3.5 bg-slate-950 rounded-xl border border-slate-800 font-mono text-[10px] text-teal-300 overflow-x-auto">
-                {JSON.stringify(selected.context, null, 2)}
-              </pre>
+            {/* Right Column: AI Tutor Chat Station */}
+            <div className="lg:col-span-7">
+              <AITutorPanel
+                context={selected.context}
+                compact={false}
+              />
             </div>
-          </div>
 
-          {/* Right Column: AI Tutor Chat Station */}
-          <div className="lg:col-span-7">
-            <AITutorPanel
-              context={selected.context}
-              compact={false}
-            />
           </div>
-
-        </div>
+        )}
 
       </div>
     </div>

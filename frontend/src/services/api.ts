@@ -98,6 +98,10 @@ export interface TutorResponse {
   source: string;
 }
 
+export interface TutorChatResponse {
+  reply: string;
+}
+
 export const DEUTSCH_ORACLES_DATA: DeutschOracle[] = [
   { id: 'constant_0', name: 'Constant 0 (f(x) = 0)', type: 'constant', description: 'Returns 0 for all inputs. The oracle performs identity on the ancilla qubit.' },
   { id: 'constant_1', name: 'Constant 1 (f(x) = 1)', type: 'constant', description: 'Returns 1 for all inputs. The oracle applies an X gate to the ancilla qubit.' },
@@ -443,4 +447,38 @@ export async function askAITutor(question: string, context: TutorContext): Promi
     answer,
     source: 'in-browser-quantum-mentor'
   };
+}
+
+export async function sendTutorChat(message: string): Promise<TutorChatResponse> {
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}/tutor/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message })
+    });
+  } catch (networkErr: any) {
+    throw new Error('Unable to reach Quantum Backend (http://127.0.0.1:8000). Please ensure the backend service is running.');
+  }
+
+  if (!response.ok) {
+    let errorDetail = `Request failed with status ${response.status}`;
+    try {
+      const errJson = await response.json();
+      if (errJson?.detail?.message) {
+        errorDetail = errJson.detail.message;
+      } else if (errJson?.detail) {
+        errorDetail = typeof errJson.detail === 'string' ? errJson.detail : JSON.stringify(errJson.detail);
+      } else if (errJson?.message) {
+        errorDetail = errJson.message;
+      }
+    } catch {
+      if (response.status === 429) {
+        errorDetail = 'The tutor is busy (rate limit exceeded). Please wait a moment and try again.';
+      }
+    }
+    throw new Error(errorDetail);
+  }
+
+  return await response.json();
 }

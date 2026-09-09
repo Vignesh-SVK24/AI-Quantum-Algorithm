@@ -5,12 +5,19 @@ except Exception:
     qiskit = None
     QISKIT_VERSION = "2.5.2 (Statevector Engine)"
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from app.quantum_sim import simulate_hadamard_circuit, validate_circuit, build_and_simulate
 from app.algorithms import DEUTSCH_ORACLES, run_deutsch_jozsa, run_grover
 from app.tutor import ask_tutor
+from app.gemini_tutor import (
+    check_rate_limit,
+    validate_and_sanitize_message,
+    call_gemini_api,
+    RateLimitExceededError,
+    AuthenticationError
+)
 
 app = FastAPI(
     title="Quantum Algorithm Learning Platform API",
@@ -146,7 +153,7 @@ def simulate_grover(request: GroverRequest):
         raise HTTPException(status_code=500, detail={"message": "Grover execution failed", "errors": [str(e)]})
 
 
-# --- AI Tutor Endpoint ---
+# --- AI Tutor Endpoints ---
 
 @app.post("/api/tutor")
 def tutor_endpoint(request: TutorRequest):
@@ -155,6 +162,63 @@ def tutor_endpoint(request: TutorRequest):
         return ask_tutor(request.question, request.context.model_dump())
     except Exception as e:
         raise HTTPException(status_code=500, detail={"message": "Tutor request failed", "errors": [str(e)]})
+
+
+class ChatMessageRequest(BaseModel):
+    message: str
+
+
+@app.post("/tutor/chat")
+@app.post("/api/tutor/chat")
+async def chat_with_tutor(req: ChatMessageRequest, request: Request):
+    """
+    AI Chat endpoint powered by Google Gemini.
+    - Strict rate limiting per client IP (max 15 requests/min)
+    - Input sanitization and length validation (reject empty, >2000 chars)
+    - Exponential backoff retry on Gemini API 429
+    - Zero API key exposure
+    """
+    # 1. Rate limiting by IP
+    client_ip = (
+        request.headers.get("x-forwarded-for")
+        or (request.client.host if request.client else "127.0.0.1")
+    )
+    if "," in client_ip:
+        client_ip = client_ip.split(",")[0].strip()
+
+    allowed, retry_after = check_rate_limit(client_ip)
+    if not allowed:
+        raise HTTPException(
+            status_code=429,
+            detail={"message": f"Rate limit exceeded. Please wait {retry_after} second(s) before sending more messages."},
+            headers={"Retry-After": str(retry_after)}
+        )
+
+    # 2. Input validation & sanitization
+    try:
+        clean_msg = validate_and_sanitize_message(req.message)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail={"message": str(ve)})
+
+    # 3. Call Gemini model
+    try:
+        reply = call_gemini_api(clean_msg)
+        return {"reply": reply}
+    except RateLimitExceededError:
+        raise HTTPException(
+            status_code=429,
+            detail={"message": "The tutor is busy, please try again in a moment."}
+        )
+    except AuthenticationError:
+        raise HTTPException(
+            status_code=503,
+            detail={"message": "The tutor service is temporarily unavailable due to an authentication issue."}
+        )
+    except Exception:
+        raise HTTPException(
+            status_code=500,
+            detail={"message": "An error occurred while communicating with the tutor service."}
+        )
 
 
 if __name__ == "__main__":
