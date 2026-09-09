@@ -17,6 +17,8 @@ from app.gemini_tutor import (
     call_gemini_api,
     process_tutor_chat
 )
+from app.feedback import FeedbackPayload, record_feedback, get_feedback_summary
+from app.accuracy_test import run_accuracy_tests
 
 app = FastAPI(
     title="Quantum Algorithm Learning Platform API",
@@ -168,6 +170,8 @@ class ChatMessageRequest(BaseModel):
     mode: str = "beginner"
     circuit_context: dict | None = None
     algorithm_context: dict | None = None
+    history: list[dict] | None = None
+    student_progress: dict | None = None
 
 
 @app.post("/tutor/chat")
@@ -177,12 +181,11 @@ async def chat_with_tutor(req: ChatMessageRequest, request: Request):
     AI Chat endpoint powered by Google Gemini + Quantum Knowledge Base (RAG).
     - Strict rate limiting per client IP (max 15 requests/min)
     - Input sanitization and length validation
+    - Multi-turn conversation memory
+    - Personalized student progress awareness
     - Grounded RAG retrieval with verified IBM & Qiskit sources
-    - Difficulty mode awareness (beginner, intermediate, advanced)
-    - Circuit & Qiskit code generation with backend verification
-    - Zero API key exposure
+    - Mathematical verification against Qiskit simulation
     """
-    # 1. Rate limiting by IP
     client_ip = (
         request.headers.get("x-forwarded-for")
         or (request.client.host if request.client else "127.0.0.1")
@@ -198,13 +201,14 @@ async def chat_with_tutor(req: ChatMessageRequest, request: Request):
             headers={"Retry-After": str(retry_after)}
         )
 
-    # 2. Input validation & processing
     try:
         result = process_tutor_chat(
             message=req.message,
             mode=req.mode,
             circuit_context=req.circuit_context,
-            algorithm_context=req.algorithm_context
+            algorithm_context=req.algorithm_context,
+            history=req.history,
+            student_progress=req.student_progress
         )
         return result
     except ValueError as ve:
@@ -214,6 +218,27 @@ async def chat_with_tutor(req: ChatMessageRequest, request: Request):
             status_code=500,
             detail={"message": "An error occurred while communicating with the tutor service."}
         )
+
+
+@app.post("/tutor/feedback")
+@app.post("/api/tutor/feedback")
+def submit_feedback(payload: FeedbackPayload):
+    """Logs student thumbs-up / thumbs-down rating and details for post-hackathon analysis."""
+    return record_feedback(payload)
+
+
+@app.get("/tutor/feedback/summary")
+@app.get("/api/tutor/feedback/summary")
+def get_feedback_analytics():
+    """Returns aggregated feedback analytics (positive %, total ratings, breakdown by mode)."""
+    return get_feedback_summary()
+
+
+@app.get("/tutor/accuracy-test")
+@app.get("/api/tutor/accuracy-test")
+def run_accuracy_test_endpoint():
+    """Runs the 16-test AI Accuracy Regression Suite and returns pass/fail report."""
+    return run_accuracy_tests()
 
 
 if __name__ == "__main__":

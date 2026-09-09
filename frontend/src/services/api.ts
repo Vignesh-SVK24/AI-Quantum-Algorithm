@@ -105,6 +105,25 @@ export interface TutorSourceCitation {
   url?: string;
 }
 
+export interface TutorPracticeQuestion {
+  id: string;
+  topic?: string;
+  question: string;
+  options: string[];
+  correct_index: number;
+  explanation: string;
+}
+
+export interface TutorFeedbackPayload {
+  message_id: string;
+  question: string;
+  response: string;
+  mode: string;
+  rating: number;
+  sources_cited?: any[];
+  feedback_text?: string;
+}
+
 export interface TutorChatResponse {
   reply: string;
   classification?: string;
@@ -115,6 +134,8 @@ export interface TutorChatResponse {
   } | null;
   qiskit_code?: string | null;
   qiskit_verified?: boolean | null;
+  practice_question?: TutorPracticeQuestion | null;
+  is_verified?: boolean | null;
 }
 
 export const DEUTSCH_ORACLES_DATA: DeutschOracle[] = [
@@ -467,7 +488,9 @@ export async function askAITutor(question: string, context: TutorContext): Promi
 export async function sendTutorChat(
   message: string,
   mode: 'beginner' | 'intermediate' | 'advanced' = 'beginner',
-  circuitContext?: TutorContext | null
+  circuitContext?: TutorContext | null,
+  history?: Array<{ role: 'user' | 'tutor'; text: string }> | null,
+  studentProgress?: Record<string, any> | null
 ): Promise<TutorChatResponse> {
   let response: Response;
   try {
@@ -477,7 +500,9 @@ export async function sendTutorChat(
       body: JSON.stringify({
         message,
         mode,
-        circuit_context: circuitContext || null
+        circuit_context: circuitContext || null,
+        history: history || null,
+        student_progress: studentProgress || null
       })
     });
   } catch (networkErr: any) {
@@ -504,4 +529,18 @@ export async function sendTutorChat(
   }
 
   return await response.json();
+}
+
+export async function sendTutorFeedback(payload: TutorFeedbackPayload): Promise<{ status: string }> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/tutor/feedback`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) return await res.json();
+    return { status: 'fallback_ok' };
+  } catch {
+    return { status: 'offline_logged' };
+  }
 }
