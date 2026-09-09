@@ -1,0 +1,182 @@
+[
+  {
+    "id": "qubit_definition",
+    "topic": "Fundamentals",
+    "title": "What is a Qubit?",
+    "tags": ["qubit", "quantum bit", "bit", "classical bit", "information", "definition"],
+    "summary": "A qubit (quantum bit) is the fundamental unit of quantum information, analogous to the classical bit. Unlike a classical bit which is strictly 0 or 1, a qubit's state is a normalized vector in a two-dimensional complex Hilbert space: |ψ⟩ = α|0⟩ + β|1⟩, where α and β are complex probability amplitudes satisfying |α|² + |β|² = 1.",
+    "source": "IBM Quantum Learning — Basics of Quantum Information",
+    "url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/single-systems"
+  },
+  {
+    "id": "computational_basis",
+    "topic": "Fundamentals",
+    "title": "Computational Basis States |0⟩ and |1⟩",
+    "tags": ["basis", "computational basis", "ground state", "excited state", "ket", "dirac", "vector"],
+    "summary": "The standard computational basis states are |0⟩ = [1, 0]ᵀ (ground state) and |1⟩ = [0, 1]ᵀ (excited state). They form an orthonormal basis for a single qubit. Any single-qubit quantum state can be expressed as a linear combination of these basis states.",
+    "source": "IBM Quantum Learning — Single Qubit Systems",
+    "url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/single-systems"
+  },
+  {
+    "id": "superposition_principle",
+    "topic": "Fundamentals",
+    "title": "Quantum Superposition",
+    "tags": ["superposition", "linear combination", "amplitudes", "probability", "state"],
+    "summary": "Superposition is the principle that a quantum state can be written as a linear combination of basis states: |ψ⟩ = α|0⟩ + β|1⟩. Crucially, a qubit in superposition is NOT 'both 0 and 1 at the same time'; it is in a single, well-defined quantum state whose complex amplitudes determine measurement probabilities via Born's rule.",
+    "source": "IBM Quantum Learning — Multiple Systems and Superposition",
+    "url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/single-systems"
+  },
+  {
+    "id": "probability_amplitudes",
+    "topic": "Fundamentals",
+    "title": "Probability Amplitudes and Born Rule",
+    "tags": ["amplitudes", "born rule", "probability", "normalization", "complex numbers", "phase"],
+    "summary": "Probability amplitudes α and β are complex numbers with magnitude and phase. According to the Born rule, measuring in the standard basis yields outcome 0 with probability P(0) = |α|² and outcome 1 with probability P(1) = |β|². The normalization condition requires |α|² + |β|² = 1.",
+    "source": "Qiskit Textbook — The Atoms of Computation",
+    "url": "https://learn.qiskit.org/course/introduction/the-atoms-of-computation"
+  },
+  {
+    "id": "quantum_measurement",
+    "topic": "Measurement",
+    "title": "Measurement and Wavefunction Collapse",
+    "tags": ["measurement", "collapse", "wavefunction", "projective", "observe", "born"],
+    "summary": "Measurement extracts classical information from a quantum system and is fundamentally probabilistic. When a qubit in state α|0⟩ + β|1⟩ is measured in the computational basis, its state irreversibly collapses to |0⟩ (with probability |α|²) or |1⟩ (with probability |β|²), destroying superposition.",
+    "source": "IBM Quantum Learning — Measurement in Quantum Circuits",
+    "url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/single-systems"
+  },
+  {
+    "id": "bloch_sphere",
+    "topic": "Visualization",
+    "title": "The Bloch Sphere",
+    "tags": ["bloch", "sphere", "visualization", "theta", "phi", "angles", "statevector", "geometry"],
+    "summary": "The Bloch sphere is a geometric representation of pure single-qubit states on the surface of a unit sphere: |ψ⟩ = cos(θ/2)|0⟩ + e^(iφ)sin(θ/2)|1⟩. The North pole represents |0⟩, South pole represents |1⟩, and the equator represents equal superpositions with differing relative phases φ.",
+    "source": "Qiskit Documentation — Visualizing Quantum States",
+    "url": "https://docs.quantum.ibm.com/api/qiskit/visualization"
+  },
+  {
+    "id": "hadamard_gate",
+    "topic": "Quantum Gates",
+    "title": "Hadamard Gate (H)",
+    "tags": ["h", "hadamard", "gate", "superposition", "equal superposition", "unitary"],
+    "summary": "The Hadamard gate creates equal superpositions from basis states: H|0⟩ = (|0⟩ + |1⟩)/√2 (state |+⟩) and H|1⟩ = (|0⟩ - |1⟩)/√2 (state |-⟩). Matrix: (1/√2)[[1, 1], [1, -1]]. Applying H twice returns the original state: H² = I.",
+    "source": "IBM Quantum Learning — Single Qubit Gates",
+    "url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/single-systems"
+  },
+  {
+    "id": "pauli_x_gate",
+    "topic": "Quantum Gates",
+    "title": "Pauli-X Gate (NOT Gate)",
+    "tags": ["x", "not", "bit flip", "pauli-x", "pauli x", "gate", "flip"],
+    "summary": "The Pauli-X gate acts as the quantum bit-flip or NOT gate: X|0⟩ = |1⟩ and X|1⟩ = |0⟩. Matrix: [[0, 1], [1, 0]]. Geometrically on the Bloch sphere, X represents a π (180°) rotation around the X-axis.",
+    "source": "IBM Quantum Learning — Single Qubit Gates",
+    "url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/single-systems"
+  },
+  {
+    "id": "pauli_z_gate",
+    "topic": "Quantum Gates",
+    "title": "Pauli-Z Gate (Phase Flip Gate)",
+    "tags": ["z", "phase flip", "pauli-z", "pauli z", "gate", "phase"],
+    "summary": "The Pauli-Z gate acts as a phase-flip gate: Z|0⟩ = |0⟩ and Z|1⟩ = -|1⟩. Matrix: [[1, 0], [0, -1]]. It leaves state |0⟩ unchanged while flipping the relative phase of state |1⟩ by π radians (180°).",
+    "source": "IBM Quantum Learning — Single Qubit Gates",
+    "url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/single-systems"
+  },
+  {
+    "id": "pauli_y_gate",
+    "topic": "Quantum Gates",
+    "title": "Pauli-Y Gate",
+    "tags": ["y", "pauli-y", "pauli y", "gate", "rotation"],
+    "summary": "The Pauli-Y gate performs both a bit-flip and a phase-flip with complex factor i: Y|0⟩ = i|1⟩ and Y|1⟩ = -i|0⟩. Matrix: [[0, -i], [i, 0]]. Corresponds to a π rotation around the Y-axis of the Bloch sphere.",
+    "source": "IBM Quantum Learning — Single Qubit Gates",
+    "url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/single-systems"
+  },
+  {
+    "id": "phase_gates_s_t",
+    "topic": "Quantum Gates",
+    "title": "Phase Gates (S and T Gates)",
+    "tags": ["s", "t", "phase gate", "s gate", "t gate", "rotation z", "qubit gate"],
+    "summary": "The S gate applies a π/2 (90°) phase rotation: S|1⟩ = i|1⟩ (matrix [[1, 0], [0, i]], S = √Z). The T gate applies a π/4 (45°) phase rotation: T|1⟩ = e^(iπ/4)|1⟩ (matrix [[1, 0], [0, e^(iπ/4)]], T = √S). Together with H, T provides universal quantum computation.",
+    "source": "Qiskit Textbook — Single Qubit Gates",
+    "url": "https://learn.qiskit.org/course/introduction/single-qubit-gates"
+  },
+  {
+    "id": "cnot_gate",
+    "topic": "Quantum Gates",
+    "title": "Controlled-NOT Gate (CNOT / CX)",
+    "tags": ["cnot", "cx", "controlled not", "two qubit", "control", "target", "entanglement"],
+    "summary": "The CNOT (Controlled-X) gate is an entangling 2-qubit gate. If the control qubit is |1⟩, it flips the target qubit; if the control is |0⟩, the target is unchanged: CNOT|00⟩ = |00⟩, CNOT|01⟩ = |01⟩, CNOT|10⟩ = |11⟩, CNOT|11⟩ = |10⟩.",
+    "source": "IBM Quantum Learning — Multiple Qubits and Entanglement",
+    "url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/multiple-systems"
+  },
+  {
+    "id": "quantum_entanglement",
+    "topic": "Multi-Qubit",
+    "title": "Quantum Entanglement",
+    "tags": ["entanglement", "entangled", "non-separable", "correlation", "epr", "bell"],
+    "summary": "Quantum entanglement occurs when two or more qubits share a joint state that cannot be factored into the tensor product of individual qubit states (|ψ⟩ ≠ |ψ_A⟩ ⊗ |ψ_B⟩). Measuring one entangled qubit instantaneously correlates the outcome of the other regardless of distance.",
+    "source": "IBM Quantum Learning — Multiple Systems",
+    "url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/multiple-systems"
+  },
+  {
+    "id": "bell_states",
+    "topic": "Multi-Qubit",
+    "title": "Bell States (EPR Pairs)",
+    "tags": ["bell state", "bell states", "epr pair", "phi+", "psi+", "maximally entangled"],
+    "summary": "The four Bell states are maximally entangled two-qubit basis states: |Φ⁺⟩ = (|00⟩ + |11⟩)/√2, |Φ⁻⟩ = (|00⟩ - |11⟩)/√2, |Ψ⁺⟩ = (|01⟩ + |10⟩)/√2, |Ψ⁻⟩ = (|01⟩ - |10⟩)/√2. Created by applying H to qubit 0 followed by CNOT from qubit 0 to qubit 1.",
+    "source": "Qiskit Textbook — Quantum Entanglement",
+    "url": "https://learn.qiskit.org/course/introduction/entangled-states"
+  },
+  {
+    "id": "phase_kickback",
+    "topic": "Quantum Techniques",
+    "title": "Phase Kickback Effect",
+    "tags": ["phase kickback", "kickback", "eigenvalue", "controlled unitary", "oracle"],
+    "summary": "Phase kickback is a quantum phenomenon where applying a controlled gate to a target qubit in an eigenstate (e.g. |-⟩ = (|0⟩ - |1⟩)/√2) 'kicks back' the eigenvalue phase shift onto the control qubit. It is the core mechanism enabling Deutsch-Jozsa, Grover, and Shor algorithms.",
+    "source": "IBM Quantum Learning — Quantum Phase Kickback",
+    "url": "https://learning.quantum.ibm.com/course/fundamentals-of-quantum-algorithms/phase-kickback"
+  },
+  {
+    "id": "deutsch_jozsa_algorithm",
+    "topic": "Algorithms",
+    "title": "Deutsch-Jozsa Algorithm",
+    "tags": ["deutsch", "deutsch jozsa", "deutsch-jozsa", "oracle", "constant", "balanced", "algorithm"],
+    "summary": "The Deutsch-Jozsa algorithm determines with certainty whether a black-box boolean function f(x) is constant (same output for all inputs) or balanced (output 0 for half, 1 for half). Classically this requires up to 2^(n-1) + 1 evaluations; Deutsch-Jozsa solves it in exactly 1 quantum query via quantum parallelism and phase kickback.",
+    "source": "IBM Quantum Learning — Fundamentals of Quantum Algorithms",
+    "url": "https://learning.quantum.ibm.com/course/fundamentals-of-quantum-algorithms/deutsch-jozsa-algorithm"
+  },
+  {
+    "id": "grovers_search_algorithm",
+    "topic": "Algorithms",
+    "title": "Grover's Search Algorithm",
+    "tags": ["grover", "grover's", "search", "unsorted database", "speedup", "quadratic", "algorithm"],
+    "summary": "Grover's algorithm searches an unstructured database of N items in O(√N) evaluations compared to classical O(N), providing a quadratic speedup. It uses iterative amplitude amplification consisting of an oracle phase flip followed by an inversion-about-the-mean diffusion operator.",
+    "source": "IBM Quantum Learning — Grover's Algorithm",
+    "url": "https://learning.quantum.ibm.com/course/fundamentals-of-quantum-algorithms/grovers-algorithm"
+  },
+  {
+    "id": "amplitude_amplification",
+    "topic": "Algorithms",
+    "title": "Amplitude Amplification and Diffusion Operator",
+    "tags": ["diffusion", "amplitude amplification", "inversion about the mean", "grover operator"],
+    "summary": "Amplitude amplification geometrically rotates the quantum state vector toward the marked target state. The diffusion operator D = 2|s⟩⟨s| - I reflects all amplitudes across their average, turning a negative phase on the target state into constructively amplified probability while destructively canceling non-target states.",
+    "source": "Qiskit Textbook — Grover's Algorithm",
+    "url": "https://learn.qiskit.org/course/introduction/grovers-algorithm"
+  },
+  {
+    "id": "quantum_parallelism",
+    "topic": "Fundamentals",
+    "title": "Quantum Parallelism and Interference",
+    "tags": ["parallelism", "interference", "constructive", "destructive", "hadamard transform"],
+    "summary": "Applying Hadamard gates across n qubits creates an equal superposition of all 2^n possible computational states. Quantum algorithms leverage constructive interference to amplify correct answers and destructive interference to cancel out incorrect answers.",
+    "source": "IBM Quantum Learning — Basics of Quantum Information",
+    "url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information"
+  },
+  {
+    "id": "qiskit_circuit_basics",
+    "topic": "Qiskit",
+    "title": "Creating Circuits with Qiskit",
+    "tags": ["qiskit", "quantumcircuit", "python", "code", "simulator", "statevector"],
+    "summary": "In Qiskit, quantum circuits are created via QuantumCircuit(num_qubits, num_clbits). Gates are applied sequentially (e.g. qc.h(0), qc.cx(0, 1)). Circuits can be simulated exactly using Statevector.from_instruction(qc) or sampled with measurement using the Sampler primitive.",
+    "source": "Qiskit Documentation — Building Quantum Circuits",
+    "url": "https://docs.quantum.ibm.com/build"
+  }
+]

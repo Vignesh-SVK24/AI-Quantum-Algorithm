@@ -132,7 +132,7 @@ export const AITutor: React.FC = () => {
         {activeTab === 'chat' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div className="lg:col-span-8">
-              <GeminiChat />
+              <GeminiChat circuitContext={selected.context} />
             </div>
 
             <div className="lg:col-span-4 space-y-4">

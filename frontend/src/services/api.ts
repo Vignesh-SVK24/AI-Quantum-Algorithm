@@ -98,8 +98,23 @@ export interface TutorResponse {
   source: string;
 }
 
+export interface TutorSourceCitation {
+  id?: string;
+  name: string;
+  title: string;
+  url?: string;
+}
+
 export interface TutorChatResponse {
   reply: string;
+  classification?: string;
+  sources?: TutorSourceCitation[];
+  circuit_data?: {
+    num_qubits: number;
+    gates: Array<{ type: string; target: number; step: number; control?: number }>;
+  } | null;
+  qiskit_code?: string | null;
+  qiskit_verified?: boolean | null;
 }
 
 export const DEUTSCH_ORACLES_DATA: DeutschOracle[] = [
@@ -449,13 +464,21 @@ export async function askAITutor(question: string, context: TutorContext): Promi
   };
 }
 
-export async function sendTutorChat(message: string): Promise<TutorChatResponse> {
+export async function sendTutorChat(
+  message: string,
+  mode: 'beginner' | 'intermediate' | 'advanced' = 'beginner',
+  circuitContext?: TutorContext | null
+): Promise<TutorChatResponse> {
   let response: Response;
   try {
     response = await fetch(`${API_BASE_URL}/tutor/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message })
+      body: JSON.stringify({
+        message,
+        mode,
+        circuit_context: circuitContext || null
+      })
     });
   } catch (networkErr: any) {
     throw new Error('Unable to reach Quantum Backend (http://127.0.0.1:8000). Please ensure the backend service is running.');
