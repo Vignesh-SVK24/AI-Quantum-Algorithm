@@ -7,9 +7,7 @@ import {
   Loader2, 
   AlertCircle, 
   RotateCcw, 
-  ShieldCheck,
-  BookOpen, 
-  ExternalLink, 
+  ShieldCheck, 
   Code2, 
   Check, 
   Copy, 
@@ -27,6 +25,7 @@ import {
   type TutorSourceCitation,
   type TutorPracticeQuestion 
 } from '../services/api';
+import { ResearchIndicator } from './ResearchIndicator';
 
 interface ChatMessage {
   id: string;
@@ -45,6 +44,11 @@ interface ChatMessage {
   is_verified?: boolean | null;
   userRating?: 1 | -1 | null;
   feedbackSubmitted?: boolean;
+  research_category?: string;
+  research_reasoning?: string;
+  is_web_grounded?: boolean;
+  search_provider?: string | null;
+  domain_breakdown?: Record<string, number>;
 }
 
 interface GeminiChatProps {
@@ -198,7 +202,12 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
         qiskit_code: response.qiskit_code,
         qiskit_verified: response.qiskit_verified,
         practice_question: response.practice_question,
-        is_verified: response.is_verified ?? true
+        is_verified: response.is_verified ?? true,
+        research_category: response.research_category,
+        research_reasoning: response.research_reasoning,
+        is_web_grounded: response.is_web_grounded,
+        search_provider: response.search_provider,
+        domain_breakdown: response.domain_breakdown
       };
       setMessages(prev => [...prev, tutorMessage]);
     } catch (err: any) {
@@ -503,26 +512,15 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
                   </div>
                 )}
 
-                {/* Grounded Source Citations (Tint of Slate Gray at low opacity) */}
-                {m.sources && m.sources.length > 0 && (
-                  <div className="pt-2 border-t border-black-olive/10 space-y-1">
-                    <span className="text-[10px] uppercase font-bold tracking-wider text-black-olive/60 flex items-center gap-1">
-                      <BookOpen className="w-3 h-3 text-slate-gray" /> Grounded Sources:
-                    </span>
-                    <div className="flex flex-wrap gap-2 pt-0.5">
-                      {m.sources.map((src, i) => (
-                        <a
-                          key={i}
-                          href={src.url || 'https://learning.quantum.ibm.com'}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-slate-gray/10 text-[10px] text-slate-gray hover:bg-slate-gray/20 transition-all font-semibold"
-                        >
-                          <span>{src.title ? `${src.name} — ${src.title}` : src.name}</span>
-                          <ExternalLink className="w-2.5 h-2.5 opacity-70" />
-                        </a>
-                      ))}
-                    </div>
+                {/* Autonomous Research & Grounded Source Citations */}
+                {!isUser && (
+                  <div className="pt-2 border-t border-black-olive/10">
+                    <ResearchIndicator 
+                      isGrounded={m.is_web_grounded || (Boolean(m.sources) && m.sources!.length > 0)}
+                      researchCategory={m.research_category}
+                      searchProvider={m.search_provider}
+                      sources={m.sources}
+                    />
                   </div>
                 )}
 
@@ -575,13 +573,8 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
 
         {/* Loading State */}
         {loading && (
-          <div className="flex gap-3 items-center text-black-olive/70 text-xs py-2">
-            <div className="w-7 h-7 rounded-xl bg-floral-white shadow-neu-raised flex items-center justify-center text-slate-gray">
-              <Loader2 className="w-4 h-4 animate-spin" />
-            </div>
-            <div className="text-slate-gray font-medium">
-              Consulting verified IBM/Qiskit knowledge base &amp; memory...
-            </div>
+          <div className="flex gap-3 items-center py-2">
+            <ResearchIndicator isSearching={true} />
           </div>
         )}
 

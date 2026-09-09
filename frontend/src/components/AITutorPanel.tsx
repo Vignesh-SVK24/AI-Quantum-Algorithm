@@ -4,16 +4,15 @@ import {
   X, 
   Send, 
   Sparkles, 
-  BookOpen, 
   HelpCircle, 
-  Loader2, 
-  ExternalLink
+  Loader2 
 } from 'lucide-react';
 import { 
   sendTutorChat, 
   type TutorContext, 
   type TutorSourceCitation 
 } from '../services/api';
+import { ResearchIndicator } from './ResearchIndicator';
 
 interface Message {
   id: string;
@@ -21,6 +20,11 @@ interface Message {
   text: string;
   timestamp: string;
   sources?: TutorSourceCitation[];
+  research_category?: string;
+  research_reasoning?: string;
+  is_web_grounded?: boolean;
+  search_provider?: string | null;
+  domain_breakdown?: Record<string, number>;
 }
 
 interface AITutorPanelProps {
@@ -81,7 +85,12 @@ export const AITutorPanel: React.FC<AITutorPanelProps> = ({ context, compact = f
         sender: 'tutor',
         text: res.reply,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        sources: res.sources
+        sources: res.sources,
+        research_category: res.research_category,
+        research_reasoning: res.research_reasoning,
+        is_web_grounded: res.is_web_grounded,
+        search_provider: res.search_provider,
+        domain_breakdown: res.domain_breakdown
       };
       setMessages(prev => [...prev, tutorMsg]);
     } catch (err) {
@@ -186,26 +195,15 @@ export const AITutorPanel: React.FC<AITutorPanelProps> = ({ context, compact = f
                 >
                   <p className="leading-relaxed whitespace-pre-wrap">{m.text}</p>
                   
-                  {/* Grounded Source Citations */}
-                  {m.sources && m.sources.length > 0 && (
-                    <div className="pt-1.5 border-t border-black-olive/10 space-y-1">
-                      <span className="text-[9px] uppercase font-bold text-black-olive/60 flex items-center gap-1">
-                        <BookOpen className="w-2.5 h-2.5 text-slate-gray" /> Sources:
-                      </span>
-                      <div className="flex flex-wrap gap-1">
-                        {m.sources.map((src, idx) => (
-                          <a
-                            key={idx}
-                            href={src.url || 'https://learning.quantum.ibm.com'}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-gray/10 text-[9px] font-semibold text-slate-gray hover:bg-slate-gray/20 transition-all"
-                          >
-                            <span>{src.name}</span>
-                            <ExternalLink className="w-2 h-2 opacity-70" />
-                          </a>
-                        ))}
-                      </div>
+                  {/* Autonomous Research & Grounded Source Citations */}
+                  {m.sender === 'tutor' && (
+                    <div className="pt-1.5 border-t border-black-olive/10">
+                      <ResearchIndicator 
+                        isGrounded={m.is_web_grounded || (Boolean(m.sources) && m.sources!.length > 0)}
+                        researchCategory={m.research_category}
+                        searchProvider={m.search_provider}
+                        sources={m.sources}
+                      />
                     </div>
                   )}
 
@@ -217,9 +215,8 @@ export const AITutorPanel: React.FC<AITutorPanelProps> = ({ context, compact = f
             ))}
 
             {loading && (
-              <div className="flex items-center gap-2 text-black-olive/60 text-xs py-2">
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-gray" />
-                <span>Consulting verified IBM/Qiskit knowledge base...</span>
+              <div className="py-2">
+                <ResearchIndicator isSearching={true} />
               </div>
             )}
             <div ref={messagesEndRef} />

@@ -5,6 +5,7 @@ except Exception:
     qiskit = None
     QISKIT_VERSION = "2.5.2 (Statevector Engine)"
 
+import os
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -240,6 +241,21 @@ def get_feedback_analytics():
 def run_accuracy_test_endpoint():
     """Runs the 16-test AI Accuracy Regression Suite and returns pass/fail report."""
     return run_accuracy_tests()
+
+
+@app.get("/tutor/research-status")
+@app.get("/api/tutor/research-status")
+def get_research_status():
+    """Returns autonomous web research status and provider readiness."""
+    api_key = os.environ.get("TAVILY_API_KEY", "").strip()
+    has_tavily = bool(api_key and api_key != "your_tavily_api_key_here")
+    return {
+        "status": "online",
+        "tavily_configured": has_tavily,
+        "active_provider": "tavily" if has_tavily else "academic_fallback",
+        "academic_fallback_ready": True,
+        "source_tiers": ["industry_leaders", "academic_arxiv_nature", "framework_docs", "tech_media"]
+    }
 
 
 class SearchRequest(BaseModel):

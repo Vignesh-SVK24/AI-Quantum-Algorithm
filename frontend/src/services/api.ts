@@ -103,6 +103,10 @@ export interface TutorSourceCitation {
   name: string;
   title: string;
   url?: string;
+  source_type?: 'platform' | 'academic' | 'industry_leader' | 'framework' | 'web' | 'documentation';
+  organization?: string;
+  authority_tier?: number;
+  snippet?: string;
 }
 
 export interface TutorPracticeQuestion {
@@ -127,6 +131,11 @@ export interface TutorFeedbackPayload {
 export interface TutorChatResponse {
   reply: string;
   classification?: string;
+  research_category?: string;
+  research_reasoning?: string;
+  is_web_grounded?: boolean;
+  search_provider?: string | null;
+  domain_breakdown?: Record<string, number>;
   sources?: TutorSourceCitation[];
   circuit_data?: {
     num_qubits: number;
@@ -136,6 +145,30 @@ export interface TutorChatResponse {
   qiskit_verified?: boolean | null;
   practice_question?: TutorPracticeQuestion | null;
   is_verified?: boolean | null;
+}
+
+export interface ResearchStatusResponse {
+  status: string;
+  tavily_configured: boolean;
+  active_provider: string;
+  academic_fallback_ready: boolean;
+  source_tiers: string[];
+}
+
+export async function getResearchStatus(): Promise<ResearchStatusResponse> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/tutor/research-status`);
+    if (res.ok) return await res.json();
+  } catch {
+    // Offline fallback
+  }
+  return {
+    status: 'online',
+    tavily_configured: false,
+    active_provider: 'academic_fallback',
+    academic_fallback_ready: true,
+    source_tiers: ['industry_leaders', 'academic_arxiv_nature', 'framework_docs', 'tech_media']
+  };
 }
 
 export const DEUTSCH_ORACLES_DATA: DeutschOracle[] = [
