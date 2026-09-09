@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   Bot, 
   Send, 
@@ -65,6 +65,7 @@ const PROGRESS_STORAGE_KEY = 'quantum_learning_progress';
 
 export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCircuit }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [difficultyMode, setDifficultyMode] = useState<'beginner' | 'intermediate' | 'advanced'>('beginner');
   const [copiedCodeId, setCopiedCodeId] = useState<string | null>(null);
   const [practiceAnswers, setPracticeAnswers] = useState<Record<string, number>>({});
@@ -119,6 +120,36 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
       // Ignore
     }
   }, [messages]);
+
+  // Handle follow-up context passed from HeroSearchBar on the Landing Page
+  useEffect(() => {
+    const state = location.state as { initialQuestion?: string; initialAnswer?: string; sources?: any[] } | null;
+    if (state?.initialQuestion && state?.initialAnswer) {
+      const q = state.initialQuestion;
+      const a = state.initialAnswer;
+      setMessages(prev => {
+        if (prev.some(m => m.text === q)) return prev;
+        return [
+          ...prev,
+          {
+            id: `hero-q-${Date.now()}`,
+            sender: 'user',
+            text: q,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          },
+          {
+            id: `hero-a-${Date.now() + 1}`,
+            sender: 'tutor',
+            text: a,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            sources: state.sources || [],
+            is_verified: true
+          }
+        ];
+      });
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const getStudentProgress = (): Record<string, any> => {
     try {

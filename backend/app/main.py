@@ -15,7 +15,8 @@ from app.gemini_tutor import (
     check_rate_limit,
     validate_and_sanitize_message,
     call_gemini_api,
-    process_tutor_chat
+    process_tutor_chat,
+    search_quantum_grounded
 )
 from app.feedback import FeedbackPayload, record_feedback, get_feedback_summary
 from app.accuracy_test import run_accuracy_tests
@@ -239,6 +240,48 @@ def get_feedback_analytics():
 def run_accuracy_test_endpoint():
     """Runs the 16-test AI Accuracy Regression Suite and returns pass/fail report."""
     return run_accuracy_tests()
+
+
+class SearchRequest(BaseModel):
+    query: str
+
+
+@app.post("/search/quantum")
+@app.post("/api/search/quantum")
+async def search_quantum_endpoint(req: SearchRequest, request: Request = None):
+    """
+    Hero Search Bar Endpoint:
+    Combines local curated Quantum Knowledge Base (RAG) and live web search
+    to deliver beginner-simplified answers with distinct source attribution.
+    Protected by rate limiting and anti-hallucination verification.
+    """
+    client_ip = "127.0.0.1"
+    if request:
+        client_ip = (
+            request.headers.get("x-forwarded-for")
+            or (request.client.host if request.client else "127.0.0.1")
+        )
+        if "," in client_ip:
+            client_ip = client_ip.split(",")[0].strip()
+
+    allowed, retry_after = check_rate_limit(client_ip)
+    if not allowed:
+        raise HTTPException(
+            status_code=429,
+            detail={"message": f"Rate limit exceeded. Please wait {retry_after} second(s) before searching again."},
+            headers={"Retry-After": str(retry_after)}
+        )
+
+    try:
+        result = search_quantum_grounded(req.query)
+        return result
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail={"message": str(ve)})
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail={"message": "An error occurred while searching for quantum insights."}
+        )
 
 
 if __name__ == "__main__":

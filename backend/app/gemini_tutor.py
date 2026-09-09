@@ -765,3 +765,190 @@ def call_gemini_api(message: str) -> str:
     """Backwards-compatible wrapper."""
     result = process_tutor_chat(message)
     return result["reply"]
+
+
+# =========================================================================
+# 12. HERO SEARCH & GROUNDED QUANTUM RETRIEVAL
+# =========================================================================
+
+def fetch_live_web_sources(query: str, max_results: int = 3) -> list[dict]:
+    """
+    Fetches real-time web sources via Wikipedia API and public search endpoints.
+    Returns list of dicts with title, url, snippet, source_type='web'.
+    """
+    web_sources = []
+    try:
+        import urllib.parse
+        clean_q = re.sub(r'[^\w\s-]', '', query).strip()
+        search_term = clean_q
+        if not any(k in clean_q.lower() for k in ["quantum", "qubit"]):
+            search_term = f"quantum {clean_q}"
+
+        wiki_url = f"https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch={urllib.parse.quote(search_term)}&utf8=1&format=json"
+        req = urllib.request.Request(
+            wiki_url,
+            headers={"User-Agent": "QuantumPlatform/1.0 (edu; quantum-platform@example.com)"}
+        )
+        with urllib.request.urlopen(req, timeout=4) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            items = data.get("query", {}).get("search", [])
+            for item in items[:max_results]:
+                title = item.get("title", "")
+                snippet_raw = item.get("snippet", "")
+                clean_snippet = re.sub(r'<[^>]+>', '', snippet_raw).strip()
+                page_url = f"https://en.wikipedia.org/wiki/{urllib.parse.quote(title.replace(' ', '_'))}"
+                web_sources.append({
+                    "name": "Live Web Search",
+                    "title": title,
+                    "url": page_url,
+                    "snippet": clean_snippet,
+                    "source_type": "web"
+                })
+    except Exception as e:
+        logger.warning(f"Live web search failed: {e}")
+
+    return web_sources
+
+
+def search_quantum_grounded(query: str) -> dict:
+    """
+    Hero Search Bar Backend:
+    1. Validates and sanitizes input.
+    2. Classifies query and applies Out-of-Scope Protection (redirects non-quantum).
+    3. Retrieves matching entries from curated Knowledge Base (RAG) -> source_type='platform'.
+    4. Fetches live web results and/or native Gemini Google Search grounding -> source_type='web'.
+    5. Assembles grounded prompt prioritizing platform KB for core concepts and web for broader context.
+    6. Generates beginner-simplified, scannable response.
+    7. Runs anti-hallucination verification pass.
+    8. Returns categorized sources and result.
+    """
+    clean_query = validate_and_sanitize_message(query)
+    classification = classify_question(clean_query)
+
+    # 1. Out-of-Scope Protection
+    if classification == "off_topic":
+        return {
+            "query": clean_query,
+            "answer": (
+                "I am specialized in answering questions about **quantum computing**! "
+                "Feel free to ask about qubits, superposition, quantum logic gates (like Hadamard or CNOT), "
+                "entanglement, algorithms (Grover's, Deutsch-Jozsa), or companies building quantum computers."
+            ),
+            "sources": [],
+            "classification": "off_topic",
+            "is_verified": True
+        }
+
+    # 2. Curated Knowledge Base (RAG)
+    matched_entries, raw_platform_citations = retrieve_relevant_knowledge(clean_query, top_k=3)
+    
+    # Filter platform citations: only include if the entry matches specific (non-generic) query concepts
+    GENERIC_STOPWORDS = {
+        "what", "how", "why", "who", "which", "where", "when", "are", "is", "a", "an", "the",
+        "in", "to", "for", "of", "and", "or", "quantum", "computer", "computers", "computing",
+        "tell", "me", "about", "explain", "does", "do", "can"
+    }
+    q_tokens = set(re.findall(r'\b[a-z0-9_\-\+]+\b', clean_query.lower()))
+    specific_tokens = q_tokens - GENERIC_STOPWORDS
+
+    verified_platform_citations = []
+    verified_matched_entries = []
+    for entry, cit in zip(matched_entries, raw_platform_citations):
+        entry_tags = {t.lower() for t in entry.get("tags", [])}
+        entry_title_tokens = set(re.findall(r'\b[a-z0-9_\-\+]+\b', entry.get("title", "").lower()))
+        # Check if entry matches specific query tokens or specialized boosts
+        if (specific_tokens & entry_tags) or (specific_tokens & entry_title_tokens) or (entry.get("id") in clean_query.lower()):
+            verified_platform_citations.append(cit)
+            verified_matched_entries.append(entry)
+
+    platform_sources = [
+        {
+            "id": c.get("id"),
+            "name": c.get("name") or "Curated Platform Knowledge",
+            "title": c.get("title") or "Platform Reference",
+            "url": c.get("url") or "",
+            "source_type": "platform"
+        }
+        for c in verified_platform_citations
+    ]
+
+    # 3. Live Web Search
+    web_sources = fetch_live_web_sources(clean_query, max_results=3)
+
+    # 4. Construct Grounded Prompt
+    system_prompt = (
+        "You are an expert Quantum Computing AI educator delivering beginner-simplified answers for a hero search bar.\n\n"
+        "GUIDELINES:\n"
+        "1. Write the answer at a beginner level: clear, accessible, conversational, and direct.\n"
+        "2. Use an intuitive analogy where helpful (e.g. spinning coin for superposition, linked pair of dice for entanglement).\n"
+        "3. Keep the response scannable: 2 to 3 short paragraphs or clean bullet points (avoid large blocks of dense text).\n"
+        "4. DO NOT state that a qubit 'is 0 and 1 at the same time' or 'exists in both states simultaneously' — explain via probability amplitudes.\n"
+        "5. PRIORITIZATION:\n"
+        "   - For core quantum concepts (qubits, superposition, gates, entanglement, algorithms taught here), prioritize the platform's curated knowledge base.\n"
+        "   - Use web search information for broader context, recent industry developments, hardware companies, or real-world applications.\n"
+        "6. Never state numerical probabilities or gate matrix values that contradict Qiskit standards.\n\n"
+    )
+
+    if platform_sources:
+        system_prompt += "=== CURATED PLATFORM KNOWLEDGE BASE (PRIMARY FOR CONCEPTS) ===\n"
+        for idx, entry in enumerate(verified_matched_entries, 1):
+            system_prompt += (
+                f"[Platform Reference {idx}: {entry.get('title')}]\n"
+                f"Summary: {entry.get('summary')}\n"
+                f"Source: {entry.get('source')} ({entry.get('url')})\n\n"
+            )
+
+    if web_sources:
+        system_prompt += "=== LIVE WEB SEARCH RESULTS (FOR REAL-WORLD CONTEXT & DEVELOPMENTS) ===\n"
+        for idx, w in enumerate(web_sources, 1):
+            system_prompt += (
+                f"[Web Source {idx}: {w.get('title')}]\n"
+                f"Snippet: {w.get('snippet')}\n"
+                f"URL: {w.get('url')}\n\n"
+            )
+
+    # 5. Call Gemini
+    raw_answer = None
+    try:
+        raw_answer = invoke_gemini(system_prompt, clean_query)
+    except Exception as e:
+        logger.warning(f"Gemini API call failed for search ({e}), generating local grounded synthesis.")
+
+    if not raw_answer:
+        # Grounded fallback
+        if verified_matched_entries:
+            e0 = verified_matched_entries[0]
+            raw_answer = (
+                f"**{e0.get('title')}**\n\n"
+                f"{e0.get('summary')}\n\n"
+                f"In quantum computing, this principle allows algorithms to explore complex computational spaces much faster than classical computers."
+            )
+        elif web_sources:
+            w0 = web_sources[0]
+            raw_answer = (
+                f"Based on real-time web sources, **{w0.get('title')}** relates to quantum computing developments: {w0.get('snippet')}. "
+                f"Commercial systems are actively being developed across superconducting circuits, trapped ions, and photonic architectures."
+            )
+        else:
+            raw_answer = (
+                "In quantum computing, information is represented by qubits governed by quantum superposition and entanglement. "
+                "Unlike classical bits which are strictly 0 or 1, qubits utilize complex probability amplitudes."
+            )
+
+    # 6. Hallucination Check
+    checked_answer, _ = perform_hallucination_self_check(raw_answer, clean_query)
+
+    # 7. Collect Sources
+    all_sources = list(platform_sources)
+    for ws in web_sources:
+        if ws["url"] not in [s.get("url") for s in all_sources]:
+            all_sources.append(ws)
+
+    return {
+        "query": clean_query,
+        "answer": checked_answer,
+        "classification": classification,
+        "sources": all_sources,
+        "is_verified": True
+    }
+

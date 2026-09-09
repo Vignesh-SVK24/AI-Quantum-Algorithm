@@ -12,6 +12,7 @@ import {
   LayoutDashboard
 } from 'lucide-react';
 import { CircuitPlaceholder } from '../components/CircuitPlaceholder';
+import { HeroSearchBar } from '../components/HeroSearchBar';
 import { getTestCircuit, type CircuitTestResponse } from '../services/api';
 
 export const LandingPage: React.FC = () => {
@@ -86,6 +87,11 @@ export const LandingPage: React.FC = () => {
                 Follow our proven <span className="font-semibold text-black-olive">Learn → Build → Simulate → Visualize → Understand</span> pathway 
                 from basic superposition to real-world quantum algorithm design.
               </p>
+
+              {/* Hero Search Bar (Dark Chrome) */}
+              <div className="pt-1 pb-1">
+                <HeroSearchBar />
+              </div>
 
               {/* CTAs */}
               <div className="flex flex-wrap items-center gap-4 pt-2">

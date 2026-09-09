@@ -121,3 +121,54 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(32, 60, 61, 0.4);
 }
+
+/* Dark Chrome Hero Bar Styles */
+@keyframes chrome-shine {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.dark-chrome-bar {
+  background: linear-gradient(145deg, #282e23 0%, #1c2018 50%, #121510 100%);
+  position: relative;
+  border-radius: 9999px;
+  box-shadow: 0 10px 30px -5px rgba(26, 30, 22, 0.35), inset 0 1px 1px rgba(250, 247, 238, 0.15);
+}
+
+.dark-chrome-edge {
+  position: absolute;
+  inset: -1.5px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, rgba(250, 247, 238, 0.4) 0%, rgba(32, 60, 61, 0.5) 45%, rgba(49, 55, 43, 0.25) 75%, rgba(250, 247, 238, 0.25) 100%);
+  z-index: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.dark-chrome-shine {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(250, 247, 238, 0.04) 45%,
+    rgba(250, 247, 238, 0.2) 50%,
+    rgba(250, 247, 238, 0.04) 55%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: chrome-shine 4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.dark-chrome-bar:focus-within .dark-chrome-edge {
+  box-shadow: 0 0 25px rgba(32, 60, 61, 0.6), 0 0 45px rgba(32, 60, 61, 0.3);
+  background: linear-gradient(135deg, rgba(250, 247, 238, 0.65) 0%, rgba(32, 60, 61, 0.85) 50%, rgba(250, 247, 238, 0.45) 100%);
+}
+
