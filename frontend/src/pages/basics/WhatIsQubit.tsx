@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 
 interface SectionProps {
@@ -10,88 +10,79 @@ interface SectionProps {
 
 const WhatIsQubit: React.FC<SectionProps> = ({ onNext, onPrev, isFirst, isLast }) => {
   return (
-    <div className="flex flex-col h-full bg-slate-900 rounded-2xl p-8 shadow-xl border border-slate-800 text-slate-200">
-      <h2 className="text-3xl font-bold mb-6 text-white tracking-tight">What is a Qubit?</h2>
+    <div className="flex flex-col h-full bg-floral-white text-black-olive">
+      <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-black-olive tracking-tight">
+        What is a Qubit?
+      </h2>
       
-      <div className="flex-grow space-y-6">
-        <p className="text-lg leading-relaxed">
-          A <strong>qubit</strong> (short for quantum bit) is the fundamental unit of quantum information. Just as classical computers process information using bits, quantum computers process information using qubits.
+      <div className="flex-grow space-y-5 text-sm sm:text-base leading-relaxed text-black-olive/80">
+        <p>
+          A <strong className="text-black-olive font-semibold">qubit</strong> (short for quantum bit) is the fundamental unit of quantum information. Just as classical computers process information using bits, quantum computers process information using qubits.
         </p>
-        <p className="text-lg leading-relaxed">
-          Unlike classical bits, qubits are physical systems governed entirely by the laws of quantum mechanics. The mathematical description of a qubit's state is often written using Dirac notation, also known as bra-ket notation, yielding expressions like <strong>|ψ⟩</strong> (read as "ket psi").
+        <p>
+          Unlike classical bits, qubits are physical systems governed entirely by the laws of quantum mechanics. The mathematical description of a qubit's state is written using Dirac notation (bra-ket notation), yielding expressions like <strong className="text-slate-gray font-mono">|ψ⟩</strong> (read as "ket psi").
         </p>
-        <p className="text-lg leading-relaxed">
-          In practice, a qubit can be realized using various physical systems, as long as the system has two distinct, controllable quantum states.
+        <p>
+          In practice, a qubit can be realized using various physical systems, as long as the system provides two distinct, quantum-mechanically controllable states.
         </p>
 
-        <div className="my-10 flex justify-around items-center">
-          <svg width="600" height="200" viewBox="0 0 600 200" className="max-w-full">
+        {/* Neumorphic Inset SVG Diagram */}
+        <div className="my-8 p-6 rounded-2xl bg-floral-white shadow-neu-pressed flex justify-around items-center overflow-x-auto">
+          <svg width="600" height="190" viewBox="0 0 600 190" className="max-w-full select-none">
             {/* Electron Spin */}
-            <g transform="translate(50, 20)">
-              <circle cx="80" cy="60" r="40" fill="#1e1b4b" stroke="#6366f1" strokeWidth="2" />
-              <circle cx="80" cy="60" r="25" fill="#312e81" />
+            <g transform="translate(50, 15)">
+              <circle cx="80" cy="55" r="38" fill="#FAF7EE" stroke="#31372B" strokeWidth="1.5" strokeOpacity="0.2" />
+              <circle cx="80" cy="55" r="24" fill="#FAF7EE" stroke="#203C3D" strokeWidth="2" />
               {/* Up arrow */}
-              <path d="M70,70 L70,40 L60,40 L80,20 L100,40 L90,40 L90,70 Z" fill="#818cf8" opacity="0.8" />
-              {/* Down arrow */}
-              <path d="M70,50 L70,80 L60,80 L80,100 L100,80 L90,80 L90,50 Z" fill="#c7d2fe" opacity="0.4" />
-              <text x="80" y="130" fill="#cbd5e1" fontSize="16" fontWeight="bold" textAnchor="middle">Electron Spin</text>
-              <text x="80" y="150" fill="#94a3b8" fontSize="14" textAnchor="middle">(Up / Down)</text>
+              <path d="M72,65 L72,38 L62,38 L80,20 L98,38 L88,38 L88,65 Z" fill="#203C3D" />
+              <text x="80" y="125" fill="#31372B" fontSize="15" fontWeight="bold" textAnchor="middle">Electron Spin</text>
+              <text x="80" y="145" fill="#31372B" opacity="0.7" fontSize="13" textAnchor="middle">(Up / Down)</text>
             </g>
 
             {/* Photon Polarization */}
-            <g transform="translate(250, 20)">
-              <circle cx="80" cy="60" r="40" fill="#042f2e" stroke="#14b8a6" strokeWidth="2" />
-              <circle cx="80" cy="60" r="25" fill="#134e4a" />
+            <g transform="translate(250, 15)">
+              <circle cx="80" cy="55" r="38" fill="#FAF7EE" stroke="#31372B" strokeWidth="1.5" strokeOpacity="0.2" />
+              <circle cx="80" cy="55" r="24" fill="#FAF7EE" stroke="#203C3D" strokeWidth="2" />
               {/* Horizontal / Vertical */}
-              <line x1="80" y1="30" x2="80" y2="90" stroke="#5eead4" strokeWidth="4" markerEnd="url(#arrow-cyan)" markerStart="url(#arrow-cyan-rev)" />
-              <line x1="45" y1="60" x2="115" y2="60" stroke="#99f6e4" strokeWidth="4" opacity="0.5" />
+              <line x1="80" y1="28" x2="80" y2="82" stroke="#203C3D" strokeWidth="3.5" strokeLinecap="round" />
+              <line x1="53" y1="55" x2="107" y2="55" stroke="#31372B" strokeWidth="2.5" strokeOpacity="0.4" strokeLinecap="round" />
               
-              <text x="80" y="130" fill="#cbd5e1" fontSize="16" fontWeight="bold" textAnchor="middle">Photon</text>
-              <text x="80" y="150" fill="#94a3b8" fontSize="14" textAnchor="middle">(Polarization)</text>
+              <text x="80" y="125" fill="#31372B" fontSize="15" fontWeight="bold" textAnchor="middle">Photon</text>
+              <text x="80" y="145" fill="#31372B" opacity="0.7" fontSize="13" textAnchor="middle">(Polarization)</text>
             </g>
 
             {/* Superconducting */}
-            <g transform="translate(450, 20)">
-              <rect x="40" y="20" width="80" height="80" rx="8" fill="#172554" stroke="#3b82f6" strokeWidth="2" />
+            <g transform="translate(450, 15)">
+              <rect x="40" y="18" width="80" height="75" rx="14" fill="#FAF7EE" stroke="#203C3D" strokeWidth="2" />
               {/* Circuit traces */}
-              <path d="M40,40 L60,40 L60,60 L80,60 L80,40 L100,40" stroke="#93c5fd" strokeWidth="2" fill="none" />
-              <circle cx="80" cy="60" r="10" fill="#60a5fa" />
-              <line x1="40" y1="80" x2="120" y2="80" stroke="#93c5fd" strokeWidth="2" />
+              <path d="M40,38 L60,38 L60,55 L80,55 L80,38 L100,38" stroke="#31372B" strokeWidth="2" fill="none" strokeOpacity="0.6" />
+              <circle cx="80" cy="55" r="9" fill="#203C3D" />
+              <line x1="40" y1="72" x2="120" y2="72" stroke="#31372B" strokeWidth="2" strokeOpacity="0.4" />
               
-              <text x="80" y="130" fill="#cbd5e1" fontSize="16" fontWeight="bold" textAnchor="middle">Superconductor</text>
-              <text x="80" y="150" fill="#94a3b8" fontSize="14" textAnchor="middle">(Circuit States)</text>
+              <text x="80" y="125" fill="#31372B" fontSize="15" fontWeight="bold" textAnchor="middle">Superconductor</text>
+              <text x="80" y="145" fill="#31372B" opacity="0.7" fontSize="13" textAnchor="middle">(Circuit Loops)</text>
             </g>
-
-            <defs>
-              <marker id="arrow-cyan" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="#5eead4" />
-              </marker>
-              <marker id="arrow-cyan-rev" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="#5eead4" />
-              </marker>
-            </defs>
           </svg>
         </div>
       </div>
 
-      <div className="flex justify-between items-center mt-8 pt-6 border-t border-slate-800">
+      {/* Navigation Buttons */}
+      <div className="flex justify-between items-center mt-8 pt-6">
         <button
           onClick={onPrev}
           disabled={isFirst}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-            isFirst ? 'text-slate-600 bg-slate-800/50 cursor-not-allowed' : 'text-slate-300 hover:text-white hover:bg-slate-800'
-          }`}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium text-xs sm:text-sm text-black-olive/70 bg-floral-white shadow-neu-raised hover:shadow-neu-pressed disabled:opacity-30 disabled:pointer-events-none transition-all"
         >
-          <ArrowLeft size={18} /> Previous
+          <ArrowLeft size={16} /> Previous
         </button>
         <button
           onClick={onNext}
-          className="flex items-center gap-2 px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium transition-colors"
+          className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm bg-slate-gray text-floral-white shadow-neu-raised hover:shadow-neu-pressed transition-all"
         >
           {isLast ? (
-            <>Complete <Check size={18} /></>
+            <>Complete <Check size={16} /></>
           ) : (
-            <>Next <ArrowRight size={18} /></>
+            <>Next <ArrowRight size={16} /></>
           )}
         </button>
       </div>

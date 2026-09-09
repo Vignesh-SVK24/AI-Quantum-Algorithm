@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -46,7 +46,6 @@ export const Dashboard: React.FC = () => {
       title: 'Quantum Basics',
       desc: 'Qubit states, superposition, amplitudes, measurement, and Bloch sphere',
       pct: progress.basics,
-      color: ' ',
       link: '/basics',
       icon: BookOpen
     },
@@ -55,7 +54,6 @@ export const Dashboard: React.FC = () => {
       title: 'Quantum Gates',
       desc: 'Single-qubit rotations (X, H, Z) and multi-qubit CNOT operations',
       pct: progress.gates,
-      color: ' ',
       link: '/lab',
       icon: Layers
     },
@@ -64,7 +62,6 @@ export const Dashboard: React.FC = () => {
       title: 'Circuit Simulation',
       desc: 'Statevector evolution and 1,024-shot probabilistic measurement sampling',
       pct: progress.circuits,
-      color: ' ',
       link: '/lab',
       icon: TrendingUp
     },
@@ -73,25 +70,27 @@ export const Dashboard: React.FC = () => {
       title: 'Quantum Algorithms',
       desc: 'Deutsch-Jozsa phase kickback and Grover amplitude amplification',
       pct: progress.algorithms,
-      color: ' ',
       link: '/algorithms',
       icon: Cpu
     }
   ];
 
   return (
-    <div className="min-h-screen quantum-grid-bg text-black-olive">
+    <div className="min-h-screen bg-floral-white text-black-olive">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4">
           <div className="space-y-1">
-            <Link to="/" className="inline-flex items-center gap-1.5 text-xs text-slate-gray hover:text-slate-gray transition-colors shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray rounded-xl">
+            <Link 
+              to="/" 
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-floral-white text-xs font-semibold text-slate-gray shadow-neu-raised hover:shadow-neu-pressed transition-all"
+            >
               <ArrowLeft className="w-3.5 h-3.5" /> Back to Home
             </Link>
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center">
-                <LayoutDashboard className="w-5 h-5 text-black-olive" />
+            <div className="flex items-center gap-3 pt-1">
+              <div className="w-10 h-10 rounded-2xl bg-floral-white shadow-neu-raised flex items-center justify-center text-slate-gray">
+                <LayoutDashboard className="w-5 h-5" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-black-olive tracking-tight">Student Learning Dashboard</h1>
@@ -103,55 +102,56 @@ export const Dashboard: React.FC = () => {
           <div className="flex items-center gap-2">
             <button
               onClick={handleResetProgress}
-              className="px-3.5 py-1.5 rounded-xl bg-floral-white hover: text-xs text-black-olive/70 hover:text-black-olive transition-all flex items-center gap-1.5 shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray"
+              className="px-4 py-2 rounded-xl bg-floral-white text-xs font-semibold text-black-olive/70 hover:text-black-olive shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-1.5"
             >
-              <RotateCcw className="w-3 h-3" /> Reset Data
+              <RotateCcw className="w-3.5 h-3.5" /> Reset Data
             </button>
           </div>
         </div>
 
-        {/* Top Metric Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-5 rounded-2xl bg-floral-white space-y-2">
-            <span className="text-[10px] uppercase font-bold text-black-olive/70 tracking-wider">Overall Completion</span>
+        {/* Top Metric Cards (Raised Tiles) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="p-6 rounded-3xl bg-floral-white shadow-neu-raised space-y-2.5">
+            <span className="text-[10px] uppercase font-bold text-black-olive/60 tracking-wider">Overall Completion</span>
             <div className="text-2xl font-bold text-black-olive font-mono">{overallAverage}%</div>
-            <div className="h-1.5 bg-floral-white rounded-full overflow-hidden">
+            {/* Inset progress track with Slate Gray fill */}
+            <div className="h-2.5 bg-floral-white shadow-neu-pressed rounded-full overflow-hidden p-0.5">
               <div
-                className="h-full rounded-full transition-all duration-500 shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray"
+                className="h-full bg-slate-gray rounded-full transition-all duration-500 shadow-neu-sm-raised"
                 style={{ width: `${overallAverage}%` }}
               />
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-floral-white space-y-2">
-            <span className="text-[10px] uppercase font-bold text-black-olive/70 tracking-wider">Latest Quiz Score</span>
+          <div className="p-6 rounded-3xl bg-floral-white shadow-neu-raised space-y-2.5">
+            <span className="text-[10px] uppercase font-bold text-black-olive/60 tracking-wider">Latest Quiz Score</span>
             <div className="text-2xl font-bold text-slate-gray font-mono">
               {progress.quizScore !== null ? `${progress.quizScore}%` : 'Not Taken'}
             </div>
-            <div className="text-[10px] text-black-olive/70">
-              {progress.quizScore !== null ? `${progress.quizCorrect} / ${progress.quizTotal} correct answers` : 'Take the quiz to test knowledge'}
+            <div className="text-[11px] text-black-olive/70">
+              {progress.quizScore !== null ? `${progress.quizCorrect} / ${progress.quizTotal} correct answers` : 'Take quiz to evaluate skills'}
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-floral-white space-y-2">
-            <span className="text-[10px] uppercase font-bold text-black-olive/70 tracking-wider">Storage State</span>
+          <div className="p-6 rounded-3xl bg-floral-white shadow-neu-raised space-y-2.5">
+            <span className="text-[10px] uppercase font-bold text-black-olive/60 tracking-wider">Storage State</span>
             <div className="text-sm font-bold text-slate-gray font-mono flex items-center gap-1.5 pt-1">
               <CheckCircle2 className="w-4 h-4 text-slate-gray" /> localStorage Sync
             </div>
-            <div className="text-[10px] text-black-olive/70">Zero database dependency (Client MVP)</div>
+            <div className="text-[11px] text-black-olive/70">Persisted locally in browser</div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-floral-white space-y-2">
-            <span className="text-[10px] uppercase font-bold text-black-olive/70 tracking-wider">Last Activity</span>
+          <div className="p-6 rounded-3xl bg-floral-white shadow-neu-raised space-y-2.5">
+            <span className="text-[10px] uppercase font-bold text-black-olive/60 tracking-wider">Last Activity</span>
             <div className="text-sm font-bold text-black-olive font-mono pt-1">{progress.lastActive}</div>
-            <div className="text-[10px] text-black-olive/70">Session timestamp saved</div>
+            <div className="text-[11px] text-black-olive/70">Session active</div>
           </div>
         </div>
 
-        {/* Modules Progress List */}
-        <div className="p-6 rounded-2xl bg-floral-white space-y-6">
+        {/* Modules Progress List (Raised Tiles) */}
+        <div className="p-8 rounded-3xl bg-floral-white shadow-neu-raised space-y-6">
           <div>
-            <h2 className="text-base font-bold text-black-olive">Curriculum Modules</h2>
+            <h2 className="text-lg font-bold text-black-olive">Curriculum Modules</h2>
             <p className="text-xs text-black-olive/70 mt-0.5">Progress tracked across platform learning environments</p>
           </div>
 
@@ -161,31 +161,32 @@ export const Dashboard: React.FC = () => {
               return (
                 <div 
                   key={mod.id} 
-                  className="p-4 rounded-xl bg-floral-white hover: transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray"
+                  className="p-5 rounded-2xl bg-floral-white shadow-neu-raised hover:shadow-neu-pressed transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
                 >
-                  <div className="flex items-center gap-3.5">
-                    <div className="w-10 h-10 rounded-xl bg-floral-white flex items-center justify-center text-slate-gray flex-shrink-0">
+                  <div className="flex items-center gap-4">
+                    <div className="w-11 h-11 rounded-2xl bg-floral-white shadow-neu-pressed flex items-center justify-center text-slate-gray flex-shrink-0">
                       <Icon className="w-5 h-5" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
                         <h3 className="text-sm font-bold text-black-olive">{mod.title}</h3>
-                        <span className="text-xs font-mono text-slate-gray font-semibold">{mod.pct}%</span>
+                        <span className="text-xs font-mono text-slate-gray font-bold">{mod.pct}%</span>
                       </div>
                       <p className="text-xs text-black-olive/70 mt-0.5">{mod.desc}</p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-4 w-full md:w-64">
-                    <div className="flex-1 h-2 bg-floral-white rounded-full overflow-hidden">
+                    {/* Inset progress track with Slate Gray fill */}
+                    <div className="flex-1 h-2.5 bg-floral-white shadow-neu-pressed rounded-full overflow-hidden p-0.5">
                       <div
-                        className={`h-full  ${mod.color} rounded-full transition-all duration-500`}
+                        className="h-full bg-slate-gray rounded-full transition-all duration-500 shadow-neu-sm-raised"
                         style={{ width: `${mod.pct}%` }}
                       />
                     </div>
                     <Link
                       to={mod.link}
-                      className="px-3 py-1.5 rounded-xl bg-floral-white hover:bg-floral-white text-black-olive text-xs font-medium transition-colors flex items-center gap-1 whitespace-nowrap shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray"
+                      className="px-3.5 py-1.5 rounded-xl bg-floral-white text-slate-gray text-xs font-semibold shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-1.5 whitespace-nowrap"
                     >
                       <span>Open</span>
                       <ExternalLink className="w-3 h-3" />
@@ -197,20 +198,20 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Quick Quiz Callout */}
-        <div className="p-6 rounded-2xl /40 /30 /40 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="space-y-1 text-center md:text-left">
-            <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-gray uppercase tracking-wider">
+        {/* Quick Quiz Callout (Raised Card) */}
+        <div className="p-8 sm:p-10 rounded-3xl bg-floral-white shadow-neu-raised flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="space-y-1.5 text-center md:text-left">
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-gray uppercase tracking-wider">
               <Award className="w-4 h-4" /> Challenge Your Knowledge
             </div>
-            <h3 className="text-lg font-bold text-black-olive">Quantum Practice & Knowledge Quiz</h3>
-            <p className="text-xs text-black-olive/70 max-w-xl">
+            <h3 className="text-xl font-bold text-black-olive">Quantum Practice &amp; Knowledge Quiz</h3>
+            <p className="text-xs text-black-olive/70 max-w-xl leading-relaxed">
               10 multiple-choice and output prediction questions covering gates, superposition amplitudes, Born rule probabilities, and algorithm speedups.
             </p>
           </div>
           <Link
             to="/practice"
-            className="px-6 py-2.5 rounded-xl hover: hover: text-floral-white font-semibold text-xs transition-all flex items-center gap-2 whitespace-nowrap shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray"
+            className="px-8 py-3.5 rounded-2xl bg-slate-gray text-floral-white font-bold text-xs shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-2 whitespace-nowrap flex-shrink-0"
           >
             <Sparkles className="w-4 h-4" /> Start Practice Quiz
           </Link>

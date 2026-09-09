@@ -78,18 +78,21 @@ export const AITutor: React.FC = () => {
   const selected = SAMPLE_SCENARIOS.find(s => s.id === activeScenario) || SAMPLE_SCENARIOS[0];
 
   return (
-    <div className="min-h-screen quantum-grid-bg text-black-olive">
+    <div className="min-h-screen bg-floral-white text-black-olive">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4">
           <div className="space-y-1">
-            <Link to="/" className="inline-flex items-center gap-1.5 text-xs text-slate-gray hover:text-slate-gray transition-colors shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray rounded-xl">
+            <Link 
+              to="/" 
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-floral-white text-xs font-semibold text-slate-gray shadow-neu-raised hover:shadow-neu-pressed transition-all"
+            >
               <ArrowLeft className="w-3.5 h-3.5" /> Back to Home
             </Link>
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center">
-                <Bot className="w-5 h-5 text-black-olive" />
+            <div className="flex items-center gap-3 pt-1">
+              <div className="w-10 h-10 rounded-2xl bg-floral-white shadow-neu-raised flex items-center justify-center text-slate-gray">
+                <Bot className="w-5 h-5" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-black-olive tracking-tight">AI Quantum Teaching Assistant</h1>
@@ -101,25 +104,25 @@ export const AITutor: React.FC = () => {
           </div>
 
           {/* Mode Switcher Tabs */}
-          <div className="flex items-center bg-floral-white p-1 rounded-xl">
+          <div className="flex items-center bg-floral-white p-1.5 rounded-2xl shadow-neu-pressed self-start md:self-auto">
             <button
               onClick={() => setActiveTab('chat')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${
                 activeTab === 'chat'
-                  ? '   text-black-olive '
-                  : 'text-black-olive/70 hover:text-black-olive hover:bg-floral-white'
+                  ? 'bg-slate-gray text-floral-white shadow-neu-raised'
+                  : 'text-black-olive/70 hover:text-black-olive'
               }`}
             >
               <Zap className="w-3.5 h-3.5" />
               <span>Gemini Flash Chat</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-floral-white animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-slate-gray shadow-neu-sm-raised" />
             </button>
             <button
               onClick={() => setActiveTab('circuit')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${
                 activeTab === 'circuit'
-                  ? '   text-black-olive '
-                  : 'text-black-olive/70 hover:text-black-olive hover:bg-floral-white'
+                  ? 'bg-slate-gray text-floral-white shadow-neu-raised'
+                  : 'text-black-olive/70 hover:text-black-olive'
               }`}
             >
               <BookOpen className="w-3.5 h-3.5" />
@@ -135,25 +138,25 @@ export const AITutor: React.FC = () => {
               <GeminiChat circuitContext={selected.context} />
             </div>
 
-            <div className="lg:col-span-4 space-y-4">
-              <div className="p-5 rounded-2xl bg-floral-white space-y-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-xl bg-floral-white flex items-center justify-center text-slate-gray">
+            <div className="lg:col-span-4 space-y-5">
+              <div className="p-6 rounded-3xl bg-floral-white shadow-neu-raised space-y-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-floral-white shadow-neu-pressed flex items-center justify-center text-slate-gray">
                     <Sparkles className="w-4 h-4" />
                   </div>
                   <div>
                     <h3 className="text-xs font-bold text-black-olive uppercase tracking-wider">About Gemini Tutor</h3>
-                    <p className="text-[11px] text-black-olive/70">Google Gemini Flash LLM</p>
+                    <p className="text-[11px] text-black-olive/60">Google Gemini Flash LLM</p>
                   </div>
                 </div>
 
-                <p className="text-xs text-black-olive leading-relaxed">
+                <p className="text-xs text-black-olive/80 leading-relaxed">
                   The AI Tutor acts as a quantum computing teaching assistant for beginners, grounded in Dirac bra-ket notation, probability amplitudes, and quantum logic gates.
                 </p>
 
-                <div className="space-y-2 pt-3">
-                  <h4 className="text-[11px] font-semibold text-slate-gray uppercase tracking-wider">Features</h4>
-                  <ul className="space-y-1.5 text-xs text-black-olive/70">
+                <div className="space-y-2 pt-3 border-t border-black-olive/10">
+                  <h4 className="text-[11px] font-bold text-slate-gray uppercase tracking-wider">Features</h4>
+                  <ul className="space-y-2 text-xs text-black-olive/70">
                     <li className="flex items-start gap-2">
                       <span className="text-slate-gray font-bold">•</span>
                       <span>Beginner-friendly explanations without confusing jargon</span>
@@ -174,15 +177,15 @@ export const AITutor: React.FC = () => {
                 </div>
               </div>
 
-              <div className="p-5 rounded-2xl bg-floral-white space-y-3">
-                <h3 className="text-xs font-bold text-black-olive/70 uppercase tracking-wider flex items-center gap-1.5">
-                  <ShieldAlert className="w-3.5 h-3.5 text-slate-gray" /> Security &amp; Rate Limits
+              <div className="p-6 rounded-3xl bg-floral-white shadow-neu-raised space-y-3">
+                <h3 className="text-xs font-bold text-black-olive uppercase tracking-wider flex items-center gap-1.5">
+                  <ShieldAlert className="w-4 h-4 text-slate-gray" /> Security &amp; Rate Limits
                 </h3>
-                <div className="text-xs text-black-olive/70 space-y-2">
+                <div className="text-xs text-black-olive/70 space-y-2 leading-relaxed">
                   <p>
                     Your API key is never transmitted or exposed to browser clients. Requests pass through the local FastAPI backend with rate limiting to prevent quota exhaustion.
                   </p>
-                  <div className="bg-floral-white p-2.5 rounded-xl font-mono text-[10px] text-slate-gray">
+                  <div className="bg-floral-white p-3 rounded-2xl shadow-neu-pressed font-mono text-[11px] text-slate-gray">
                     Limit: 15 req/min per IP<br />
                     Backoff: 1s, 2s, 4s retry on 429
                   </div>
@@ -198,21 +201,21 @@ export const AITutor: React.FC = () => {
             
             {/* Left Column: Context Scenario Switcher */}
             <div className="lg:col-span-5 space-y-5">
-              <div className="p-5 rounded-2xl bg-floral-white space-y-4">
+              <div className="p-6 rounded-3xl bg-floral-white shadow-neu-raised space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-bold text-black-olive uppercase tracking-wider flex items-center gap-1.5">
                     <BookOpen className="w-4 h-4 text-slate-gray" /> Active Learning Scenario
                   </h3>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-floral-white text-slate-gray">
-                    Real Context
+                  <span className="text-[10px] font-mono font-semibold px-2.5 py-0.5 rounded-lg bg-floral-white shadow-neu-sm-raised text-slate-gray">
+                    Real Circuit Context
                   </span>
                 </div>
                 
-                <p className="text-xs text-black-olive/70">
+                <p className="text-xs text-black-olive/70 leading-relaxed">
                   Select a simulated quantum scenario to load its exact circuit wires, gates, and simulation results into the AI tutor:
                 </p>
 
-                <div className="space-y-2.5">
+                <div className="space-y-3">
                   {SAMPLE_SCENARIOS.map((scen) => {
                     const Icon = scen.icon;
                     const isActive = activeScenario === scen.id;
@@ -220,19 +223,19 @@ export const AITutor: React.FC = () => {
                       <button
                         key={scen.id}
                         onClick={() => setActiveScenario(scen.id)}
-                        className={`w-full text-left p-3.5 rounded-xl  transition-all ${
+                        className={`w-full text-left p-4 rounded-2xl transition-all ${
                           isActive
-                            ? 'bg-floral-white   '
-                            : 'bg-floral-white  hover:'
+                            ? 'bg-floral-white shadow-neu-pressed border border-slate-gray/40'
+                            : 'bg-floral-white shadow-neu-sm-raised hover:shadow-neu-sm-pressed'
                         }`}
                       >
                         <div className="flex items-center gap-2.5 mb-1">
-                          <div className={`w-6 h-6 rounded-xl flex items-center justify-center ${isActive ? 'bg-floral-white text-black-olive' : 'bg-floral-white text-black-olive/70'}`}>
+                          <div className={`w-7 h-7 rounded-xl flex items-center justify-center ${isActive ? 'bg-slate-gray text-floral-white' : 'bg-floral-white shadow-neu-sm-raised text-slate-gray'}`}>
                             <Icon className="w-3.5 h-3.5" />
                           </div>
                           <span className="text-xs font-bold text-black-olive">{scen.name}</span>
                         </div>
-                        <p className="text-[11px] text-black-olive/70 pl-8.5">{scen.desc}</p>
+                        <p className="text-[11px] text-black-olive/70 pl-9.5">{scen.desc}</p>
                       </button>
                     );
                   })}
@@ -240,9 +243,9 @@ export const AITutor: React.FC = () => {
               </div>
 
               {/* Context Telemetry Card */}
-              <div className="p-5 rounded-2xl bg-floral-white space-y-3">
+              <div className="p-6 rounded-3xl bg-floral-white shadow-neu-raised space-y-3">
                 <h3 className="text-xs font-bold text-black-olive/70 uppercase tracking-wider">Context Telemetry Passed to AI</h3>
-                <pre className="p-3.5 bg-floral-white rounded-xl font-mono text-[10px] text-slate-gray overflow-x-auto">
+                <pre className="p-4 bg-floral-white shadow-neu-pressed rounded-2xl font-mono text-[10px] text-slate-gray overflow-x-auto">
                   {JSON.stringify(selected.context, null, 2)}
                 </pre>
               </div>

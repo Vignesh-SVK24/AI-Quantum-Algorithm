@@ -1,33 +1,123 @@
-﻿@import "tailwindcss";
+@import "tailwindcss";
 
 @theme {
   --color-floral-white: #FAF7EE;
   --color-black-olive: #31372B;
   --color-slate-gray: #203C3D;
-  
-  --shadow-neu-raised: 8px 8px 16px rgba(49, 55, 43, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.8);
-  --shadow-neu-pressed: inset 6px 6px 12px rgba(49, 55, 43, 0.15), inset -6px -6px 12px rgba(255, 255, 255, 0.8);
-  --shadow-neu-sm-raised: 4px 4px 8px rgba(49, 55, 43, 0.12), -4px -4px 8px rgba(255, 255, 255, 0.9);
-  --shadow-neu-sm-pressed: inset 3px 3px 6px rgba(49, 55, 43, 0.12), inset -3px -3px 6px rgba(255, 255, 255, 0.9);
+
+  --shadow-neu-raised: 6px 6px 16px rgba(49, 55, 43, 0.12), -6px -6px 16px rgba(255, 255, 255, 0.95);
+  --shadow-neu-raised-lg: 10px 10px 24px rgba(49, 55, 43, 0.14), -10px -10px 24px rgba(255, 255, 255, 0.95);
+  --shadow-neu-pressed: inset 4px 4px 10px rgba(49, 55, 43, 0.14), inset -4px -4px 10px rgba(255, 255, 255, 0.95);
+  --shadow-neu-pressed-lg: inset 6px 6px 16px rgba(49, 55, 43, 0.16), inset -6px -6px 16px rgba(255, 255, 255, 0.95);
+  --shadow-neu-sm-raised: 3px 3px 8px rgba(49, 55, 43, 0.10), -3px -3px 8px rgba(255, 255, 255, 0.9);
+  --shadow-neu-sm-pressed: inset 2px 2px 6px rgba(49, 55, 43, 0.12), inset -2px -2px 6px rgba(255, 255, 255, 0.9);
+}
+
+:root {
+  --bg-surface: #FAF7EE;
+  --text-main: #31372B;
+  --accent: #203C3D;
 }
 
 body {
-  background-color: var(--color-floral-white);
-  color: var(--color-black-olive);
+  background-color: #FAF7EE;
+  color: #31372B;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
+  margin: 0;
+  padding: 0;
 }
 
-/* Base Neumorphic utility classes to make sure they're available */
-@utility neu-raised {
-  box-shadow: var(--shadow-neu-raised);
-}
-@utility neu-pressed {
-  box-shadow: var(--shadow-neu-pressed);
-}
-@utility neu-sm-raised {
-  box-shadow: var(--shadow-neu-sm-raised);
-}
-@utility neu-sm-pressed {
-  box-shadow: var(--shadow-neu-sm-pressed);
+/* Custom Neumorphic Utility Classes */
+.neu-raised {
+  background-color: #FAF7EE;
+  box-shadow: 6px 6px 16px rgba(49, 55, 43, 0.12), -6px -6px 16px rgba(255, 255, 255, 0.95);
+  border-radius: 1.25rem;
 }
 
+.neu-raised-lg {
+  background-color: #FAF7EE;
+  box-shadow: 10px 10px 24px rgba(49, 55, 43, 0.14), -10px -10px 24px rgba(255, 255, 255, 0.95);
+  border-radius: 1.5rem;
+}
+
+.neu-pressed {
+  background-color: #FAF7EE;
+  box-shadow: inset 4px 4px 10px rgba(49, 55, 43, 0.14), inset -4px -4px 10px rgba(255, 255, 255, 0.95);
+  border-radius: 1.25rem;
+}
+
+.neu-pressed-lg {
+  background-color: #FAF7EE;
+  box-shadow: inset 6px 6px 16px rgba(49, 55, 43, 0.16), inset -6px -6px 16px rgba(255, 255, 255, 0.95);
+  border-radius: 1.5rem;
+}
+
+.neu-btn {
+  background-color: #FAF7EE;
+  color: #31372B;
+  box-shadow: 4px 4px 12px rgba(49, 55, 43, 0.12), -4px -4px 12px rgba(255, 255, 255, 0.95);
+  border-radius: 1rem;
+  transition: all 0.18s ease-in-out;
+  cursor: pointer;
+}
+
+.neu-btn:hover {
+  box-shadow: 2px 2px 6px rgba(49, 55, 43, 0.14), -2px -2px 6px rgba(255, 255, 255, 0.95);
+  transform: translateY(1px);
+}
+
+.neu-btn:active, .neu-btn.active {
+  box-shadow: inset 3px 3px 8px rgba(49, 55, 43, 0.16), inset -3px -3px 8px rgba(255, 255, 255, 0.95);
+  transform: translateY(2px);
+}
+
+.neu-btn-primary {
+  background-color: #203C3D;
+  color: #FAF7EE;
+  box-shadow: 4px 4px 12px rgba(49, 55, 43, 0.22), -3px -3px 9px rgba(255, 255, 255, 0.7);
+  border-radius: 1rem;
+  transition: all 0.18s ease-in-out;
+  cursor: pointer;
+}
+
+.neu-btn-primary:hover {
+  background-color: #182e2f;
+  box-shadow: 2px 2px 6px rgba(49, 55, 43, 0.26), -2px -2px 6px rgba(255, 255, 255, 0.7);
+  transform: translateY(1px);
+}
+
+.neu-btn-primary:active {
+  box-shadow: inset 3px 3px 7px rgba(0, 0, 0, 0.4);
+  transform: translateY(2px);
+}
+
+.neu-input {
+  background-color: #FAF7EE;
+  color: #31372B;
+  box-shadow: inset 4px 4px 9px rgba(49, 55, 43, 0.13), inset -4px -4px 9px rgba(255, 255, 255, 0.95);
+  border-radius: 1rem;
+  outline: none;
+  border: 1px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.neu-input:focus {
+  border-color: rgba(32, 60, 61, 0.35);
+}
+
+/* Custom scrollbars matching palette */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #FAF7EE;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(49, 55, 43, 0.2);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(32, 60, 61, 0.4);
+}

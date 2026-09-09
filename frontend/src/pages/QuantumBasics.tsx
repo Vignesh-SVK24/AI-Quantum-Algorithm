@@ -49,28 +49,31 @@ export const QuantumBasics: React.FC = () => {
   const CurrentSection = sections[currentStep].component;
 
   return (
-    <div className="min-h-screen quantum-grid-bg">
+    <div className="min-h-screen bg-floral-white text-black-olive">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <Link to="/" className="inline-flex items-center gap-1.5 text-xs text-slate-gray hover:text-slate-gray transition-colors shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray rounded-xl">
+            <Link 
+              to="/" 
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-floral-white text-xs font-semibold text-slate-gray shadow-neu-raised hover:shadow-neu-pressed transition-all"
+            >
               <ArrowLeft className="w-3.5 h-3.5" /> Home
             </Link>
-            <div className="w-px h-4 bg-floral-white" />
+            <div className="w-1 h-4 rounded-full bg-black-olive/20" />
             <div className="flex items-center gap-2">
               <BookOpen className="w-4 h-4 text-slate-gray" />
               <span className="text-sm font-semibold text-black-olive">Quantum Basics</span>
             </div>
           </div>
-          <span className="text-xs font-mono text-black-olive/70">
-            {currentStep + 1} / {sections.length}
+          <span className="text-xs font-mono text-black-olive/70 px-3 py-1 rounded-xl bg-floral-white shadow-neu-pressed">
+            Step {currentStep + 1} of {sections.length}
           </span>
         </div>
 
-        {/* Progress Steps */}
+        {/* Progress Navigation Pills */}
         <div className="mb-8">
-          <div className="flex items-center gap-1 overflow-x-auto pb-2">
+          <div className="flex items-center gap-2 overflow-x-auto p-1.5 pb-3">
             {sections.map((section, idx) => {
               const Icon = section.icon;
               const isActive = idx === currentStep;
@@ -82,12 +85,12 @@ export const QuantumBasics: React.FC = () => {
                     setCurrentStep(idx);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium transition-all whitespace-nowrap ${
+                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-medium transition-all whitespace-nowrap ${
                     isActive
-                      ? 'bg-floral-white text-slate-gray  '
+                      ? 'bg-floral-white text-slate-gray shadow-neu-pressed font-bold'
                       : isCompleted
-                      ? 'bg-floral-white text-slate-gray  '
-                      : 'text-black-olive/70 hover:text-black-olive hover:bg-floral-white  border-transparent'
+                      ? 'bg-floral-white text-slate-gray shadow-neu-sm-raised'
+                      : 'bg-floral-white text-black-olive/70 shadow-neu-sm-raised hover:shadow-neu-sm-pressed'
                   }`}
                 >
                   {isCompleted ? (
@@ -101,32 +104,38 @@ export const QuantumBasics: React.FC = () => {
               );
             })}
           </div>
-          {/* Progress bar */}
-          <div className="mt-3 h-1 bg-floral-white rounded-full overflow-hidden">
+
+          {/* Neumorphic Inset Progress Bar */}
+          <div className="mt-3 h-2.5 bg-floral-white shadow-neu-pressed rounded-full overflow-hidden p-0.5">
             <div
-              className="h-full rounded-full transition-all duration-500 ease-out shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray"
+              className="h-full bg-slate-gray rounded-full transition-all duration-500 ease-out"
               style={{ width: `${((currentStep + 1) / sections.length) * 100}%` }}
             />
           </div>
         </div>
 
-        {/* Active Section Content */}
-        <CurrentSection
-          onNext={handleNext}
-          onPrev={handlePrev}
-          isFirst={currentStep === 0}
-          isLast={currentStep === sections.length - 1}
-        />
+        {/* Active Section Content (Rendered as Raised Card) */}
+        <div className="rounded-3xl bg-floral-white shadow-neu-raised p-6 sm:p-10">
+          <CurrentSection
+            onNext={handleNext}
+            onPrev={handlePrev}
+            isFirst={currentStep === 0}
+            isLast={currentStep === sections.length - 1}
+          />
+        </div>
 
-        {/* Completion state */}
+        {/* Completion CTA */}
         {currentStep === sections.length - 1 && (
-          <div className="mt-8 text-center">
-            <p className="text-black-olive/70 text-xs font-mono">
-              Congratulations on completing Quantum Basics! Next up: the Interactive Quantum Lab.
+          <div className="mt-10 text-center p-8 rounded-3xl bg-floral-white shadow-neu-raised max-w-xl mx-auto">
+            <p className="text-black-olive text-sm font-semibold mb-1">
+              🎉 Congratulations on completing Quantum Basics!
+            </p>
+            <p className="text-black-olive/70 text-xs mb-5">
+              You are ready to test these principles on live simulated circuits in the Quantum Lab.
             </p>
             <Link
               to="/lab"
-              className="inline-flex items-center gap-2 mt-4 px-6 py-2.5 rounded-xl hover: hover: text-floral-white font-semibold text-sm transition-all hover:scale-[1.02] shadow-neu-raised hover:shadow-neu-pressed focus:outline-none focus:ring-2 focus:ring-slate-gray"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-slate-gray text-floral-white font-semibold text-sm shadow-neu-raised hover:shadow-neu-pressed transition-all"
             >
               Continue to Quantum Lab →
             </Link>

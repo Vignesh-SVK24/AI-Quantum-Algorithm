@@ -14,7 +14,7 @@ import { About } from './pages/About';
 export const App: React.FC = () => {
   return (
     <HashRouter>
-      <div className="min-h-screen flex flex-col bg-quantum-950 text-slate-100">
+      <div className="min-h-screen flex flex-col bg-floral-white text-black-olive">
         <Navbar />
         <main className="flex-1">
           <Routes>

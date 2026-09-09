@@ -16,76 +16,76 @@ export const MeasurementHistogramWidget: React.FC<MeasurementHistogramWidgetProp
   const maxCount = Math.max(...Object.values(measurementCounts), 1);
 
   return (
-    <div className="p-4 rounded-xl bg-floral-white space-y-3">
+    <div className="p-4 rounded-2xl bg-floral-white shadow-neu-pressed space-y-3.5">
       <div className="flex items-center justify-between">
         <span className="text-xs font-bold text-black-olive uppercase tracking-wider flex items-center gap-1.5">
           <BarChart3 className="w-3.5 h-3.5 text-slate-gray" /> Measurement Histogram
         </span>
-        <span className="px-2 py-0.5 rounded-2xl text-[10px] font-mono bg-teal-500/10 text-slate-gray">
+        <span className="px-2.5 py-0.5 rounded-xl text-[10px] font-mono font-semibold bg-floral-white shadow-neu-sm-raised text-slate-gray">
           {shots.toLocaleString()} Shots
         </span>
       </div>
 
-      <p className="text-[11px] text-black-olive/70">
+      <p className="text-[11px] text-black-olive/70 leading-relaxed">
         Repeated measurements collapse the quantum state into classical bitstrings according to Born's rule.
       </p>
 
-      {/* Histogram Bars */}
-      <div className="pt-3 pb-2 px-2 bg-floral-white rounded-xl">
-        <div className="flex items-end justify-around gap-2 h-28 -b pb-2">
+      {/* Histogram Screen Inset */}
+      <div className="p-4 bg-floral-white shadow-neu-pressed rounded-2xl">
+        <div className="flex items-end justify-around gap-2 h-32 pb-2">
           {sortedEntries.map(([basis, count]) => {
             const observedPct = ((count / shots) * 100).toFixed(1);
             const theoreticalProb = probabilities[basis] || 0;
             const theoreticalPct = (theoreticalProb * 100).toFixed(1);
-            const heightPct = Math.max((count / maxCount) * 100, 4);
+            const heightPct = Math.max((count / maxCount) * 100, 5);
 
             return (
-              <div key={basis} className="flex-1 max-w-[64px] flex flex-col items-center gap-1 group relative">
+              <div key={basis} className="flex-1 max-w-[64px] flex flex-col items-center gap-1.5 group relative">
                 {/* Tooltip on hover */}
-                <div className="absolute -top-12 opacity-0 group-hover:opacity-100 transition-opacity bg-floral-white text-[10px] rounded px-2 py-1 pointer-events-none shadow-neu-raised z-20 whitespace-nowrap">
+                <div className="absolute -top-12 opacity-0 group-hover:opacity-100 transition-opacity bg-floral-white text-[10px] rounded-xl px-2.5 py-1.5 pointer-events-none shadow-neu-raised z-20 whitespace-nowrap">
                   <div className="font-bold text-black-olive">{basis}: {count} shots ({observedPct}%)</div>
-                  <div className="text-black-olive/70">Theory: {theoreticalPct}%</div>
+                  <div className="text-black-olive/60">Theory: {theoreticalPct}%</div>
                 </div>
 
                 {/* Count label */}
                 <span className="text-[10px] font-mono font-bold text-slate-gray">{count}</span>
 
-                {/* Bar */}
-                <div className="w-full bg-floral-white rounded-t-md relative flex items-end h-20 overflow-hidden">
+                {/* Bar Track & Fill */}
+                <div className="w-full bg-floral-white shadow-neu-pressed rounded-t-lg relative flex items-end h-20 overflow-hidden p-0.5">
                   <div
-                    className="w-full rounded-t-md transition-all duration-500 group-hover:brightness-110"
+                    className="w-full bg-slate-gray rounded-t-md transition-all duration-500 shadow-neu-sm-raised"
                     style={{ height: `${heightPct}%` }}
                   />
                 </div>
 
                 {/* Basis Label */}
-                <span className="text-[11px] font-mono font-bold text-black-olive/70 mt-1">{basis}</span>
-                <span className="text-[9px] font-mono text-black-olive/70">{observedPct}%</span>
+                <span className="text-[11px] font-mono font-bold text-black-olive mt-0.5">{basis}</span>
+                <span className="text-[9px] font-mono text-black-olive/60">{observedPct}%</span>
               </div>
             );
           })}
         </div>
 
-        <div className="mt-2 flex items-center justify-between text-[10px] text-black-olive/70 px-1">
-          <span>X-axis: Basis State</span>
-          <span>Y-axis: Shot Frequency</span>
+        <div className="mt-2 pt-2 border-t border-black-olive/10 flex items-center justify-between text-[10px] text-black-olive/60 px-1 font-mono">
+          <span>X: Basis State</span>
+          <span>Y: Shot Frequency</span>
         </div>
       </div>
 
       {/* Comparison with Theoretical */}
-      <div className="space-y-1.5 pt-1">
-        <div className="flex items-center gap-1 text-[11px] font-semibold text-black-olive/70">
+      <div className="space-y-2 pt-1">
+        <div className="flex items-center gap-1 text-[11px] font-semibold text-black-olive/80">
           <span>Theoretical vs. Observed Distribution</span>
-          <HelpCircle className="w-3 h-3 text-black-olive/70" />
+          <HelpCircle className="w-3 h-3 text-black-olive/50" />
         </div>
         <div className="grid grid-cols-2 gap-2 text-[10px] font-mono">
-          <div className="p-2 rounded bg-floral-white">
-            <span className="text-black-olive/70 block mb-0.5">Theoretical Born Probabilities:</span>
-            <span className="text-slate-gray">Exact $|c_i|^2$ state amplitudes</span>
+          <div className="p-2.5 rounded-xl bg-floral-white shadow-neu-raised">
+            <span className="text-black-olive/60 block mb-0.5">Born Rule Amplitude:</span>
+            <span className="text-slate-gray font-bold">Exact |c_i|² state probabilities</span>
           </div>
-          <div className="p-2 rounded bg-floral-white">
-            <span className="text-black-olive/70 block mb-0.5">Simulated Sampling:</span>
-            <span className="text-slate-gray">Real statistical variance</span>
+          <div className="p-2.5 rounded-xl bg-floral-white shadow-neu-raised">
+            <span className="text-black-olive/60 block mb-0.5">Simulated Sampling:</span>
+            <span className="text-slate-gray font-bold">Statistical 1024-shot variance</span>
           </div>
         </div>
       </div>

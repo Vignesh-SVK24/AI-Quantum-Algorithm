@@ -1,5 +1,5 @@
-﻿import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Check } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 
 interface SectionProps {
   onNext: () => void;
@@ -26,104 +26,133 @@ export const Measurement: React.FC<SectionProps> = ({ onNext, onPrev, isFirst, i
   const oneHeight = outcomes.total > 0 ? (outcomes.one / outcomes.total) * 100 : 0;
 
   return (
-    <div className="bg-slate-900/50 text-slate-100 p-8 rounded-2xl border border-slate-800 shadow-xl max-w-4xl mx-auto flex flex-col gap-8">
-      <div>
-        <h2 className="text-3xl font-bold mb-4 text-white">Measurement</h2>
-        <div className="prose prose-invert max-w-none text-slate-300">
-          <ul className="list-disc pl-5 space-y-2">
-            <li>Measurement is the process of extracting classical information from a qubit</li>
-            <li>Before measurement, the qubit is in state |ψ⟩ = α|0⟩ + β|1⟩</li>
-            <li>After measurement in the computational basis, the qubit collapses to either |0⟩ (with probability |α|²) or |1⟩ (with probability |β|²)</li>
-            <li>This collapse is irreversible — the superposition information is destroyed</li>
-            <li>Repeated measurements of identically prepared qubits reveal the underlying probabilities</li>
-            <li>This is fundamentally probabilistic — not due to ignorance but an intrinsic feature of quantum mechanics</li>
-          </ul>
-        </div>
+    <div className="flex flex-col h-full bg-floral-white text-black-olive">
+      <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-black-olive tracking-tight">
+        Quantum Measurement
+      </h2>
+      
+      <div className="space-y-4 text-sm sm:text-base leading-relaxed text-black-olive/80 mb-6 flex-grow">
+        <ul className="list-disc pl-5 space-y-2">
+          <li><strong>Measurement</strong> is the irreversible process of extracting classical bits from a quantum system.</li>
+          <li>Before measurement, a qubit resides in state <span className="font-mono text-black-olive font-semibold">|ψ⟩ = α|0⟩ + β|1⟩</span>.</li>
+          <li>Upon computational measurement, the wave function instantly collapses to |0⟩ (with probability <span className="font-mono text-slate-gray">|α|²</span>) or |1⟩ (with probability <span className="font-mono text-slate-gray">|β|²</span>).</li>
+          <li>This collapse is fundamental and irreversible — the original superposition is permanently destroyed.</li>
+          <li>Repeated trials on identically prepared qubits reveal the exact underlying probability distribution.</li>
+        </ul>
       </div>
 
-      <div className="bg-slate-800/50 p-6 rounded-xl flex justify-center items-center border border-slate-700">
-        <svg viewBox="0 0 600 200" className="w-full max-w-2xl font-sans" fill="none">
-          {/* Before */}
-          <circle cx="100" cy="100" r="40" className="fill-indigo-900/50 stroke-indigo-400 stroke-2" />
-          <text x="100" y="105" textAnchor="middle" className="fill-indigo-200 text-sm font-semibold">|ψ⟩</text>
-          <text x="100" y="160" textAnchor="middle" className="fill-slate-300 text-xs">α|0⟩ + β|1⟩</text>
+      {/* Neumorphic Inset SVG Diagram */}
+      <div className="bg-floral-white p-6 rounded-2xl shadow-neu-pressed flex justify-center items-center overflow-x-auto mb-8">
+        <svg viewBox="0 0 600 200" className="w-full max-w-2xl font-sans select-none" fill="none">
+          {/* Before: Superposition state */}
+          <circle cx="90" cy="100" r="36" fill="#FAF7EE" stroke="#203C3D" strokeWidth="2" />
+          <text x="90" y="105" textAnchor="middle" fill="#203C3D" fontSize="16" fontWeight="bold">|ψ⟩</text>
+          <text x="90" y="155" textAnchor="middle" fill="#31372B" opacity="0.7" fontSize="12" fontFamily="monospace">α|0⟩ + β|1⟩</text>
 
           {/* Apparatus */}
-          <path d="M 190 90 H 250 V 110 H 190 Z" className="fill-slate-700 stroke-slate-500" />
-          <path d="M 220 110 L 235 95" className="stroke-teal-400 stroke-2" />
-          <text x="220" y="80" textAnchor="middle" className="fill-slate-400 text-xs uppercase tracking-wider">Measure</text>
-          <path d="M 140 100 H 190" className="stroke-slate-500 stroke-2" markerEnd="url(#arrow)" />
-          <path d="M 250 100 H 300" className="stroke-slate-500 stroke-2" />
+          <rect x="180" y="80" width="60" height="40" rx="10" fill="#FAF7EE" stroke="#31372B" strokeWidth="1.5" strokeOpacity="0.4" />
+          <path d="M 200 106 A 12 12 0 0 1 220 106" stroke="#31372B" strokeWidth="1.5" strokeOpacity="0.8" />
+          <line x1="210" y1="106" x2="218" y2="92" stroke="#203C3D" strokeWidth="2" strokeLinecap="round" />
+          <text x="210" y="70" textAnchor="middle" fill="#31372B" opacity="0.7" fontSize="11" fontWeight="bold">MEASURE</text>
+          
+          <line x1="128" y1="100" x2="175" y2="100" stroke="#31372B" strokeWidth="1.5" strokeOpacity="0.4" markerEnd="url(#measNeuArrow)" />
+          <line x1="242" y1="100" x2="290" y2="100" stroke="#31372B" strokeWidth="1.5" strokeOpacity="0.4" />
 
           {/* Branching */}
-          <path d="M 300 100 Q 330 100 350 60 T 400 60" className="stroke-slate-500 stroke-2" fill="none" markerEnd="url(#arrow)" />
-          <path d="M 300 100 Q 330 100 350 140 T 400 140" className="stroke-slate-500 stroke-2" fill="none" markerEnd="url(#arrow)" />
+          <path d="M 290 100 Q 330 100 350 60 T 400 60" stroke="#31372B" strokeWidth="1.5" strokeOpacity="0.4" fill="none" markerEnd="url(#measNeuArrow)" />
+          <path d="M 290 100 Q 330 100 350 140 T 400 140" stroke="#31372B" strokeWidth="1.5" strokeOpacity="0.4" fill="none" markerEnd="url(#measNeuArrow)" />
 
           {/* Outcomes */}
-          <circle cx="450" cy="60" r="30" className="fill-indigo-950 stroke-indigo-500 stroke-2" />
-          <text x="450" y="65" textAnchor="middle" className="fill-indigo-200 text-sm font-semibold">|0⟩</text>
-          <text x="450" y="110" textAnchor="middle" className="fill-indigo-300 text-xs">Prob: |α|²</text>
+          <circle cx="450" cy="60" r="28" fill="#FAF7EE" stroke="#203C3D" strokeWidth="2" />
+          <text x="450" y="65" textAnchor="middle" fill="#203C3D" fontSize="15" fontWeight="bold">|0⟩</text>
+          <text x="450" y="105" textAnchor="middle" fill="#31372B" opacity="0.7" fontSize="12" fontFamily="monospace">Prob: |α|²</text>
 
-          <circle cx="450" cy="140" r="30" className="fill-teal-950 stroke-teal-500 stroke-2" />
-          <text x="450" y="145" textAnchor="middle" className="fill-teal-200 text-sm font-semibold">|1⟩</text>
-          <text x="450" y="190" textAnchor="middle" className="fill-teal-300 text-xs">Prob: |β|²</text>
+          <circle cx="450" cy="140" r="28" fill="#FAF7EE" stroke="#31372B" strokeWidth="2" strokeOpacity="0.6" />
+          <text x="450" y="145" textAnchor="middle" fill="#31372B" fontSize="15" fontWeight="bold">|1⟩</text>
+          <text x="450" y="185" textAnchor="middle" fill="#31372B" opacity="0.7" fontSize="12" fontFamily="monospace">Prob: |β|²</text>
 
           <defs>
-            <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-              <path d="M 0 0 L 10 5 L 0 10 z" className="fill-slate-500" />
+            <marker id="measNeuArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#31372B" />
             </marker>
           </defs>
         </svg>
       </div>
 
-      <div className="bg-slate-800/30 p-6 rounded-xl border border-slate-700/50">
-        <h3 className="text-xl font-semibold mb-4 text-indigo-300">Simulate Measurement</h3>
-        <p className="text-slate-400 text-sm mb-6">Simulating measurement of state |+⟩ = ( |0⟩ + |1⟩ ) / √2</p>
+      {/* Interactive Simulation Experiment */}
+      <div className="bg-floral-white p-6 rounded-2xl shadow-neu-raised mb-8 space-y-4">
+        <h3 className="text-base font-bold text-black-olive">
+          Simulate Quantum Measurement
+        </h3>
+        <p className="text-black-olive/70 text-xs">
+          Repeatedly sample state <span className="font-mono font-semibold text-slate-gray">|+⟩ = (|0⟩ + |1⟩)/√2</span> to observe statistical convergence:
+        </p>
         
-        <div className="flex flex-col md:flex-row gap-8 items-end">
-          <div className="flex-1 w-full max-w-sm flex gap-4 h-48 items-end justify-center">
-            <div className="w-16 flex flex-col items-center gap-2">
-              <span className="text-indigo-200 text-xs font-mono">{outcomes.zero}</span>
-              <div className="w-full bg-indigo-500/20 rounded-t-sm relative transition-all duration-300" style={{ height: `${Math.max(zeroHeight, 1)}%` }}>
-                <div className="absolute bottom-0 w-full bg-indigo-500 rounded-t-sm transition-all duration-300" style={{ height: '100%' }}></div>
+        <div className="flex flex-col sm:flex-row gap-8 items-end pt-2">
+          <div className="flex-1 w-full max-w-sm flex gap-6 h-44 items-end justify-center bg-floral-white p-4 rounded-xl shadow-neu-pressed">
+            {/* Outcome 0 Bar */}
+            <div className="w-16 flex flex-col items-center gap-1.5 h-full justify-end">
+              <span className="text-xs font-mono font-bold text-slate-gray">{outcomes.zero}</span>
+              <div className="w-full bg-floral-white shadow-neu-pressed rounded-t-lg relative h-28 overflow-hidden p-0.5 flex items-end">
+                <div 
+                  className="w-full bg-slate-gray rounded-t-md transition-all duration-200" 
+                  style={{ height: `${Math.max(zeroHeight, outcomes.total > 0 ? 4 : 0)}%` }}
+                />
               </div>
-              <span className="text-slate-300 font-semibold">|0⟩</span>
+              <span className="text-xs font-bold text-black-olive">|0⟩</span>
             </div>
             
-            <div className="w-16 flex flex-col items-center gap-2">
-              <span className="text-teal-200 text-xs font-mono">{outcomes.one}</span>
-              <div className="w-full bg-teal-500/20 rounded-t-sm relative transition-all duration-300" style={{ height: `${Math.max(oneHeight, 1)}%` }}>
-                <div className="absolute bottom-0 w-full bg-teal-500 rounded-t-sm transition-all duration-300" style={{ height: '100%' }}></div>
+            {/* Outcome 1 Bar */}
+            <div className="w-16 flex flex-col items-center gap-1.5 h-full justify-end">
+              <span className="text-xs font-mono font-bold text-black-olive">{outcomes.one}</span>
+              <div className="w-full bg-floral-white shadow-neu-pressed rounded-t-lg relative h-28 overflow-hidden p-0.5 flex items-end">
+                <div 
+                  className="w-full bg-black-olive/70 rounded-t-md transition-all duration-200" 
+                  style={{ height: `${Math.max(oneHeight, outcomes.total > 0 ? 4 : 0)}%` }}
+                />
               </div>
-              <span className="text-slate-300 font-semibold">|1⟩</span>
+              <span className="text-xs font-bold text-black-olive">|1⟩</span>
             </div>
           </div>
           
-          <div className="flex flex-col gap-3 pb-4">
-            <div className="text-slate-400 text-sm mb-2">Total: {outcomes.total} measurements</div>
-            <button onClick={simulate} className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium transition-colors">
+          <div className="flex flex-col gap-3 w-full sm:w-auto">
+            <div className="text-black-olive/70 text-xs font-mono">
+              Total Shots: <strong className="text-black-olive font-bold">{outcomes.total}</strong>
+            </div>
+            <button 
+              onClick={simulate} 
+              className="px-6 py-2.5 bg-slate-gray text-floral-white font-semibold rounded-xl text-xs sm:text-sm shadow-neu-raised hover:shadow-neu-pressed transition-all"
+            >
               Measure Qubit
             </button>
-            <button onClick={reset} className="px-6 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors">
-              Reset
+            <button 
+              onClick={reset} 
+              className="px-6 py-2.5 bg-floral-white text-black-olive font-semibold rounded-xl text-xs sm:text-sm shadow-neu-raised hover:shadow-neu-pressed transition-all"
+            >
+              Reset Tally
             </button>
           </div>
         </div>
       </div>
 
-      <div className="flex justify-between items-center pt-4 border-t border-slate-800">
-        <button 
-          onClick={onPrev} 
+      {/* Navigation Buttons */}
+      <div className="flex justify-between items-center mt-auto pt-6">
+        <button
+          onClick={onPrev}
           disabled={isFirst}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${isFirst ? 'text-slate-600 cursor-not-allowed' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium text-xs sm:text-sm text-black-olive/70 bg-floral-white shadow-neu-raised hover:shadow-neu-pressed disabled:opacity-30 disabled:pointer-events-none transition-all"
         >
-          <ChevronLeft size={18} /> Previous
+          <ArrowLeft size={16} /> Previous
         </button>
-        <button 
+        <button
           onClick={onNext}
-          className="flex items-center gap-2 px-6 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-lg font-medium transition-colors"
+          className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm bg-slate-gray text-floral-white shadow-neu-raised hover:shadow-neu-pressed transition-all"
         >
-          {isLast ? <><Check size={18} /> Complete</> : <>Next <ChevronRight size={18} /></>}
+          {isLast ? (
+            <>Complete <Check size={16} /></>
+          ) : (
+            <>Next <ArrowRight size={16} /></>
+          )}
         </button>
       </div>
     </div>

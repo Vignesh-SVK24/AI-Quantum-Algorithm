@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 
 interface SectionProps {
@@ -21,32 +21,41 @@ const Superposition: React.FC<SectionProps> = ({ onNext, onPrev, isFirst, isLast
   const percent1 = (prob1 * 100).toFixed(1);
 
   return (
-    <div className="flex flex-col h-full bg-quantum-900/50 p-6 rounded-2xl border border-slate-800 text-slate-200">
-      <h2 className="text-3xl font-bold mb-4 text-quantum-300">Superposition</h2>
+    <div className="flex flex-col h-full bg-floral-white text-black-olive">
+      <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-black-olive tracking-tight">
+        Superposition
+      </h2>
       
-      <div className="space-y-4 text-lg leading-relaxed mb-8 flex-grow">
+      <div className="space-y-5 text-sm sm:text-base leading-relaxed text-black-olive/80 mb-6 flex-grow">
         <p>
-          A qubit can exist in a quantum state described by:
+          A qubit can exist in an arbitrary linear combination of basis states, described by:
         </p>
-        <div className="text-center font-mono text-xl p-4 bg-slate-900 rounded-xl text-quantum-cyan shadow-inner">
+        <div className="text-center font-mono text-xl p-4 rounded-2xl bg-floral-white shadow-neu-pressed text-slate-gray font-bold">
           |ψ⟩ = α|0⟩ + β|1⟩
         </div>
         <p>
-          Here, <strong>α</strong> (alpha) and <strong>β</strong> (beta) are complex numbers called <strong>probability amplitudes</strong>.
+          Here, <strong className="text-black-olive font-semibold">α</strong> (alpha) and <strong className="text-black-olive font-semibold">β</strong> (beta) are complex numbers known as <strong className="text-black-olive font-semibold">probability amplitudes</strong>.
         </p>
         <p>
-          It is a common misconception to say the qubit is "both 0 and 1 at the same time." This is inaccurate! The qubit is in a <em>single, definite quantum state</em> that simply does not correspond to a classical 0 or 1. It has a well-defined relationship to both states.
+          It is a common misconception to say that a qubit is "both 0 and 1 at the same time." This is scientifically inaccurate! The qubit exists in a <em>single, well-defined quantum state</em> that happens to have a mathematical relationship to both basis vectors.
         </p>
         <p>
-          When we measure the qubit, we get |0⟩ with probability <strong>|α|²</strong> and |1⟩ with probability <strong>|β|²</strong>. For example, the Hadamard gate (H) creates an equal superposition: H|0⟩ = (1/√2)|0⟩ + (1/√2)|1⟩.
+          Upon measurement, the state collapses: we obtain |0⟩ with probability <strong className="text-slate-gray font-mono">|α|²</strong> and |1⟩ with probability <strong className="text-slate-gray font-mono">|β|²</strong>. For instance, the Hadamard gate (H) maps |0⟩ into equal superposition: <span className="font-mono">H|0⟩ = (1/√2)|0⟩ + (1/√2)|1⟩</span>.
         </p>
       </div>
 
-      <div className="bg-slate-900/80 p-6 rounded-xl border border-slate-700 mb-8">
-        <h3 className="text-xl font-semibold mb-4 text-quantum-teal">Interactive State Adjuster</h3>
+      {/* Interactive Neumorphic Card */}
+      <div className="bg-floral-white p-6 rounded-2xl shadow-neu-pressed mb-8 space-y-6">
+        <h3 className="text-base font-bold text-black-olive flex items-center justify-between">
+          <span>Interactive State Adjuster</span>
+          <span className="text-xs font-mono text-slate-gray">|α|² + |β|² = 1.0</span>
+        </h3>
         
-        <div className="mb-6">
-          <label className="block text-sm text-slate-400 mb-2">Adjust Superposition (0 to 90 degrees)</label>
+        <div>
+          <div className="flex justify-between text-xs text-black-olive/70 mb-2 font-medium">
+            <span>Adjust Angle θ (0° to 90°)</span>
+            <span className="font-mono">{((theta * 180) / Math.PI).toFixed(1)}°</span>
+          </div>
           <input 
             type="range" 
             min="0" 
@@ -54,61 +63,67 @@ const Superposition: React.FC<SectionProps> = ({ onNext, onPrev, isFirst, isLast
             step="0.01" 
             value={theta}
             onChange={(e) => setTheta(parseFloat(e.target.value))}
-            className="w-full accent-quantum-cyan"
+            className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-black-olive/20 accent-[#203C3D]"
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4 text-center font-mono text-sm mb-4">
-          <div>α = {alpha}</div>
-          <div>β = {beta}</div>
+        <div className="grid grid-cols-2 gap-4 text-center font-mono text-xs">
+          <div className="p-2.5 rounded-xl bg-floral-white shadow-neu-raised">
+            <span className="text-black-olive/60 block text-[10px]">Amplitude α:</span>
+            <span className="text-slate-gray font-bold text-sm">{alpha}</span>
+          </div>
+          <div className="p-2.5 rounded-xl bg-floral-white shadow-neu-raised">
+            <span className="text-black-olive/60 block text-[10px]">Amplitude β:</span>
+            <span className="text-slate-gray font-bold text-sm">{beta}</span>
+          </div>
         </div>
 
         <div className="space-y-4">
           <div>
-            <div className="flex justify-between text-sm mb-1">
+            <div className="flex justify-between text-xs text-black-olive/80 mb-1.5 font-medium">
               <span>Probability of |0⟩ : |α|²</span>
-              <span>{percent0}%</span>
+              <span className="font-mono text-slate-gray font-bold">{percent0}%</span>
             </div>
-            <div className="w-full bg-slate-800 rounded-full h-4 overflow-hidden">
+            <div className="w-full bg-floral-white shadow-neu-pressed rounded-full h-3.5 p-0.5 overflow-hidden">
               <div 
-                className="bg-indigo-500 h-4 transition-all duration-300" 
+                className="bg-slate-gray h-full rounded-full transition-all duration-200" 
                 style={{ width: `${percent0}%` }}
-              ></div>
+              />
             </div>
           </div>
           
           <div>
-            <div className="flex justify-between text-sm mb-1">
+            <div className="flex justify-between text-xs text-black-olive/80 mb-1.5 font-medium">
               <span>Probability of |1⟩ : |β|²</span>
-              <span>{percent1}%</span>
+              <span className="font-mono text-black-olive font-bold">{percent1}%</span>
             </div>
-            <div className="w-full bg-slate-800 rounded-full h-4 overflow-hidden">
+            <div className="w-full bg-floral-white shadow-neu-pressed rounded-full h-3.5 p-0.5 overflow-hidden">
               <div 
-                className="bg-teal-500 h-4 transition-all duration-300" 
+                className="bg-black-olive/70 h-full rounded-full transition-all duration-200" 
                 style={{ width: `${percent1}%` }}
-              ></div>
+              />
             </div>
           </div>
         </div>
       </div>
 
-      <div className="flex justify-between mt-auto pt-4 border-t border-slate-700">
+      {/* Navigation Buttons */}
+      <div className="flex justify-between items-center mt-auto pt-6">
         <button
           onClick={onPrev}
           disabled={isFirst}
-          className="flex items-center px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium text-xs sm:text-sm text-black-olive/70 bg-floral-white shadow-neu-raised hover:shadow-neu-pressed disabled:opacity-30 disabled:pointer-events-none transition-all"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Previous
+          <ArrowLeft size={16} /> Previous
         </button>
         <button
           onClick={onNext}
-          className="flex items-center px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 transition-colors"
+          className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm bg-slate-gray text-floral-white shadow-neu-raised hover:shadow-neu-pressed transition-all"
         >
           {isLast ? (
-            <>Complete <Check className="w-4 h-4 ml-2" /></>
+            <>Complete <Check size={16} /></>
           ) : (
-            <>Next <ArrowRight className="w-4 h-4 ml-2" /></>
+            <>Next <ArrowRight size={16} /></>
           )}
         </button>
       </div>

@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 
 interface SectionProps {
@@ -10,84 +10,86 @@ interface SectionProps {
 
 const ClassicalVsQubits: React.FC<SectionProps> = ({ onNext, onPrev, isFirst, isLast }) => {
   return (
-    <div className="flex flex-col h-full bg-slate-900 rounded-2xl p-8 shadow-xl border border-slate-800 text-slate-200">
-      <h2 className="text-3xl font-bold mb-6 text-white tracking-tight">Classical Bits vs Qubits</h2>
+    <div className="flex flex-col h-full bg-floral-white text-black-olive">
+      <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-black-olive tracking-tight">
+        Classical Bits vs Qubits
+      </h2>
       
-      <div className="flex-grow space-y-6">
-        <p className="text-lg leading-relaxed">
-          In classical computing, information is processed using classical bits. These bits are like simple switches: they are definitively either in a state of 0 or a state of 1. There is no ambiguity.
+      <div className="flex-grow space-y-5 text-sm sm:text-base leading-relaxed text-black-olive/80">
+        <p>
+          In classical computing, information is processed using classical bits. These bits are like simple physical switches: they are definitively either in a state of 0 or a state of 1. There is no ambiguity.
         </p>
-        <p className="text-lg leading-relaxed">
-          Quantum bits, or <strong>qubits</strong>, are fundamentally different. A qubit is described by a quantum state, which consists of probability amplitudes. Unlike a classical bit, a qubit doesn't just hold a value of 0 or 1.
+        <p>
+          Quantum bits, or <strong className="text-black-olive font-semibold">qubits</strong>, are fundamentally different. A qubit is described by a quantum state, which consists of complex probability amplitudes. Unlike a classical bit, a qubit doesn't simply hold a value of 0 or 1.
         </p>
-        <p className="text-lg leading-relaxed">
-          Instead, a qubit's state determines the <em>probabilities</em> of different measurement outcomes. When measured, it will yield a 0 or a 1, but the likelihood of each outcome is governed by the state's amplitudes prior to measurement.
+        <p>
+          Instead, a qubit's state determines the <em className="text-slate-gray font-medium">probabilities</em> of different measurement outcomes. When measured, it will yield a 0 or a 1, but the likelihood of each outcome is governed by the state's amplitudes prior to measurement.
         </p>
 
-        <div className="my-8 flex justify-center items-center">
-          <svg width="600" height="250" viewBox="0 0 600 250" className="max-w-full">
+        {/* Neumorphic Inset SVG Diagram */}
+        <div className="my-8 p-6 rounded-2xl bg-floral-white shadow-neu-pressed flex justify-center items-center overflow-x-auto">
+          <svg width="600" height="250" viewBox="0 0 600 250" className="max-w-full select-none">
             {/* Classical Bit */}
-            <g transform="translate(100, 40)">
-              <rect x="0" y="0" width="160" height="180" rx="16" fill="#1e293b" stroke="#334155" strokeWidth="2" />
-              <text x="80" y="30" fill="#94a3b8" fontSize="16" fontWeight="bold" textAnchor="middle">Classical Bit</text>
+            <g transform="translate(90, 35)">
+              <rect x="0" y="0" width="170" height="180" rx="20" fill="#FAF7EE" stroke="#31372B" strokeWidth="1.5" strokeOpacity="0.2" />
+              <text x="85" y="30" fill="#31372B" fontSize="15" fontWeight="bold" textAnchor="middle">Classical Bit</text>
               
               {/* Switch Base */}
-              <rect x="50" y="60" width="60" height="100" rx="30" fill="#0f172a" />
+              <rect x="55" y="55" width="60" height="95" rx="30" fill="#FAF7EE" stroke="#31372B" strokeWidth="1.5" strokeOpacity="0.2" />
               {/* Switch Knob (ON) */}
-              <circle cx="80" cy="85" r="24" fill="#3b82f6" />
+              <circle cx="85" cy="80" r="22" fill="#203C3D" />
               
-              <text x="30" y="90" fill="#64748b" fontSize="14" textAnchor="middle">ON (1)</text>
-              <text x="30" y="145" fill="#64748b" fontSize="14" textAnchor="middle">OFF (0)</text>
+              <text x="32" y="85" fill="#31372B" opacity="0.7" fontSize="13" textAnchor="middle">ON (1)</text>
+              <text x="32" y="130" fill="#31372B" opacity="0.7" fontSize="13" textAnchor="middle">OFF (0)</text>
             </g>
 
             {/* Qubit */}
-            <g transform="translate(340, 40)">
-              <rect x="0" y="0" width="200" height="180" rx="16" fill="#0f172a" stroke="#0d9488" strokeWidth="2" />
-              <text x="100" y="30" fill="#5eead4" fontSize="16" fontWeight="bold" textAnchor="middle">Qubit</text>
+            <g transform="translate(340, 35)">
+              <rect x="0" y="0" width="200" height="180" rx="20" fill="#FAF7EE" stroke="#203C3D" strokeWidth="1.5" strokeOpacity="0.4" />
+              <text x="100" y="30" fill="#203C3D" fontSize="15" fontWeight="bold" textAnchor="middle">Qubit</text>
               
               {/* Bloch sphere 2D rep */}
-              <circle cx="100" cy="110" r="50" fill="none" stroke="#334155" strokeWidth="2" strokeDasharray="4 4" />
-              <ellipse cx="100" cy="110" rx="50" ry="15" fill="none" stroke="#334155" strokeWidth="1" strokeDasharray="4 4" />
+              <circle cx="100" cy="105" r="48" fill="none" stroke="#31372B" strokeWidth="1.5" strokeDasharray="4 4" strokeOpacity="0.3" />
+              <ellipse cx="100" cy="105" rx="48" ry="14" fill="none" stroke="#31372B" strokeWidth="1" strokeDasharray="3 3" strokeOpacity="0.3" />
               
               {/* Z axis */}
-              <line x1="100" y1="50" x2="100" y2="170" stroke="#475569" strokeWidth="2" />
-              <text x="100" y="45" fill="#94a3b8" fontSize="14" textAnchor="middle">|0⟩</text>
-              <text x="100" y="185" fill="#94a3b8" fontSize="14" textAnchor="middle">|1⟩</text>
+              <line x1="100" y1="50" x2="100" y2="160" stroke="#31372B" strokeWidth="1.5" strokeOpacity="0.4" />
+              <text x="100" y="44" fill="#31372B" fontSize="13" textAnchor="middle" fontWeight="bold">|0⟩</text>
+              <text x="100" y="174" fill="#31372B" fontSize="13" textAnchor="middle" fontWeight="bold">|1⟩</text>
 
               {/* State Vector */}
-              <line x1="100" y1="110" x2="135" y2="75" stroke="#2dd4bf" strokeWidth="3" markerEnd="url(#arrow)" />
-              <text x="145" y="70" fill="#2dd4bf" fontSize="16" fontWeight="bold">|ψ⟩</text>
+              <line x1="100" y1="105" x2="135" y2="72" stroke="#203C3D" strokeWidth="2.5" markerEnd="url(#neuArrow)" />
+              <text x="145" y="68" fill="#203C3D" fontSize="15" fontWeight="bold">|ψ⟩</text>
               
-              <text x="100" y="215" fill="#5eead4" fontSize="14" fontStyle="italic" textAnchor="middle">|ψ⟩ = α|0⟩ + β|1⟩</text>
+              <text x="100" y="200" fill="#203C3D" fontSize="13" fontStyle="italic" textAnchor="middle">|ψ⟩ = α|0⟩ + β|1⟩</text>
             </g>
 
             <defs>
-              <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="#2dd4bf" />
+              <marker id="neuArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#203C3D" />
               </marker>
             </defs>
           </svg>
         </div>
       </div>
 
-      <div className="flex justify-between items-center mt-8 pt-6 border-t border-slate-800">
+      {/* Navigation Buttons */}
+      <div className="flex justify-between items-center mt-8 pt-6">
         <button
           onClick={onPrev}
           disabled={isFirst}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-            isFirst ? 'text-slate-600 bg-slate-800/50 cursor-not-allowed' : 'text-slate-300 hover:text-white hover:bg-slate-800'
-          }`}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium text-xs sm:text-sm text-black-olive/70 bg-floral-white shadow-neu-raised hover:shadow-neu-pressed disabled:opacity-30 disabled:pointer-events-none transition-all"
         >
-          <ArrowLeft size={18} /> Previous
+          <ArrowLeft size={16} /> Previous
         </button>
         <button
           onClick={onNext}
-          className="flex items-center gap-2 px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium transition-colors"
+          className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm bg-slate-gray text-floral-white shadow-neu-raised hover:shadow-neu-pressed transition-all"
         >
           {isLast ? (
-            <>Complete <Check size={18} /></>
+            <>Complete <Check size={16} /></>
           ) : (
-            <>Next <ArrowRight size={18} /></>
+            <>Next <ArrowRight size={16} /></>
           )}
         </button>
       </div>

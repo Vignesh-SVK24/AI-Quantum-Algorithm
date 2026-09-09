@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 
 interface SectionProps {
@@ -10,74 +10,76 @@ interface SectionProps {
 
 const QubitStates: React.FC<SectionProps> = ({ onNext, onPrev, isFirst, isLast }) => {
   return (
-    <div className="flex flex-col h-full bg-slate-900 rounded-2xl p-8 shadow-xl border border-slate-800 text-slate-200">
-      <h2 className="text-3xl font-bold mb-6 text-white tracking-tight">Qubit States |0⟩ and |1⟩</h2>
+    <div className="flex flex-col h-full bg-floral-white text-black-olive">
+      <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-black-olive tracking-tight">
+        Qubit States |0⟩ and |1⟩
+      </h2>
       
-      <div className="flex-grow space-y-6">
-        <p className="text-lg leading-relaxed">
-          Every qubit has two special computational basis states, denoted as <strong>|0⟩</strong> and <strong>|1⟩</strong>. These are analogous to the classical bit values 0 and 1.
+      <div className="flex-grow space-y-5 text-sm sm:text-base leading-relaxed text-black-olive/80">
+        <p>
+          Every qubit has two primary computational basis states, denoted in Dirac notation as <strong className="text-black-olive font-mono">|0⟩</strong> and <strong className="text-black-olive font-mono">|1⟩</strong>. These correspond directly to classical bit values 0 and 1.
         </p>
-        <p className="text-lg leading-relaxed">
-          By convention, |0⟩ represents the "ground state" (lowest energy) and |1⟩ represents the "excited state" (higher energy). If you measure a qubit that is exactly in the |0⟩ state, you will always get 0. If you measure one in the |1⟩ state, you will always get 1.
+        <p>
+          By convention, |0⟩ represents the "ground state" (lowest energy level) and |1⟩ represents the "excited state" (higher energy level). If you measure a qubit prepared in the |0⟩ state, you will always get 0. If prepared in |1⟩, you will always get 1.
         </p>
-        <p className="text-lg leading-relaxed">
-          These two states form an <em>orthonormal basis</em>. Mathematically, any possible state of a qubit can be expressed as a linear combination of these two vectors:
+        <p>
+          These two states form an <em className="text-slate-gray font-medium">orthonormal basis</em>. Any state of a single qubit can be expressed as a linear combination of these basis vectors:
         </p>
 
-        <div className="my-8 flex justify-center items-center">
-          <svg width="500" height="260" viewBox="0 0 500 260" className="max-w-full">
-            {/* Vectors */}
-            <g transform="translate(80, 20)">
-              <text x="30" y="50" fill="#5eead4" fontSize="24" fontWeight="bold">|0⟩ =</text>
-              <rect x="90" y="20" width="40" height="70" rx="4" fill="none" stroke="#475569" strokeWidth="2" />
-              <text x="110" y="45" fill="#f8fafc" fontSize="20" textAnchor="middle">1</text>
-              <text x="110" y="75" fill="#94a3b8" fontSize="20" textAnchor="middle">0</text>
+        {/* Neumorphic Inset SVG Diagram */}
+        <div className="my-8 p-6 rounded-2xl bg-floral-white shadow-neu-pressed flex justify-center items-center overflow-x-auto">
+          <svg width="500" height="240" viewBox="0 0 500 240" className="max-w-full select-none">
+            {/* Basis Vectors */}
+            <g transform="translate(70, 15)">
+              <text x="30" y="50" fill="#203C3D" fontSize="22" fontWeight="bold">|0⟩ =</text>
+              <rect x="90" y="20" width="38" height="66" rx="8" fill="#FAF7EE" stroke="#31372B" strokeWidth="1.5" strokeOpacity="0.4" />
+              <text x="109" y="44" fill="#31372B" fontSize="18" textAnchor="middle" fontWeight="bold">1</text>
+              <text x="109" y="70" fill="#31372B" opacity="0.4" fontSize="18" textAnchor="middle">0</text>
               
-              <text x="250" y="50" fill="#818cf8" fontSize="24" fontWeight="bold">|1⟩ =</text>
-              <rect x="310" y="20" width="40" height="70" rx="4" fill="none" stroke="#475569" strokeWidth="2" />
-              <text x="330" y="45" fill="#94a3b8" fontSize="20" textAnchor="middle">0</text>
-              <text x="330" y="75" fill="#f8fafc" fontSize="20" textAnchor="middle">1</text>
+              <text x="240" y="50" fill="#203C3D" fontSize="22" fontWeight="bold">|1⟩ =</text>
+              <rect x="300" y="20" width="38" height="66" rx="8" fill="#FAF7EE" stroke="#31372B" strokeWidth="1.5" strokeOpacity="0.4" />
+              <text x="319" y="44" fill="#31372B" opacity="0.4" fontSize="18" textAnchor="middle">0</text>
+              <text x="319" y="70" fill="#31372B" fontSize="18" textAnchor="middle" fontWeight="bold">1</text>
             </g>
 
-            {/* Energy Levels */}
-            <g transform="translate(150, 140)">
-              <line x1="0" y1="80" x2="200" y2="80" stroke="#5eead4" strokeWidth="3" />
-              <text x="220" y="85" fill="#5eead4" fontSize="18">|0⟩ (Ground State)</text>
+            {/* Energy Level Diagram */}
+            <g transform="translate(130, 125)">
+              <line x1="0" y1="75" x2="190" y2="75" stroke="#203C3D" strokeWidth="2.5" />
+              <text x="205" y="80" fill="#31372B" fontSize="15" fontWeight="medium">|0⟩ (Ground State)</text>
               
-              <line x1="0" y1="20" x2="200" y2="20" stroke="#818cf8" strokeWidth="3" />
-              <text x="220" y="25" fill="#818cf8" fontSize="18">|1⟩ (Excited State)</text>
+              <line x1="0" y1="20" x2="190" y2="20" stroke="#203C3D" strokeWidth="2.5" />
+              <text x="205" y="25" fill="#31372B" fontSize="15" fontWeight="medium">|1⟩ (Excited State)</text>
               
-              <line x1="100" y1="80" x2="100" y2="20" stroke="#cbd5e1" strokeWidth="2" strokeDasharray="4 4" markerEnd="url(#arrow-energy)" />
-              <text x="115" y="55" fill="#cbd5e1" fontSize="14">Energy</text>
+              <line x1="95" y1="75" x2="95" y2="23" stroke="#31372B" strokeWidth="1.5" strokeDasharray="3 3" strokeOpacity="0.5" markerEnd="url(#neuArrowEnergy)" />
+              <text x="108" y="52" fill="#31372B" opacity="0.7" fontSize="13">Energy ΔE</text>
             </g>
 
             <defs>
-              <marker id="arrow-energy" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="#cbd5e1" />
+              <marker id="neuArrowEnergy" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#31372B" />
               </marker>
             </defs>
           </svg>
         </div>
       </div>
 
-      <div className="flex justify-between items-center mt-8 pt-6 border-t border-slate-800">
+      {/* Navigation Buttons */}
+      <div className="flex justify-between items-center mt-8 pt-6">
         <button
           onClick={onPrev}
           disabled={isFirst}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-            isFirst ? 'text-slate-600 bg-slate-800/50 cursor-not-allowed' : 'text-slate-300 hover:text-white hover:bg-slate-800'
-          }`}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium text-xs sm:text-sm text-black-olive/70 bg-floral-white shadow-neu-raised hover:shadow-neu-pressed disabled:opacity-30 disabled:pointer-events-none transition-all"
         >
-          <ArrowLeft size={18} /> Previous
+          <ArrowLeft size={16} /> Previous
         </button>
         <button
           onClick={onNext}
-          className="flex items-center gap-2 px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium transition-colors"
+          className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm bg-slate-gray text-floral-white shadow-neu-raised hover:shadow-neu-pressed transition-all"
         >
           {isLast ? (
-            <>Complete <Check size={18} /></>
+            <>Complete <Check size={16} /></>
           ) : (
-            <>Next <ArrowRight size={18} /></>
+            <>Next <ArrowRight size={16} /></>
           )}
         </button>
       </div>
