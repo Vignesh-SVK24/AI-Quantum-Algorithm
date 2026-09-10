@@ -41,12 +41,25 @@ class LocalSearchResponse(TypedDict):
 
 _supabase_client = None
 
+def load_env_if_needed():
+    if not os.environ.get("SUPABASE_URL"):
+        env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".env"))
+        if os.path.exists(env_path):
+            with open(env_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line or line.startswith("#") or "=" not in line:
+                        continue
+                    k, v = line.split("=", 1)
+                    os.environ.setdefault(k.strip(), v.strip())
+
 def get_supabase_client():
     """Initializes or returns cached Supabase client."""
     global _supabase_client
     if _supabase_client is not None:
         return _supabase_client
     
+    load_env_if_needed()
     url = os.environ.get("SUPABASE_URL")
     key = os.environ.get("SUPABASE_KEY")
     if url and key:
