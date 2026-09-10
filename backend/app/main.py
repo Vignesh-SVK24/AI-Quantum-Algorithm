@@ -23,6 +23,8 @@ from app.services.local_search import search_quantum_db
 from app.feedback import FeedbackPayload, record_feedback, get_feedback_summary
 from app.accuracy_test import run_accuracy_tests
 from app.practice import practice_router
+from app.circuit_analyzer import explain_circuit
+from app.playground import get_playground_algorithms, get_playground_algorithm_by_id
 
 app = FastAPI(
     title="Quantum Algorithm Learning Platform API",
@@ -60,6 +62,15 @@ class SimulateRequest(BaseModel):
     gates: list[GatePayload]
     num_qubits: int = 3
     shots: int = 1024
+
+
+class CircuitExplainRequest(BaseModel):
+    circuit: list[GatePayload]
+    num_qubits: int = 3
+    simulation_result: dict | None = None
+    mode: str = "simple"
+    algorithm_name: str | None = None
+    student_progress: dict | None = None
 
 
 class DeutschJozsaRequest(BaseModel):
@@ -340,6 +351,54 @@ async def search_quantum_endpoint(req: SearchRequest, request: Request = None):
             status_code=500,
             detail={"message": "An error occurred while querying the Quantum Knowledge Base database."}
         )
+
+
+@app.post("/circuit/explain")
+@app.post("/api/circuit/explain")
+def explain_circuit_endpoint(req: CircuitExplainRequest):
+    """
+    Explain This Circuit Endpoint:
+    Inspects actual quantum circuit gates, detects cancellations/anomalies, evaluates
+    entanglement and chronological transformations, and generates structured
+    educational explanations grounded in the Quantum Knowledge Base.
+    """
+    try:
+        gates_dicts = [g.model_dump() for g in req.circuit]
+        return explain_circuit(
+            circuit=gates_dicts,
+            num_qubits=req.num_qubits,
+            simulation_result=req.simulation_result,
+            mode=req.mode,
+            algorithm_name=req.algorithm_name,
+            student_progress=req.student_progress
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail={"message": f"Circuit explanation failed: {str(e)}"}
+        )
+
+
+@app.get("/playground/algorithms")
+@app.get("/api/playground/algorithms")
+def list_playground_algorithms():
+    """
+    Lists the 12 curated algorithms for the Quantum Algorithm Playground,
+    spanning Beginner, Intermediate, and Advanced tiers.
+    """
+    return get_playground_algorithms()
+
+
+@app.get("/playground/algorithms/{algo_id}")
+@app.get("/api/playground/algorithms/{algo_id}")
+def get_playground_algorithm(algo_id: str):
+    """
+    Retrieves a specific curated playground algorithm by its slug.
+    """
+    algo = get_playground_algorithm_by_id(algo_id)
+    if not algo:
+        raise HTTPException(status_code=404, detail=f"Algorithm '{algo_id}' not found.")
+    return algo
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 import { QUANTUM_TOPICS_CATALOG } from '../data/quantumTopicsData';
+import { PLAYGROUND_ALGORITHMS, type PlaygroundAlgorithm } from '../data/playgroundAlgorithmsData';
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim().replace(/\/$/, '') ||
   (import.meta.env.DEV ? 'http://127.0.0.1:8000' : '');
@@ -1130,6 +1131,235 @@ function buildOfflineResponse(rawQuery: string, topic: any): QuantumTopicSearchR
     storage_engine: 'local_offline_cache',
     is_verified: true,
     message: null
+  };
+}
+
+export interface CircuitObservation {
+  type: 'tip' | 'observation' | 'warning';
+  gate?: string;
+  qubit?: number;
+  message: string;
+}
+
+export interface GateExplanation {
+  step: number;
+  gate: string;
+  target: number;
+  control?: number | null;
+  purpose: string;
+  transformation: string;
+}
+
+export interface CircuitExplanationResponse {
+  circuit_overview: string;
+  mode: 'simple' | 'detailed';
+  gate_explanations: GateExplanation[];
+  circuit_observations: CircuitObservation[];
+  simulation_analysis: string;
+  key_concepts: string[];
+  explanation_markdown: string;
+  sources: Array<{ name: string; source_type?: string }>;
+  is_ai_generated: boolean;
+}
+
+export interface ExplainCircuitRequest {
+  circuit: SimulateGate[];
+  num_qubits: number;
+  simulation_result?: any;
+  mode?: 'simple' | 'detailed';
+  algorithm_name?: string;
+  algorithm_id?: string;
+  student_progress?: any;
+}
+
+export async function fetchPlaygroundAlgorithms(): Promise<PlaygroundAlgorithm[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/playground/algorithms`);
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        return data;
+      }
+    }
+  } catch {
+    // Backend offline or unreachable, fallback to client catalogue
+  }
+  return PLAYGROUND_ALGORITHMS;
+}
+
+export async function explainCircuit(req: ExplainCircuitRequest): Promise<CircuitExplanationResponse> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/circuit/explain`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        circuit: req.circuit,
+        num_qubits: req.num_qubits,
+        simulation_result: req.simulation_result || null,
+        mode: req.mode || 'simple',
+        algorithm_name: req.algorithm_name || req.algorithm_id || null,
+        student_progress: req.student_progress || null
+      })
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch {
+    // Backend unavailable, fallback to local deterministic analyzer
+  }
+
+  return generateOfflineCircuitExplanation(req);
+}
+
+function generateOfflineCircuitExplanation(req: ExplainCircuitRequest): CircuitExplanationResponse {
+  const isDetailed = (req.mode || 'simple').toLowerCase() === 'detailed';
+  const gates = [...req.circuit].sort((a, b) => (a.step || 0) - (b.step || 0));
+  const observations: CircuitObservation[] = [];
+
+  // Check self-cancelling gates
+  const qubitHistory: Record<number, SimulateGate[]> = {};
+  for (const g of gates) {
+    const target = g.target ?? 0;
+    const gType = (g.type || '').toUpperCase();
+    if (['H', 'X', 'Y', 'Z'].includes(gType)) {
+      const prev = qubitHistory[target];
+      if (prev && prev.length > 0 && prev[prev.length - 1].type.toUpperCase() === gType) {
+        const lastStep = prev[prev.length - 1].step;
+        observations.push({
+          type: 'tip',
+          gate: gType,
+          qubit: target,
+          message: `Consecutive ${gType} gates detected on qubit q[${target}] at steps ${lastStep} and ${g.step}. Because ${gType}² = I (identity), these two operations cancel each other out.`
+        });
+      }
+    }
+    if (!qubitHistory[target]) qubitHistory[target] = [];
+    qubitHistory[target].push(g);
+  }
+
+  // Check entanglement
+  const entangling = gates.filter(g => ['CNOT', 'CX', 'CZ', 'SWAP'].includes(g.type.toUpperCase()));
+  const hasEntanglement = entangling.length > 0;
+  if (hasEntanglement) {
+    const pairs = Array.from(new Set(entangling.map(g => `q[${g.control ?? 0}] ↔ q[${g.target}]`))).join(', ');
+    observations.push({
+      type: 'observation',
+      message: `Multi-qubit interaction detected via ${entangling.length} entangling gate(s) between ${pairs}. This creates coherent quantum correlations across registers.`
+    });
+  } else if (req.num_qubits > 1 && gates.length > 0) {
+    observations.push({
+      type: 'observation',
+      message: 'All operations are local single-qubit gates. The composite state remains a separable product state with zero entanglement.'
+    });
+  }
+
+  // Gate-by-gate explanations
+  const gateExplanations: GateExplanation[] = gates.map((g, idx) => {
+    const gType = g.type.toUpperCase();
+    let purpose = `Applies ${gType} transformation to qubit q[${g.target}].`;
+    let transformation = `Transforms state of q[${g.target}].`;
+
+    if (gType === 'H') {
+      purpose = 'Creates quantum superposition, transforming basis states into equal-amplitude superpositions.';
+      transformation = isDetailed
+        ? 'H|0⟩ = (|0⟩+|1⟩)/√2 = |+⟩, H|1⟩ = (|0⟩-|1⟩)/√2 = |−⟩; Hadamard matrix [[1,1],[1,-1]]/√2.'
+        : 'Rotates a definite state into an equal 50/50 probability superposition of 0 and 1.';
+    } else if (gType === 'X') {
+      purpose = 'Pauli-X NOT bit flip; rotates state 180° around the X-axis of the Bloch sphere.';
+      transformation = isDetailed
+        ? 'X|0⟩ = |1⟩, X|1⟩ = |0⟩; Matrix [[0,1],[1,0]].'
+        : 'Flips 0 to 1 and 1 to 0, like a classical inverter.';
+    } else if (gType === 'Z') {
+      purpose = 'Pauli-Z phase flip; inverts the phase of the excited state |1⟩.';
+      transformation = isDetailed
+        ? 'Z|0⟩ = |0⟩, Z|1⟩ = -|1⟩; Matrix [[1,0],[0,-1]].'
+        : 'Leaves |0⟩ unchanged and flips the quantum phase of |1⟩ by 180 degrees.';
+    } else if (gType === 'CNOT' || gType === 'CX') {
+      purpose = `Controlled-NOT entangling gate with control q[${g.control ?? 0}] and target q[${g.target}].`;
+      transformation = isDetailed
+        ? `|c, t⟩ → |c, t ⊕ c⟩; Flips target qubit q[${g.target}] if control qubit q[${g.control ?? 0}] is in state |1⟩.`
+        : `If control q[${g.control ?? 0}] is 1, flips target q[${g.target}]. Creates entanglement when control is in superposition.`;
+    } else if (gType === 'CZ') {
+      purpose = `Controlled-Phase (CZ) entangling gate with control q[${g.control ?? 0}] and target q[${g.target}].`;
+      transformation = isDetailed
+        ? '|11⟩ → -|11⟩; introduces a π phase flip only when both control and target are |1⟩.'
+        : 'Flips the sign of state |11⟩, crucial for quantum phase oracles.';
+    } else if (gType === 'S') {
+      purpose = 'Phase gate (quarter turn); adds π/2 (90°) phase to |1⟩.';
+      transformation = isDetailed
+        ? 'S|0⟩ = |0⟩, S|1⟩ = i|1⟩; S = √Z.'
+        : 'Adds a quarter-turn (90°) phase to the |1⟩ component.';
+    } else if (gType === 'T') {
+      purpose = 'T gate (eighth turn); adds π/4 (45°) phase to |1⟩.';
+      transformation = isDetailed
+        ? 'T|0⟩ = |0⟩, T|1⟩ = e^(iπ/4)|1⟩; T = √S.'
+        : 'Adds an eighth-turn (45°) phase rotation to |1⟩.';
+    } else if (gType === 'SWAP') {
+      purpose = `Swaps quantum states between qubit q[${g.control ?? 0}] and q[${g.target}].`;
+      transformation = isDetailed
+        ? '|a, b⟩ → |b, a⟩; Exchanges quantum amplitude distributions.'
+        : `Exchanges the full quantum states of q[${g.control ?? 0}] and q[${g.target}].`;
+    }
+
+    return {
+      step: g.step || idx + 1,
+      gate: gType,
+      target: g.target,
+      control: g.control ?? null,
+      purpose,
+      transformation
+    };
+  });
+
+  // Simulation outcome analysis
+  let simAnalysis = 'Circuit ready for simulation.';
+  if (req.simulation_result && req.simulation_result.probabilities) {
+    const probs = req.simulation_result.probabilities as Record<string, number>;
+    const nonZero = Object.entries(probs).filter(([_, p]) => p > 0.001);
+    if (nonZero.length === 1) {
+      simAnalysis = `Deterministic outcome: The circuit evaluates definitively to state ${nonZero[0][0]} with 100% probability.`;
+    } else if (nonZero.length === 2 && nonZero.every(([_, p]) => Math.abs(p - 0.5) < 0.05)) {
+      simAnalysis = `Bipartite superposition: Exactly two states (${nonZero[0][0]} and ${nonZero[1][0]}) share 50% probability each (characteristic of Bell / entangled pairs).`;
+    } else {
+      simAnalysis = `Superposition across ${nonZero.length} computational basis states. Measurement probabilities: ` +
+        nonZero.map(([state, p]) => `${state}: ${(p * 100).toFixed(1)}%`).join(', ') + '.';
+    }
+  }
+
+  // Key concepts
+  const keyConcepts = ['Superposition'];
+  if (hasEntanglement) keyConcepts.push('Entanglement');
+  if (gates.some(g => ['Z', 'S', 'T', 'CZ'].includes(g.type.toUpperCase()))) keyConcepts.push('Quantum Phase');
+  keyConcepts.push('Measurement Collapse');
+
+  // Build markdown summary
+  const markdown = [
+    `### Circuit Analysis: ${req.algorithm_name || `${req.num_qubits}-Qubit Quantum Circuit`}`,
+    '',
+    `This circuit executes **${gates.length} quantum operations** across **${req.num_qubits} qubits**.`,
+    '',
+    '#### Operational Flow',
+    ...gateExplanations.map(g => `- **Step ${g.step} (${g.gate} on q[${g.target}]${g.control != null ? ` with control q[${g.control}]` : ''})**: ${g.purpose}`),
+    '',
+    '#### Quantum State Evolution',
+    simAnalysis,
+    '',
+    observations.length > 0 ? '#### Structural Observations\n' + observations.map(o => `- **[${o.type.toUpperCase()}]**: ${o.message}`).join('\n') : ''
+  ].filter(Boolean).join('\n');
+
+  return {
+    circuit_overview: `This circuit uses ${req.num_qubits} qubit${req.num_qubits !== 1 ? 's' : ''} with ${gates.length} gate operations. ${hasEntanglement ? 'It establishes quantum entanglement between registers.' : 'Operations are separable local gates.'}`,
+    mode: isDetailed ? 'detailed' : 'simple',
+    gate_explanations: gateExplanations,
+    circuit_observations: observations,
+    simulation_analysis: simAnalysis,
+    key_concepts: keyConcepts,
+    explanation_markdown: markdown,
+    sources: [
+      { name: 'Quantum Knowledge Base', source_type: 'verified_db' },
+      { name: 'Qiskit Circuit Runtime Specification', source_type: 'framework' }
+    ],
+    is_ai_generated: false
   };
 }
 

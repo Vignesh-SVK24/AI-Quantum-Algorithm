@@ -24,6 +24,7 @@ import { BlochSphereWidget } from '../components/BlochSphereWidget';
 import { StateComparisonWidget } from '../components/StateComparisonWidget';
 import { MeasurementHistogramWidget } from '../components/MeasurementHistogramWidget';
 import { AITutorPanel } from '../components/AITutorPanel';
+import { ExplainCircuitModal } from '../components/ExplainCircuitModal';
 import type { QuantumVisualizationData } from '../components/visualization3d';
 
 const QuantumVisualizer = React.lazy(() => import('../components/visualization3d').then(m => ({ default: m.QuantumVisualizer })));
@@ -89,6 +90,7 @@ export const QuantumLab: React.FC = () => {
   const [simError, setSimError] = useState<string | null>(null);
   const [isSimulating, setIsSimulating] = useState(false);
   const [activeTab, setActiveTab] = useState<'all' | 'before-after' | 'bloch' | 'histogram' | '3d'>('all');
+  const [isExplainModalOpen, setIsExplainModalOpen] = useState<boolean>(false);
 
   const visualizationData: QuantumVisualizationData = React.useMemo(() => {
     return {
@@ -415,6 +417,15 @@ export const QuantumLab: React.FC = () => {
                 className="px-3.5 py-2 rounded-xl text-xs font-semibold text-black-olive/80 bg-warm-ivory border border-soft-sand hover:bg-soft-sand transition-all flex items-center gap-1.5 shadow-sm"
               >
                 <Trash2 className="w-3.5 h-3.5 text-olive-mist" /> Reset
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsExplainModalOpen(true)}
+                disabled={circuit.length === 0}
+                title={circuit.length === 0 ? "Place at least one gate to explain circuit" : "Explain this circuit in detail"}
+                className="px-3.5 py-2 rounded-xl text-xs font-semibold text-black-olive bg-warm-gold/20 border border-warm-gold/40 hover:bg-warm-gold/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1.5 shadow-sm"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-cocoa-noir" /> Explain Circuit
               </button>
               <button
                 onClick={handleRunCircuit}
@@ -754,6 +765,22 @@ export const QuantumLab: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Explain Circuit Interactive Modal */}
+      <ExplainCircuitModal
+        isOpen={isExplainModalOpen}
+        onClose={() => setIsExplainModalOpen(false)}
+        circuit={circuit.map(g => ({
+          id: g.id,
+          type: g.type,
+          target: g.target,
+          step: g.step,
+          control: g.control
+        }))}
+        numQubits={numQubits}
+        simulationResult={simResult}
+        algorithmName="Custom Quantum Lab Circuit"
+      />
 
       {/* Floating Context-Aware AI Tutor Drawer */}
       <AITutorPanel

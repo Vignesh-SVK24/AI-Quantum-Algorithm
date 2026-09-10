@@ -11,7 +11,8 @@ import {
   Info,
   Activity,
   Menu,
-  X
+  X,
+  Layers
 } from 'lucide-react';
 import { checkBackendHealth } from '../services/api';
 
@@ -41,7 +42,8 @@ export const Navbar: React.FC = () => {
   const navLinks = [
     { name: 'Basics', path: '/basics', icon: BookOpen },
     { name: 'Quantum Lab', path: '/lab', icon: FlaskConical },
-    { name: 'Algorithms', path: '/algorithms', icon: Cpu },
+    { name: 'Playground', path: '/playground', icon: Cpu },
+    { name: 'Algorithms', path: '/algorithms', icon: Layers },
     { name: 'AI Tutor', path: '/tutor', icon: Bot },
     { name: 'Practice', path: '/practice', icon: Sparkles },
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },

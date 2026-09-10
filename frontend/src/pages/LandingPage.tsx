@@ -105,6 +105,14 @@ export const LandingPage: React.FC = () => {
                 </Link>
 
                 <Link
+                  to="/playground"
+                  className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-warm-gold/20 border border-warm-gold/60 text-black-olive font-semibold text-sm hover:bg-warm-gold/30 transition-all active:scale-98 shadow-sm"
+                >
+                  <Cpu className="w-4 h-4 text-cocoa-noir" />
+                  <span>Algorithm Playground</span>
+                </Link>
+
+                <Link
                   to="/lab"
                   className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl border-1.5 border-black-olive text-black-olive font-semibold text-sm hover:bg-warm-ivory transition-all active:scale-98"
                 >

@@ -6,6 +6,7 @@ import { LandingPage } from './pages/LandingPage';
 import { QuantumBasics } from './pages/QuantumBasics';
 import { QuantumLab } from './pages/QuantumLab';
 import { AlgorithmLab } from './pages/AlgorithmLab';
+import { AlgorithmPlayground } from './pages/AlgorithmPlayground';
 import { AITutor } from './pages/AITutor';
 import { Practice } from './pages/Practice';
 import { Dashboard } from './pages/Dashboard';
@@ -50,6 +51,8 @@ export const App: React.FC = () => {
             <Route path="/" element={<LandingPage />} />
             <Route path="/basics" element={<QuantumBasics />} />
             <Route path="/lab" element={<QuantumLab />} />
+            <Route path="/playground" element={<AlgorithmPlayground />} />
+            <Route path="/playground/:algoId" element={<AlgorithmPlayground />} />
             <Route path="/algorithms" element={<AlgorithmLab />} />
             <Route path="/tutor" element={<AITutor />} />
             <Route path="/practice" element={<Practice />} />

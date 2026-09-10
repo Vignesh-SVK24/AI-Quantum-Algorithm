@@ -8,7 +8,8 @@ except Exception:
     HAS_QISKIT = False
 
 
-SUPPORTED_GATES = {"H", "X", "Z", "CNOT"}
+SUPPORTED_GATES = {"H", "X", "Y", "Z", "S", "T", "CNOT", "CZ", "SWAP"}
+TWO_QUBIT_GATES = {"CNOT", "CZ", "SWAP"}
 
 
 def validate_circuit(gates: list[dict], num_qubits: int) -> list[str]:
@@ -19,7 +20,7 @@ def validate_circuit(gates: list[dict], num_qubits: int) -> list[str]:
         return errors
 
     for i, g in enumerate(gates):
-        gtype = g.get("type")
+        gtype = (g.get("type") or "").upper()
         target = g.get("target")
         step = g.get("step")
 
@@ -33,12 +34,12 @@ def validate_circuit(gates: list[dict], num_qubits: int) -> list[str]:
         if not isinstance(step, int) or step < 0:
             errors.append(f"Gate {i} ({gtype}): invalid step index {step}.")
 
-        if gtype == "CNOT":
+        if gtype in TWO_QUBIT_GATES:
             control = g.get("control")
             if not isinstance(control, int) or control < 0 or control >= num_qubits:
-                errors.append(f"Gate {i} (CNOT): control qubit {control} is out of range [0, {num_qubits - 1}].")
+                errors.append(f"Gate {i} ({gtype}): control qubit {control} is out of range [0, {num_qubits - 1}].")
             elif control == target:
-                errors.append(f"Gate {i} (CNOT): control and target cannot be the same qubit ({control}).")
+                errors.append(f"Gate {i} ({gtype}): control and target cannot be the same qubit ({control}).")
 
     return errors
 
@@ -101,7 +102,7 @@ def _simulate_circuit_numpy(gates: list[dict], num_qubits: int, shots: int = 102
     inv_sqrt2 = 1.0 / np.sqrt(2.0)
 
     for g in sorted_gates:
-        gtype = g["type"]
+        gtype = (g.get("type") or "").upper()
         target = g["target"]
         t_shift = num_qubits - 1 - target
 
@@ -112,11 +113,36 @@ def _simulate_circuit_numpy(gates: list[dict], num_qubits: int, shots: int = 102
                 new_state[flipped] = state[i]
             state = new_state
 
+        elif gtype == "Y":
+            new_state = state.copy()
+            for i in range(num_states):
+                flipped = i ^ (1 << t_shift)
+                if (i >> t_shift) & 1 == 0:
+                    new_state[flipped] = 1j * state[i]
+                else:
+                    new_state[flipped] = -1j * state[i]
+            state = new_state
+
         elif gtype == "Z":
             new_state = state.copy()
             for i in range(num_states):
                 if (i >> t_shift) & 1:
                     new_state[i] = -state[i]
+            state = new_state
+
+        elif gtype == "S":
+            new_state = state.copy()
+            for i in range(num_states):
+                if (i >> t_shift) & 1:
+                    new_state[i] = state[i] * 1j
+            state = new_state
+
+        elif gtype == "T":
+            t_phase = np.exp(1j * np.pi / 4.0)
+            new_state = state.copy()
+            for i in range(num_states):
+                if (i >> t_shift) & 1:
+                    new_state[i] = state[i] * t_phase
             state = new_state
 
         elif gtype == "H":
@@ -131,7 +157,7 @@ def _simulate_circuit_numpy(gates: list[dict], num_qubits: int, shots: int = 102
                     new_state[i1] = (a0 - a1) * inv_sqrt2
             state = new_state
 
-        elif gtype == "CNOT":
+        elif gtype in ("CNOT", "CX"):
             control = g["control"]
             c_shift = num_qubits - 1 - control
             new_state = state.copy()
@@ -139,6 +165,27 @@ def _simulate_circuit_numpy(gates: list[dict], num_qubits: int, shots: int = 102
                 if (i >> c_shift) & 1:
                     flipped = i ^ (1 << t_shift)
                     new_state[flipped] = state[i]
+            state = new_state
+
+        elif gtype == "CZ":
+            control = g["control"]
+            c_shift = num_qubits - 1 - control
+            new_state = state.copy()
+            for i in range(num_states):
+                if ((i >> c_shift) & 1) and ((i >> t_shift) & 1):
+                    new_state[i] = -state[i]
+            state = new_state
+
+        elif gtype == "SWAP":
+            control = g["control"]
+            c_shift = num_qubits - 1 - control
+            new_state = state.copy()
+            for i in range(num_states):
+                c_bit = (i >> c_shift) & 1
+                t_bit = (i >> t_shift) & 1
+                if c_bit != t_bit:
+                    swapped = i ^ (1 << c_shift) ^ (1 << t_shift)
+                    new_state[swapped] = state[i]
             state = new_state
 
     basis_labels = [f"|{''.join(str((i >> (num_qubits - 1 - bit)) & 1) for bit in range(num_qubits))}>" for i in range(num_states)]
@@ -189,17 +236,29 @@ def build_and_simulate(gates: list[dict], num_qubits: int, shots: int = 1024) ->
         try:
             qc = QuantumCircuit(num_qubits)
             for g in sorted_gates:
-                gtype = g["type"]
+                gtype = (g.get("type") or "").upper()
                 target = g["target"]
                 if gtype == "H":
                     qc.h(target)
                 elif gtype == "X":
                     qc.x(target)
+                elif gtype == "Y":
+                    qc.y(target)
                 elif gtype == "Z":
                     qc.z(target)
-                elif gtype == "CNOT":
+                elif gtype == "S":
+                    qc.s(target)
+                elif gtype == "T":
+                    qc.t(target)
+                elif gtype in ("CNOT", "CX"):
                     control = g["control"]
                     qc.cx(control, target)
+                elif gtype == "CZ":
+                    control = g["control"]
+                    qc.cz(control, target)
+                elif gtype == "SWAP":
+                    control = g["control"]
+                    qc.swap(control, target)
 
             sv = Statevector.from_instruction(qc)
             sv_data = sv.data
