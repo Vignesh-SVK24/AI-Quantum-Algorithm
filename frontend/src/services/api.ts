@@ -1,3 +1,5 @@
+import { QUANTUM_TOPICS_CATALOG } from '../data/quantumTopicsData';
+
 const API_BASE_URL = 'http://127.0.0.1:8000';
 
 export interface HealthResponse {
@@ -198,7 +200,9 @@ function simulateCircuitInBrowser(request: SimulateRequest): SimulateResponse {
     const target = g.target;
     const tShift = numQubits - 1 - target;
 
-    if (g.type === 'X') {
+    const gType = (g.type || '').toUpperCase();
+
+    if (gType === 'X') {
       const newReal = new Float64Array(real);
       const newImag = new Float64Array(imag);
       for (let i = 0; i < numStates; i++) {
@@ -208,14 +212,48 @@ function simulateCircuitInBrowser(request: SimulateRequest): SimulateResponse {
       }
       real.set(newReal);
       imag.set(newImag);
-    } else if (g.type === 'Z') {
+    } else if (gType === 'Y') {
+      const newReal = new Float64Array(real);
+      const newImag = new Float64Array(imag);
+      for (let i = 0; i < numStates; i++) {
+        const bit = (i >> tShift) & 1;
+        const flipped = i ^ (1 << tShift);
+        if (bit === 0) {
+          newReal[flipped] = -imag[i];
+          newImag[flipped] = real[i];
+        } else {
+          newReal[flipped] = imag[i];
+          newImag[flipped] = -real[i];
+        }
+      }
+      real.set(newReal);
+      imag.set(newImag);
+    } else if (gType === 'Z') {
       for (let i = 0; i < numStates; i++) {
         if ((i >> tShift) & 1) {
           real[i] = -real[i];
           imag[i] = -imag[i];
         }
       }
-    } else if (g.type === 'H') {
+    } else if (gType === 'S') {
+      for (let i = 0; i < numStates; i++) {
+        if ((i >> tShift) & 1) {
+          const r = real[i];
+          const im = imag[i];
+          real[i] = -im;
+          imag[i] = r;
+        }
+      }
+    } else if (gType === 'T') {
+      for (let i = 0; i < numStates; i++) {
+        if ((i >> tShift) & 1) {
+          const r = real[i];
+          const im = imag[i];
+          real[i] = (r - im) * invSqrt2;
+          imag[i] = (r + im) * invSqrt2;
+        }
+      }
+    } else if (gType === 'H') {
       const newReal = new Float64Array(real);
       const newImag = new Float64Array(imag);
       for (let i = 0; i < numStates; i++) {
@@ -234,12 +272,28 @@ function simulateCircuitInBrowser(request: SimulateRequest): SimulateResponse {
       }
       real.set(newReal);
       imag.set(newImag);
-    } else if (g.type === 'CNOT' && typeof g.control === 'number') {
+    } else if ((gType === 'CNOT' || gType === 'CX') && typeof g.control === 'number') {
       const cShift = numQubits - 1 - g.control;
       const newReal = new Float64Array(real);
       const newImag = new Float64Array(imag);
       for (let i = 0; i < numStates; i++) {
         if ((i >> cShift) & 1) {
+          const flipped = i ^ (1 << tShift);
+          newReal[flipped] = real[i];
+          newImag[flipped] = imag[i];
+        }
+      }
+      real.set(newReal);
+      imag.set(newImag);
+    } else if ((gType === 'CCX' || gType === 'TOFFOLI') && typeof g.control === 'number') {
+      const c1 = g.control;
+      const c2 = (g as any).control2 ?? (g as any).control_qubit_2 ?? (c1 === 0 ? 1 : 0);
+      const c1Shift = numQubits - 1 - c1;
+      const c2Shift = numQubits - 1 - c2;
+      const newReal = new Float64Array(real);
+      const newImag = new Float64Array(imag);
+      for (let i = 0; i < numStates; i++) {
+        if (((i >> c1Shift) & 1) && ((i >> c2Shift) & 1)) {
           const flipped = i ^ (1 << tShift);
           newReal[flipped] = real[i];
           newImag[flipped] = imag[i];
@@ -612,6 +666,9 @@ export interface QuantumTopic {
   source_url?: string | null;
   additional_sources: QuantumTopicSource[];
   verification_status: string;
+  created_at?: string;
+  updated_at?: string;
+  [key: string]: any;
 }
 
 export interface QuantumTopicSearchResponse {
@@ -638,87 +695,9 @@ export async function searchQuantum(query: string): Promise<QuantumTopicSearchRe
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ query: trimmed })
     });
-  } catch (networkErr: any) {
-    // Offline / Demo fallback when backend connection is unavailable
-    const qLower = trimmed.toLowerCase();
-    if (qLower.includes('qubit')) {
-      return {
-        query: trimmed,
-        matched: true,
-        topic: {
-          id: 'qubit',
-          topic_name: 'Qubit',
-          slug: 'qubit',
-          category: 'Foundations',
-          short_definition: 'The fundamental unit of quantum information, represented as a two-level quantum system with continuous state amplitudes.',
-          beginner_explanation: 'In classical computing, a bit is like an electric switch that is either strictly OFF (0) or ON (1). A qubit (quantum bit) is described by a quantum state vector whose mathematical weights determine the probability of finding it as 0 or 1 upon measurement. It is not "0 and 1 at the same time"—rather, it has a precise, definite quantum state with complex probability amplitudes.',
-          detailed_explanation: 'A physical qubit can be implemented using electron spin, photon polarization, or superconducting transmon circuits. The state is represented in a two-dimensional complex Hilbert space spanned by the orthonormal computational basis vectors |0⟩ and |1⟩. The coefficients α and β are probability amplitudes whose squared magnitudes satisfy the normalization condition |α|² + |β|² = 1.',
-          mathematical_explanation: 'State vector in Dirac notation: |ψ⟩ = α|0⟩ + β|1⟩, where α, β ∈ ℂ. In matrix form, |0⟩ = [1, 0]ᵀ and |1⟩ = [0, 1]ᵀ, yielding |ψ⟩ = [α, β]ᵀ.',
-          formula: '|ψ⟩ = α|0⟩ + β|1⟩  where  |α|² + |β|² = 1',
-          example: 'Consider a state with α = 1/√2 and β = 1/√2: |ψ⟩ = (1/√2)|0⟩ + (1/√2)|1⟩. Measuring this qubit gives outcome 0 with probability 50% and outcome 1 with probability 50%.',
-          circuit_example: 'from qiskit import QuantumCircuit\nqc = QuantumCircuit(1, 1)\nqc.h(0)\nqc.measure(0, 0)',
-          related_topics: ['Superposition', 'Measurement', 'Bloch Sphere', 'Hadamard Gate'],
-          common_mistakes: [
-            'Believing a qubit is "0 and 1 simultaneously" rather than possessing a definite state with probabilistic measurement outcomes.',
-            'Assuming reading or measuring a qubit preserves its superposition state.'
-          ],
-          aliases: ['quantum bit', 'qubits', 'what is a qubit'],
-          keywords: ['qubit', 'quantum bit', 'amplitudes', 'basis states'],
-          tags: ['foundations', 'qubit', 'basis-states'],
-          source_name: 'IBM Quantum Learning',
-          source_url: 'https://learning.quantum.ibm.com/course/basics-of-quantum-information/single-systems',
-          additional_sources: [{ title: 'Qiskit Fundamentals Guide', url: 'https://docs.quantum.ibm.com/' }],
-          verification_status: 'verified'
-        },
-        did_you_mean: null,
-        related_topics: ['Superposition', 'Measurement', 'Bloch Sphere', 'Hadamard Gate'],
-        storage_engine: 'local_offline_cache',
-        is_verified: true,
-        message: null
-      };
-    } else if (qLower.includes('hadamard') || qLower.includes('h gate')) {
-      return {
-        query: trimmed,
-        matched: true,
-        topic: {
-          id: 'hadamard-gate',
-          topic_name: 'Hadamard Gate',
-          slug: 'hadamard-gate',
-          category: 'Quantum Gates',
-          short_definition: 'A fundamental single-qubit gate that maps computational basis states into equal superpositions and vice versa.',
-          beginner_explanation: 'The Hadamard gate (H gate) creates quantum superpositions. Starting from |0⟩, applying H produces an equal superposition where measuring 0 or 1 is equally likely (50% each).',
-          detailed_explanation: 'The Hadamard transformation corresponds to a 180-degree rotation around the diagonal (X+Z)/√2 axis on the Bloch sphere. Because H is unitary and Hermitian, H² = I.',
-          mathematical_explanation: 'Matrix: H = (1/√2) [ [1, 1], [1, -1] ]. Transformation: H|0⟩ = |+⟩, H|1⟩ = |-⟩.',
-          formula: 'H = (1/√2) [[1, 1], [1, -1]]',
-          example: 'Applying H to state |0⟩: H[1, 0]ᵀ = [1/√2, 1/√2]ᵀ.',
-          circuit_example: 'from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.h(0)',
-          related_topics: ['Superposition', 'Quantum Interference', 'Qubit'],
-          common_mistakes: ['Assuming H creates a random classical coin toss rather than a coherent reversible superposition.'],
-          aliases: ['h gate', 'hadamard', 'h operator'],
-          keywords: ['hadamard', 'h gate', 'superposition gate'],
-          tags: ['gates', 'single-qubit', 'superposition'],
-          source_name: 'IBM Quantum Learning',
-          source_url: 'https://learning.quantum.ibm.com/',
-          additional_sources: [{ title: 'Qiskit API Reference: HGate', url: 'https://docs.quantum.ibm.com/' }],
-          verification_status: 'verified'
-        },
-        did_you_mean: null,
-        related_topics: ['Superposition', 'Quantum Interference', 'Qubit'],
-        storage_engine: 'local_offline_cache',
-        is_verified: true,
-        message: null
-      };
-    }
-    return {
-      query: trimmed,
-      matched: false,
-      topic: null,
-      did_you_mean: qLower.includes('gatee') ? 'Hadamard Gate' : null,
-      related_topics: [],
-      storage_engine: 'local_offline_cache',
-      is_verified: false,
-      message: 'No matching quantum topic was found in the Quantum Knowledge Base.'
-    };
+  } catch (_networkErr: any) {
+    // Offline fallback for static deployments (e.g. GitHub Pages) and backend disconnects
+    return searchOfflineCatalog(trimmed);
   }
 
   if (!response.ok) {
@@ -740,4 +719,87 @@ export async function searchQuantum(query: string): Promise<QuantumTopicSearchRe
 
   return await response.json();
 }
+
+function searchOfflineCatalog(rawQuery: string): QuantumTopicSearchResponse {
+  const query = rawQuery.trim().toLowerCase();
+  const stripped = query
+    .replace(/^(what\s+is\s+(a\s+|an\s+|the\s+)?|how\s+does\s+(a\s+|the\s+)?|tell\s+me\s+about\s+(a\s+|the\s+)?|explain\s+(a\s+|the\s+)?)/i, '')
+    .trim();
+
+  // 1. Exact slug or exact topic_name
+  let match = QUANTUM_TOPICS_CATALOG.find(t => t.slug.toLowerCase() === query || t.topic_name.toLowerCase() === query);
+  if (match) return buildOfflineResponse(rawQuery, match);
+
+  // 2. Exact alias
+  match = QUANTUM_TOPICS_CATALOG.find(t => t.aliases?.some(a => a.toLowerCase() === query));
+  if (match) return buildOfflineResponse(rawQuery, match);
+
+  // 3. Stripped query
+  if (stripped && stripped !== query) {
+    match = QUANTUM_TOPICS_CATALOG.find(t => t.slug.toLowerCase() === stripped || t.topic_name.toLowerCase() === stripped);
+    if (match) return buildOfflineResponse(rawQuery, match);
+
+    match = QUANTUM_TOPICS_CATALOG.find(t => t.aliases?.some(a => a.toLowerCase() === stripped));
+    if (match) return buildOfflineResponse(rawQuery, match);
+  }
+
+  // 4. Keywords exact match
+  match = QUANTUM_TOPICS_CATALOG.find(t => t.keywords?.some(k => k.toLowerCase() === query || (stripped && k.toLowerCase() === stripped)));
+  if (match) return buildOfflineResponse(rawQuery, match);
+
+  // 5. Partial / substring match
+  const searchKey = stripped || query;
+  match = QUANTUM_TOPICS_CATALOG.find(t => 
+    t.topic_name.toLowerCase().includes(searchKey) || 
+    t.slug.toLowerCase().includes(searchKey) ||
+    t.aliases?.some(a => a.toLowerCase().includes(searchKey)) ||
+    t.keywords?.some(k => k.toLowerCase().includes(searchKey))
+  );
+  if (match) return buildOfflineResponse(rawQuery, match);
+
+  // 6. Reverse contains (e.g. user typed "grover algorithm simulation")
+  match = QUANTUM_TOPICS_CATALOG.find(t => 
+    searchKey.includes(t.topic_name.toLowerCase()) ||
+    searchKey.includes(t.slug.toLowerCase()) ||
+    t.aliases?.some(a => searchKey.includes(a.toLowerCase()))
+  );
+  if (match) return buildOfflineResponse(rawQuery, match);
+
+  // Did you mean?
+  let didYouMean: string | null = null;
+  const prefix = searchKey.slice(0, 3);
+  if (prefix.length >= 3) {
+    for (const t of QUANTUM_TOPICS_CATALOG) {
+      if (t.topic_name.toLowerCase().startsWith(prefix) || t.slug.toLowerCase().startsWith(prefix)) {
+        didYouMean = t.topic_name;
+        break;
+      }
+    }
+  }
+
+  return {
+    query: rawQuery,
+    matched: false,
+    topic: null,
+    did_you_mean: didYouMean,
+    related_topics: [],
+    storage_engine: 'local_offline_cache',
+    is_verified: false,
+    message: 'No matching quantum topic was found in the Quantum Knowledge Base.'
+  };
+}
+
+function buildOfflineResponse(rawQuery: string, topic: QuantumTopic): QuantumTopicSearchResponse {
+  return {
+    query: rawQuery,
+    matched: true,
+    topic,
+    did_you_mean: null,
+    related_topics: topic.related_topics || [],
+    storage_engine: 'local_offline_cache',
+    is_verified: true,
+    message: null
+  };
+}
+
 
