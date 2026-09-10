@@ -83,49 +83,54 @@ export const AITutor: React.FC = () => {
         
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4">
-          <div className="space-y-1">
+          <div className="space-y-2">
             <Link 
               to="/" 
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-floral-white text-xs font-semibold text-slate-gray shadow-neu-raised hover:shadow-neu-pressed transition-all"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-warm-ivory border border-soft-sand text-xs font-semibold text-black-olive hover:bg-soft-sand transition-all shadow-sm"
             >
-              <ArrowLeft className="w-3.5 h-3.5" /> Back to Home
+              <ArrowLeft className="w-3.5 h-3.5 text-olive-mist" /> Back to Home
             </Link>
             <div className="flex items-center gap-3 pt-1">
-              <div className="w-10 h-10 rounded-2xl bg-floral-white shadow-neu-raised flex items-center justify-center text-slate-gray">
-                <Bot className="w-5 h-5" />
+              <div className="w-11 h-11 rounded-2xl bg-slate-glow text-soft-cyan border border-soft-cyan/30 shadow-md flex items-center justify-center">
+                <Bot className="w-6 h-6" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-black-olive tracking-tight">AI Quantum Teaching Assistant</h1>
-                <p className="text-xs text-black-olive/70">
-                  Powered by Google Gemini Flash API with rate limiting and secure proxy
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] uppercase font-mono tracking-widest px-2.5 py-0.5 rounded-full bg-muted-sage/20 text-black-olive font-bold border border-muted-sage/40">
+                    Grounded Dirac Assistant
+                  </span>
+                </div>
+                <h1 className="text-2xl sm:text-3xl font-bold font-serif text-black-olive tracking-tight">AI Quantum Teaching Assistant</h1>
+                <p className="text-xs text-olive-mist">
+                  Powered by Google Gemini Flash API with rate limiting, Qiskit simulation grounding, and anti-hallucination guardrails
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Mode Switcher Tabs */}
-          <div className="flex items-center bg-floral-white p-1.5 rounded-2xl shadow-neu-pressed self-start md:self-auto">
+          {/* Mode Switcher Tabs (Anchored Black Olive Pill Bar) */}
+          <div className="flex items-center bg-black-olive p-1.5 rounded-2xl shadow-md border border-black-olive/40 self-start md:self-auto">
             <button
               onClick={() => setActiveTab('chat')}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${
                 activeTab === 'chat'
-                  ? 'bg-slate-gray text-floral-white shadow-neu-raised'
-                  : 'text-black-olive/70 hover:text-black-olive'
+                  ? 'bg-slate-glow text-soft-cyan border border-soft-cyan/40 shadow-sm'
+                  : 'text-warm-ivory/70 hover:text-warm-ivory'
               }`}
             >
-              <Zap className="w-3.5 h-3.5" />
+              <Zap className="w-3.5 h-3.5 text-warm-gold" />
               <span>Gemini Flash Chat</span>
-              <span className="w-2 h-2 rounded-full bg-slate-gray shadow-neu-sm-raised" />
+              <span className="w-2 h-2 rounded-full bg-soft-cyan shadow-sm" />
             </button>
             <button
               onClick={() => setActiveTab('circuit')}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${
                 activeTab === 'circuit'
-                  ? 'bg-slate-gray text-floral-white shadow-neu-raised'
-                  : 'text-black-olive/70 hover:text-black-olive'
+                  ? 'bg-slate-glow text-soft-cyan border border-soft-cyan/40 shadow-sm'
+                  : 'text-warm-ivory/70 hover:text-warm-ivory'
               }`}
             >
-              <BookOpen className="w-3.5 h-3.5" />
+              <BookOpen className="w-3.5 h-3.5 text-muted-sage" />
               <span>Circuit Context Assistant</span>
             </button>
           </div>
@@ -139,14 +144,15 @@ export const AITutor: React.FC = () => {
             </div>
 
             <div className="lg:col-span-4 space-y-5">
-              <div className="p-6 rounded-3xl bg-floral-white shadow-neu-raised space-y-4">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-floral-white shadow-neu-pressed flex items-center justify-center text-slate-gray">
-                    <Sparkles className="w-4 h-4" />
+              {/* About Card (Light Surface #FFFDF7) */}
+              <div className="p-6 rounded-3xl bg-[#FFFDF7] border border-soft-sand shadow-sm space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-warm-ivory border border-soft-sand flex items-center justify-center text-black-olive shadow-sm">
+                    <Sparkles className="w-4 h-4 text-warm-gold" />
                   </div>
                   <div>
                     <h3 className="text-xs font-bold text-black-olive uppercase tracking-wider">About Gemini Tutor</h3>
-                    <p className="text-[11px] text-black-olive/60">Google Gemini Flash LLM</p>
+                    <p className="text-[11px] text-olive-mist">Google Gemini Flash LLM</p>
                   </div>
                 </div>
 
@@ -154,38 +160,39 @@ export const AITutor: React.FC = () => {
                   The AI Tutor acts as a quantum computing teaching assistant for beginners, grounded in Dirac bra-ket notation, probability amplitudes, and quantum logic gates.
                 </p>
 
-                <div className="space-y-2 pt-3 border-t border-black-olive/10">
-                  <h4 className="text-[11px] font-bold text-slate-gray uppercase tracking-wider">Features</h4>
-                  <ul className="space-y-2 text-xs text-black-olive/70">
+                <div className="space-y-2.5 pt-3 border-t border-soft-sand">
+                  <h4 className="text-[11px] font-bold text-black-olive uppercase tracking-wider">Pedagogical Features</h4>
+                  <ul className="space-y-2 text-xs text-black-olive/75">
                     <li className="flex items-start gap-2">
-                      <span className="text-slate-gray font-bold">•</span>
+                      <span className="text-muted-sage font-bold">•</span>
                       <span>Beginner-friendly explanations without confusing jargon</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-slate-gray font-bold">•</span>
+                      <span className="text-muted-sage font-bold">•</span>
                       <span>Strict scientific accuracy (avoids "0 and 1 at same time" trope)</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-slate-gray font-bold">•</span>
+                      <span className="text-muted-sage font-bold">•</span>
                       <span>Exponential backoff on 429 rate limit errors (1s, 2s, 4s)</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-slate-gray font-bold">•</span>
+                      <span className="text-muted-sage font-bold">•</span>
                       <span>Server-side API key protection with sliding-window rate limit</span>
                     </li>
                   </ul>
                 </div>
               </div>
 
-              <div className="p-6 rounded-3xl bg-floral-white shadow-neu-raised space-y-3">
-                <h3 className="text-xs font-bold text-black-olive uppercase tracking-wider flex items-center gap-1.5">
-                  <ShieldAlert className="w-4 h-4 text-slate-gray" /> Security &amp; Rate Limits
+              {/* Security & Rate Limits (Dark Anchor Card - Cocoa Noir) */}
+              <div className="p-6 rounded-3xl bg-cocoa-noir text-warm-ivory border border-cocoa-noir/40 shadow-md space-y-3">
+                <h3 className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-warm-gold">
+                  <ShieldAlert className="w-4 h-4 text-warm-gold" /> Security &amp; Rate Limits
                 </h3>
-                <div className="text-xs text-black-olive/70 space-y-2 leading-relaxed">
+                <div className="text-xs text-warm-ivory/80 space-y-2.5 leading-relaxed">
                   <p>
                     Your API key is never transmitted or exposed to browser clients. Requests pass through the local FastAPI backend with rate limiting to prevent quota exhaustion.
                   </p>
-                  <div className="bg-floral-white p-3 rounded-2xl shadow-neu-pressed font-mono text-[11px] text-slate-gray">
+                  <div className="bg-deep-slate/80 p-3 rounded-2xl border border-soft-slate/40 font-mono text-[11px] text-soft-cyan">
                     Limit: 15 req/min per IP<br />
                     Backoff: 1s, 2s, 4s retry on 429
                   </div>
@@ -201,17 +208,17 @@ export const AITutor: React.FC = () => {
             
             {/* Left Column: Context Scenario Switcher */}
             <div className="lg:col-span-5 space-y-5">
-              <div className="p-6 rounded-3xl bg-floral-white shadow-neu-raised space-y-4">
+              <div className="p-6 rounded-3xl bg-[#FFFDF7] border border-soft-sand shadow-sm space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-bold text-black-olive uppercase tracking-wider flex items-center gap-1.5">
-                    <BookOpen className="w-4 h-4 text-slate-gray" /> Active Learning Scenario
+                  <h3 className="text-xs font-bold text-black-olive uppercase tracking-wider flex items-center gap-2">
+                    <BookOpen className="w-4 h-4 text-olive-mist" /> Active Learning Scenario
                   </h3>
-                  <span className="text-[10px] font-mono font-semibold px-2.5 py-0.5 rounded-lg bg-floral-white shadow-neu-sm-raised text-slate-gray">
+                  <span className="text-[10px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-warm-ivory border border-soft-sand text-black-olive">
                     Real Circuit Context
                   </span>
                 </div>
                 
-                <p className="text-xs text-black-olive/70 leading-relaxed">
+                <p className="text-xs text-olive-mist leading-relaxed">
                   Select a simulated quantum scenario to load its exact circuit wires, gates, and simulation results into the AI tutor:
                 </p>
 
@@ -223,29 +230,29 @@ export const AITutor: React.FC = () => {
                       <button
                         key={scen.id}
                         onClick={() => setActiveScenario(scen.id)}
-                        className={`w-full text-left p-4 rounded-2xl transition-all ${
+                        className={`w-full text-left p-4 rounded-2xl transition-all border ${
                           isActive
-                            ? 'bg-floral-white shadow-neu-pressed border border-slate-gray/40'
-                            : 'bg-floral-white shadow-neu-sm-raised hover:shadow-neu-sm-pressed'
+                            ? 'bg-slate-glow text-floral-white border-soft-cyan/40 shadow-md'
+                            : 'bg-warm-ivory/70 border-soft-sand hover:border-olive-mist text-black-olive hover:bg-warm-ivory'
                         }`}
                       >
                         <div className="flex items-center gap-2.5 mb-1">
-                          <div className={`w-7 h-7 rounded-xl flex items-center justify-center ${isActive ? 'bg-slate-gray text-floral-white' : 'bg-floral-white shadow-neu-sm-raised text-slate-gray'}`}>
+                          <div className={`w-7 h-7 rounded-xl flex items-center justify-center ${isActive ? 'bg-soft-cyan text-deep-slate font-bold' : 'bg-floral-white border border-soft-sand text-black-olive'}`}>
                             <Icon className="w-3.5 h-3.5" />
                           </div>
-                          <span className="text-xs font-bold text-black-olive">{scen.name}</span>
+                          <span className={`text-xs font-bold ${isActive ? 'text-floral-white' : 'text-black-olive'}`}>{scen.name}</span>
                         </div>
-                        <p className="text-[11px] text-black-olive/70 pl-9.5">{scen.desc}</p>
+                        <p className={`text-[11px] pl-9.5 ${isActive ? 'text-warm-ivory/80' : 'text-black-olive/70'}`}>{scen.desc}</p>
                       </button>
                     );
                   })}
                 </div>
               </div>
 
-              {/* Context Telemetry Card */}
-              <div className="p-6 rounded-3xl bg-floral-white shadow-neu-raised space-y-3">
-                <h3 className="text-xs font-bold text-black-olive/70 uppercase tracking-wider">Context Telemetry Passed to AI</h3>
-                <pre className="p-4 bg-floral-white shadow-neu-pressed rounded-2xl font-mono text-[10px] text-slate-gray overflow-x-auto">
+              {/* Context Telemetry Card (Slate Glow Dark Technical Card) */}
+              <div className="p-6 rounded-3xl bg-slate-glow text-warm-ivory border border-soft-slate/40 shadow-md space-y-3">
+                <h3 className="text-xs font-bold text-soft-cyan uppercase tracking-wider">Context Telemetry Passed to AI</h3>
+                <pre className="p-4 bg-deep-slate border border-soft-slate/30 rounded-2xl font-mono text-[10px] text-warm-ivory/80 overflow-x-auto">
                   {JSON.stringify(selected.context, null, 2)}
                 </pre>
               </div>

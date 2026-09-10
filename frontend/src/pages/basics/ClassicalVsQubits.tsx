@@ -10,7 +10,7 @@ interface SectionProps {
 
 const ClassicalVsQubits: React.FC<SectionProps> = ({ onNext, onPrev, isFirst, isLast }) => {
   return (
-    <div className="flex flex-col h-full bg-floral-white text-black-olive">
+    <div className="flex flex-col h-full bg-transparent text-black-olive">
       <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-black-olive tracking-tight">
         Classical Bits vs Qubits
       </h2>
@@ -26,8 +26,8 @@ const ClassicalVsQubits: React.FC<SectionProps> = ({ onNext, onPrev, isFirst, is
           Instead, a qubit's state determines the <em className="text-slate-gray font-medium">probabilities</em> of different measurement outcomes. When measured, it will yield a 0 or a 1, but the likelihood of each outcome is governed by the state's amplitudes prior to measurement.
         </p>
 
-        {/* Neumorphic Inset SVG Diagram */}
-        <div className="my-8 p-6 rounded-2xl bg-floral-white shadow-neu-pressed flex justify-center items-center overflow-x-auto">
+        {/* Botanical Inset SVG Diagram */}
+        <div className="my-8 p-6 rounded-2xl bg-warm-ivory/60 border border-soft-sand flex justify-center items-center overflow-x-auto shadow-sm">
           <svg width="600" height="250" viewBox="0 0 600 250" className="max-w-full select-none">
             {/* Classical Bit */}
             <g transform="translate(90, 35)">
@@ -78,13 +78,13 @@ const ClassicalVsQubits: React.FC<SectionProps> = ({ onNext, onPrev, isFirst, is
         <button
           onClick={onPrev}
           disabled={isFirst}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium text-xs sm:text-sm text-black-olive/70 bg-floral-white shadow-neu-raised hover:shadow-neu-pressed disabled:opacity-30 disabled:pointer-events-none transition-all"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm text-black-olive bg-warm-ivory border border-soft-sand shadow-sm hover:bg-soft-sand disabled:opacity-30 disabled:pointer-events-none transition-all"
         >
           <ArrowLeft size={16} /> Previous
         </button>
         <button
           onClick={onNext}
-          className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm bg-slate-gray text-floral-white shadow-neu-raised hover:shadow-neu-pressed transition-all"
+          className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-warm-gold text-cocoa-noir shadow-md hover:bg-warm-gold/90 transition-all"
         >
           {isLast ? (
             <>Complete <Check size={16} /></>

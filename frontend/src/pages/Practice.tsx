@@ -437,58 +437,98 @@ export const Practice: React.FC = () => {
             const isSelected = selectedLevel === cfg.id;
             const Icon = cfg.icon;
 
+            // Distinct visual style per level
+            let levelCardStyle = "";
+            let badgeStyle = "";
+            let textPrimary = "";
+            let textSecondary = "";
+            let barBg = "";
+            let barFill = "";
+
+            if (cfg.id === 'beginner') {
+              // Beginner: Floral White / light
+              levelCardStyle = isSelected
+                ? 'bg-[#FFFDF7] border-2 border-black-olive shadow-md'
+                : unlocked
+                ? 'bg-[#FFFDF7] border border-soft-sand hover:border-black-olive/40 shadow-sm'
+                : 'bg-warm-ivory/60 border border-soft-sand opacity-50 cursor-not-allowed';
+              badgeStyle = 'bg-warm-ivory text-deep-olive border border-soft-sand';
+              textPrimary = 'text-black-olive';
+              textSecondary = 'text-olive-mist';
+              barBg = 'bg-warm-ivory';
+              barFill = 'bg-deep-olive';
+            } else if (cfg.id === 'intermediate') {
+              // Intermediate: Black Olive dark card
+              levelCardStyle = isSelected
+                ? 'bg-black-olive text-floral-white border-2 border-warm-gold shadow-botanical-glow'
+                : unlocked
+                ? 'bg-black-olive text-floral-white border border-deep-olive hover:border-olive-mist shadow-sm'
+                : 'bg-black-olive/60 text-floral-white/50 border border-deep-olive opacity-50 cursor-not-allowed';
+              badgeStyle = 'bg-deep-olive text-soft-cyan border border-olive-mist/30';
+              textPrimary = 'text-floral-white';
+              textSecondary = 'text-soft-cyan';
+              barBg = 'bg-deep-olive';
+              barFill = 'bg-soft-cyan';
+            } else {
+              // Advanced: Cocoa Noir deep dark card
+              levelCardStyle = isSelected
+                ? 'bg-cocoa-noir text-floral-white border-2 border-warm-gold shadow-lg'
+                : unlocked
+                ? 'bg-cocoa-noir text-floral-white border border-soft-cocoa hover:border-warm-gold/40 shadow-sm'
+                : 'bg-cocoa-noir/60 text-floral-white/50 border border-soft-cocoa opacity-50 cursor-not-allowed';
+              badgeStyle = 'bg-[#251B17] text-warm-gold border border-warm-gold/30';
+              textPrimary = 'text-floral-white';
+              textSecondary = 'text-warm-gold';
+              barBg = 'bg-[#251B17]';
+              barFill = 'bg-warm-gold';
+            }
+
             return (
               <button
                 key={cfg.id}
                 onClick={() => handleSelectLevel(cfg.id)}
                 disabled={!unlocked}
-                className={`p-5 rounded-3xl text-left transition-all relative overflow-hidden flex flex-col justify-between ${
-                  isSelected
-                    ? 'bg-floral-white shadow-neu-pressed border-2 border-slate-gray'
-                    : unlocked
-                    ? 'bg-floral-white shadow-neu-raised hover:shadow-neu-pressed opacity-95'
-                    : 'bg-floral-white shadow-neu-pressed opacity-50 cursor-not-allowed'
-                }`}
+                className={`p-5 rounded-3xl text-left transition-all relative overflow-hidden flex flex-col justify-between ${levelCardStyle}`}
               >
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <div className={`w-8 h-8 rounded-xl bg-floral-white shadow-neu-sm-raised flex items-center justify-center ${cfg.badgeColor}`}>
+                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${badgeStyle}`}>
                       <Icon className="w-4 h-4" />
                     </div>
                     {completed ? (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-mono font-bold text-slate-gray px-2 py-0.5 rounded-full bg-floral-white shadow-neu-sm-raised">
-                        <Check className="w-3 h-3 text-slate-gray" /> Passed
+                      <span className="inline-flex items-center gap-1 text-[11px] font-mono font-bold px-2 py-0.5 rounded-full bg-warm-gold text-deep-olive shadow-sm">
+                        <Check className="w-3 h-3 text-deep-olive" /> Passed
                       </span>
                     ) : unlocked ? (
-                      <span className="text-[10px] font-mono text-black-olive/60 uppercase font-semibold px-2 py-0.5 rounded-full bg-floral-white shadow-neu-sm-raised">
-                        Unlocked
+                      <span className={`text-[10px] font-mono uppercase font-semibold px-2 py-0.5 rounded-full ${badgeStyle}`}>
+                        30 Questions
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-mono text-black-olive/50 px-2 py-0.5 rounded-full bg-floral-white shadow-neu-pressed">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-mono opacity-60 px-2 py-0.5 rounded-full border border-current">
                         <Lock className="w-3 h-3" /> Locked
                       </span>
                     )}
                   </div>
 
                   <div>
-                    <h3 className="text-base font-bold text-black-olive">{cfg.name}</h3>
-                    <p className="text-xs font-medium text-slate-gray">{cfg.tagline}</p>
+                    <h3 className={`text-base font-bold ${textPrimary}`}>{cfg.name}</h3>
+                    <p className={`text-xs font-semibold ${textSecondary}`}>{cfg.tagline}</p>
                   </div>
                   
-                  <p className="text-[11px] text-black-olive/70 line-clamp-2 leading-relaxed">
+                  <p className={`text-[11px] leading-relaxed line-clamp-2 ${cfg.id === 'beginner' ? 'text-black-olive/75' : 'text-floral-white/75'}`}>
                     {cfg.description}
                   </p>
                 </div>
 
                 {/* Progress bar per level */}
-                <div className="mt-4 pt-3 border-t border-black-olive/5">
-                  <div className="flex justify-between text-[10px] font-mono text-black-olive/60 mb-1">
+                <div className="mt-4 pt-3 border-t border-current border-opacity-10">
+                  <div className="flex justify-between text-[10px] font-mono opacity-70 mb-1">
                     <span>Round Progress</span>
                     <span>{(progress.unlockedRounds[cfg.id] || 1)} / 3 Rounds</span>
                   </div>
-                  <div className="h-1.5 bg-floral-white shadow-neu-pressed rounded-full overflow-hidden p-0.5">
+                  <div className={`h-1.5 ${barBg} rounded-full overflow-hidden p-0.5`}>
                     <div 
-                      className="h-full bg-slate-gray rounded-full transition-all"
+                      className={`h-full ${barFill} rounded-full transition-all`}
                       style={{ width: `${Math.min(100, ((progress.unlockedRounds[cfg.id] || 1) / 3) * 100)}%` }}
                     />
                   </div>
@@ -568,15 +608,15 @@ export const Practice: React.FC = () => {
             
             {/* Header: Progress, Level, Round & Question Indicator */}
             <div className="space-y-2">
-              <div className="flex flex-wrap justify-between items-center text-xs font-mono text-black-olive/70 gap-2">
-                <span className="font-bold text-slate-gray">
+              <div className="flex flex-wrap justify-between items-center text-xs font-mono text-olive-mist gap-2">
+                <span className="font-bold text-deep-olive">
                   {selectedLevel.toUpperCase()} — Round {selectedRound} of 3 — Question {currentIdx + 1} of {currentQuestions.length}
                 </span>
                 <span>Topic: <strong className="text-black-olive">{q?.topicName || 'Foundations'}</strong></span>
               </div>
-              <div className="h-2.5 bg-floral-white shadow-neu-pressed rounded-full overflow-hidden p-0.5">
+              <div className="h-2 bg-soft-sand rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-slate-gray rounded-full transition-all duration-300 shadow-neu-sm-raised"
+                  className="h-full bg-black-olive rounded-full transition-all duration-300"
                   style={{ width: `${((currentIdx + 1) / currentQuestions.length) * 100}%` }}
                 />
               </div>
@@ -584,14 +624,14 @@ export const Practice: React.FC = () => {
 
             {/* Raised Question Card */}
             {q && (
-              <div className="p-6 md:p-8 rounded-3xl bg-floral-white shadow-neu-raised space-y-6">
+              <div className="p-6 md:p-8 rounded-3xl bg-[#FFFDF7] border border-soft-sand shadow-sm space-y-6">
                 
                 <div className="space-y-2.5">
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono uppercase tracking-wider px-3 py-1 rounded-full bg-floral-white shadow-neu-sm-raised text-slate-gray font-bold">
+                    <span className="text-[10px] font-mono uppercase tracking-wider px-3 py-1 rounded-full bg-warm-ivory border border-soft-sand text-deep-olive font-bold">
                       {q.questionType.replace('_', ' ')}
                     </span>
-                    <span className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-floral-white shadow-neu-sm-raised text-black-olive/60">
+                    <span className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-warm-ivory border border-soft-sand text-olive-mist">
                       Level: {q.level}
                     </span>
                   </div>
@@ -603,18 +643,18 @@ export const Practice: React.FC = () => {
                 {/* Options List */}
                 <div className="space-y-3">
                   {q.options.map((option, idx) => {
-                    let btnStyle = "bg-floral-white shadow-neu-raised hover:shadow-neu-pressed text-black-olive";
+                    let btnStyle = "bg-warm-ivory/60 border border-soft-sand hover:border-black-olive/40 hover:bg-warm-ivory text-black-olive";
                     let icon = null;
 
                     if (hasAnsweredCurrent) {
                       if (idx === q.correctIndex) {
-                        btnStyle = "bg-floral-white shadow-neu-pressed border-2 border-slate-gray text-slate-gray font-bold";
-                        icon = <CheckCircle2 className="w-5 h-5 text-slate-gray flex-shrink-0" />;
+                        btnStyle = "bg-deep-olive text-floral-white border-2 border-muted-sage font-bold shadow-sm";
+                        icon = <CheckCircle2 className="w-5 h-5 text-muted-sage flex-shrink-0" />;
                       } else if (idx === selectedAnswer) {
-                        btnStyle = "bg-floral-white shadow-neu-pressed text-black-olive/70";
-                        icon = <XCircle className="w-5 h-5 text-black-olive/70 flex-shrink-0" />;
+                        btnStyle = "bg-cocoa-noir text-floral-white border-2 border-soft-cocoa font-bold";
+                        icon = <XCircle className="w-5 h-5 text-warm-gold flex-shrink-0" />;
                       } else {
-                        btnStyle = "bg-floral-white opacity-50 text-black-olive/50";
+                        btnStyle = "bg-warm-ivory/30 border border-soft-sand/50 opacity-40 text-black-olive/40";
                       }
                     }
 
@@ -626,7 +666,7 @@ export const Practice: React.FC = () => {
                         className={`w-full p-4 rounded-2xl text-left text-sm font-medium transition-all flex items-center justify-between gap-3 ${btnStyle}`}
                       >
                         <div className="flex items-center gap-3">
-                          <span className="w-6 h-6 rounded-lg bg-floral-white shadow-neu-sm-raised flex items-center justify-center font-mono text-xs text-black-olive font-bold flex-shrink-0">
+                          <span className="w-6 h-6 rounded-lg bg-floral-white border border-soft-sand flex items-center justify-center font-mono text-xs text-black-olive font-bold flex-shrink-0 shadow-sm">
                             {String.fromCharCode(65 + idx)}
                           </span>
                           <span className="leading-snug">{option}</span>
@@ -639,21 +679,19 @@ export const Practice: React.FC = () => {
 
                 {/* Immediate Feedback Box Grounded in DB Explanation */}
                 {hasAnsweredCurrent && (
-                  <div className={`p-4 rounded-2xl bg-floral-white shadow-neu-pressed text-xs leading-relaxed space-y-1.5 transition-all ${
-                    selectedAnswer === q.correctIndex
-                      ? 'text-slate-gray'
-                      : 'text-black-olive/80'
-                  }`}>
-                    <div className="font-bold flex items-center gap-1.5">
+                  <div className="p-4 rounded-2xl bg-warm-ivory border border-soft-sand text-xs leading-relaxed space-y-1.5 transition-all">
+                    <div className={`font-bold flex items-center gap-1.5 ${
+                      selectedAnswer === q.correctIndex ? 'text-deep-olive' : 'text-cocoa-noir'
+                    }`}>
                       {selectedAnswer === q.correctIndex ? (
                         <>
-                          <Check className="w-4 h-4 text-slate-gray" />
-                          <span>Correct!</span>
+                          <Check className="w-4 h-4 text-muted-sage" />
+                          <span>Correct! Excellent scientific reasoning.</span>
                         </>
                       ) : (
                         <>
-                          <XCircle className="w-4 h-4 text-black-olive/70" />
-                          <span>Incorrect — Conceptual Explanation:</span>
+                          <XCircle className="w-4 h-4 text-warm-gold" />
+                          <span>Incorrect — Conceptual Grounding:</span>
                         </>
                       )}
                     </div>
@@ -666,7 +704,7 @@ export const Practice: React.FC = () => {
                   <div className="flex justify-end pt-2">
                     <button
                       onClick={handleNextQuestion}
-                      className="px-6 py-3 rounded-2xl bg-slate-gray text-floral-white font-semibold text-xs shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-2"
+                      className="px-6 py-3 rounded-xl bg-black-olive text-floral-white font-semibold text-xs shadow-sm hover:bg-deep-olive hover:shadow-md transition-all flex items-center gap-2"
                     >
                       <span>
                         {currentIdx === currentQuestions.length - 1 

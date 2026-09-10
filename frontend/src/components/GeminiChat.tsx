@@ -292,32 +292,32 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
   };
 
   return (
-    <div className="flex flex-col h-[720px] bg-floral-white shadow-neu-raised rounded-3xl overflow-hidden border border-black-olive/10">
+    <div className="flex flex-col h-[740px] bg-slate-glow text-floral-white shadow-xl rounded-3xl overflow-hidden border border-soft-slate/40">
       
       {/* Top Header Bar */}
-      <div className="px-6 py-4 bg-floral-white border-b border-black-olive/10 flex flex-wrap items-center justify-between gap-4">
+      <div className="px-6 py-4 bg-deep-slate border-b border-soft-slate/40 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-floral-white shadow-neu-raised flex items-center justify-center text-slate-gray">
+          <div className="w-10 h-10 rounded-2xl bg-slate-glow border border-soft-cyan/40 text-soft-cyan shadow-sm flex items-center justify-center">
             <Bot className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-sm font-bold text-black-olive">Quantum AI Teaching Assistant</h2>
-              <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-floral-white shadow-neu-sm-raised text-slate-gray">
-                <ShieldCheck className="w-3 h-3 text-slate-gray" />
-                Anti-Hallucination Verified
+              <h2 className="text-sm font-bold text-floral-white">Quantum AI Teaching Assistant</h2>
+              <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-glow border border-muted-sage/40 text-muted-sage">
+                <ShieldCheck className="w-3 h-3 text-muted-sage" />
+                Anti-Hallucination Grounded
               </span>
             </div>
-            <p className="text-[11px] text-black-olive/70">
+            <p className="text-[11px] text-warm-ivory/70">
               Grounded in IBM Quantum Learning · Verified with Qiskit Simulation
             </p>
           </div>
         </div>
 
-        {/* Difficulty Mode Toggle (Raised Segmented Control with Pressed Active State) */}
-        <div className="flex items-center gap-1 bg-floral-white p-1 rounded-2xl shadow-neu-raised">
-          <span className="text-[10px] font-semibold text-black-olive/70 px-2 flex items-center gap-1">
-            <GraduationCap className="w-3 h-3 text-slate-gray" /> Mode:
+        {/* Difficulty Mode Toggle */}
+        <div className="flex items-center gap-1 bg-deep-slate border border-soft-slate/50 p-1 rounded-2xl">
+          <span className="text-[10px] font-semibold text-warm-ivory/70 px-2 flex items-center gap-1">
+            <GraduationCap className="w-3 h-3 text-soft-cyan" /> Mode:
           </span>
           {(['beginner', 'intermediate', 'advanced'] as const).map((mode) => (
             <button
@@ -325,8 +325,8 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
               onClick={() => setDifficultyMode(mode)}
               className={`px-3 py-1.5 rounded-xl text-[10px] font-bold capitalize transition-all ${
                 difficultyMode === mode
-                  ? 'bg-floral-white shadow-neu-pressed text-slate-gray'
-                  : 'text-black-olive/70 hover:text-black-olive'
+                  ? 'bg-slate-glow text-soft-cyan border border-soft-cyan/30 shadow-sm'
+                  : 'text-warm-ivory/60 hover:text-warm-ivory'
               }`}
             >
               {mode}
@@ -335,7 +335,7 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
           <button
             onClick={handleClear}
             title="Reset conversation & memory"
-            className="p-1.5 rounded-xl text-black-olive/70 hover:text-black-olive shadow-neu-sm-raised hover:shadow-neu-sm-pressed transition-all ml-1"
+            className="p-1.5 rounded-xl text-warm-ivory/60 hover:text-warm-ivory hover:bg-slate-glow/50 transition-all ml-1"
           >
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
@@ -344,22 +344,22 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
 
       {/* Error Notification Banner */}
       {errorMessage && (
-        <div className="px-5 py-2.5 bg-floral-white shadow-neu-pressed border-b border-black-olive/10 flex items-center justify-between text-xs text-slate-gray">
+        <div className="px-5 py-2.5 bg-cocoa-noir border-b border-soft-cocoa/40 flex items-center justify-between text-xs text-warm-gold">
           <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-slate-gray flex-shrink-0" />
+            <AlertCircle className="w-4 h-4 text-warm-gold flex-shrink-0" />
             <span>{errorMessage}</span>
           </div>
           <button
             onClick={() => setErrorMessage(null)}
-            className="text-[11px] text-slate-gray underline ml-3 flex-shrink-0 font-medium"
+            className="text-[11px] text-warm-ivory underline ml-3 flex-shrink-0 font-medium"
           >
             Dismiss
           </button>
         </div>
       )}
 
-      {/* Messages Scroll Area */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4 text-xs sm:text-sm">
+      {/* Messages Scroll Area (Deep Slate Canvas) */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-5 text-xs sm:text-sm bg-deep-slate/95">
         {messages.map((m) => {
           const isUser = m.sender === 'user';
           return (
@@ -368,28 +368,28 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
               className={`flex gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}
             >
               {!isUser && (
-                <div className="w-7 h-7 rounded-xl bg-floral-white shadow-neu-raised flex items-center justify-center text-slate-gray flex-shrink-0 mt-1">
-                  <Sparkles className="w-3.5 h-3.5" />
+                <div className="w-8 h-8 rounded-xl bg-slate-glow border border-soft-cyan/40 text-soft-cyan flex items-center justify-center flex-shrink-0 mt-1 shadow-sm">
+                  <Sparkles className="w-4 h-4 text-soft-cyan" />
                 </div>
               )}
 
-              {/* User message = Pressed/Inset, AI response = Raised */}
+              {/* User message = Black Olive, AI response = Slate Glow */}
               <div
                 className={`max-w-[85%] sm:max-w-[80%] rounded-2xl p-4 space-y-3 ${
                   isUser
-                    ? 'bg-floral-white shadow-neu-pressed text-black-olive'
-                    : 'bg-floral-white shadow-neu-raised text-black-olive'
+                    ? 'bg-black-olive text-warm-ivory border border-black-olive/70 shadow-md'
+                    : 'bg-slate-glow text-floral-white border border-soft-slate/40 shadow-md'
                 }`}
               >
                 {/* Tutor Status Header */}
                 {!isUser && m.is_verified && (
-                  <div className="flex items-center justify-between pb-1.5 border-b border-black-olive/10 text-[10px] text-slate-gray">
-                    <span className="flex items-center gap-1 font-mono font-semibold">
-                      <ShieldCheck className="w-3 h-3 text-slate-gray" />
-                      <span>✓ Grounded &amp; Mathematically Verified</span>
+                  <div className="flex items-center justify-between pb-2 border-b border-soft-slate/30 text-[10px] text-soft-cyan">
+                    <span className="flex items-center gap-1.5 font-mono font-semibold">
+                      <ShieldCheck className="w-3.5 h-3.5 text-muted-sage" />
+                      <span className="text-muted-sage">✓ Grounded &amp; Mathematically Verified</span>
                     </span>
                     {m.classification && (
-                      <span className="text-black-olive/60 uppercase tracking-wider font-mono text-[9px]">
+                      <span className="text-warm-ivory/60 uppercase tracking-wider font-mono text-[9px] px-2 py-0.5 rounded bg-deep-slate/80 border border-soft-slate/30">
                         {m.classification.replace('_', ' ')}
                       </span>
                     )}
@@ -397,18 +397,18 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
                 )}
 
                 {/* Main Message Text */}
-                <div className="leading-relaxed whitespace-pre-wrap font-sans break-words">
+                <div className="leading-relaxed whitespace-pre-wrap font-sans break-words text-floral-white/95">
                   {m.text}
                 </div>
 
                 {/* Interactive Dynamic Practice Question Card */}
                 {m.practice_question && (
-                  <div className="p-4 rounded-2xl bg-floral-white shadow-neu-pressed space-y-3">
-                    <div className="flex items-center gap-2 text-xs font-bold text-black-olive">
-                      <HelpCircle className="w-4 h-4 text-slate-gray" />
+                  <div className="p-4 rounded-2xl bg-deep-slate border border-soft-slate/40 space-y-3">
+                    <div className="flex items-center gap-2 text-xs font-bold text-soft-cyan">
+                      <HelpCircle className="w-4 h-4 text-soft-cyan" />
                       <span>Interactive Practice Question</span>
                     </div>
-                    <p className="text-xs text-black-olive font-medium">
+                    <p className="text-xs text-warm-ivory font-medium">
                       {m.practice_question.question}
                     </p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
@@ -417,14 +417,14 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
                         const isAnswered = practiceAnswers[m.id] !== undefined;
                         const isCorrectOption = oIdx === m.practice_question?.correct_index;
 
-                        let btnStyle = 'bg-floral-white shadow-neu-raised text-black-olive hover:shadow-neu-pressed';
+                        let btnStyle = 'bg-slate-glow/90 border border-soft-slate/40 text-warm-ivory hover:border-soft-cyan hover:bg-slate-glow';
                         if (isAnswered) {
                           if (isCorrectOption) {
-                            btnStyle = 'bg-slate-gray text-floral-white shadow-neu-raised font-bold';
+                            btnStyle = 'bg-soft-cyan text-deep-slate font-bold shadow-md';
                           } else if (isSelected) {
-                            btnStyle = 'bg-floral-white shadow-neu-pressed text-black-olive/60';
+                            btnStyle = 'bg-deep-slate border-red-400/40 text-warm-ivory/60';
                           } else {
-                            btnStyle = 'bg-floral-white text-black-olive/40 opacity-60';
+                            btnStyle = 'bg-deep-slate/50 border-soft-slate/20 text-warm-ivory/30 opacity-60';
                           }
                         }
 
@@ -433,9 +433,9 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
                             key={oIdx}
                             disabled={isAnswered}
                             onClick={() => handlePracticeSelect(m.id, m.practice_question!, oIdx)}
-                            className={`p-3 rounded-xl text-left text-xs transition-all flex items-start gap-2 ${btnStyle}`}
+                            className={`p-3 rounded-xl text-left text-xs transition-all flex items-start gap-2 border ${btnStyle}`}
                           >
-                            <span className="w-4 h-4 rounded-md bg-black-olive/10 flex items-center justify-center text-[10px] font-bold flex-shrink-0">
+                            <span className="w-4 h-4 rounded-md bg-white/10 flex items-center justify-center text-[10px] font-bold flex-shrink-0">
                               {String.fromCharCode(65 + oIdx)}
                             </span>
                             <span>{opt}</span>
@@ -446,12 +446,12 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
 
                     {/* Feedback result */}
                     {practiceFeedback[m.id] && (
-                      <div className="p-3 rounded-xl bg-floral-white shadow-neu-raised text-xs space-y-1">
-                        <div className="font-bold flex items-center gap-1.5 text-slate-gray">
-                          <Award className="w-3.5 h-3.5" />
-                          <span>{practiceFeedback[m.id].correct ? 'Correct! (+5 Progress Score)' : 'Incorrect — Explanation:'}</span>
+                      <div className="p-3.5 rounded-xl bg-slate-glow border border-soft-slate/40 text-xs space-y-1.5">
+                        <div className="font-bold flex items-center gap-1.5 text-warm-gold">
+                          <Award className="w-4 h-4 text-warm-gold" />
+                          <span>{practiceFeedback[m.id].correct ? 'Correct! (+5 Progress Score)' : 'Incorrect — Pedagogical Explanation:'}</span>
                         </div>
-                        <p className="text-[11px] text-black-olive/80 leading-relaxed">
+                        <p className="text-[11px] text-warm-ivory/85 leading-relaxed">
                           {practiceFeedback[m.id].explanation}
                         </p>
                       </div>
@@ -461,21 +461,21 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
 
                 {/* Circuit Data Preview & Load Action */}
                 {m.circuit_data && (
-                  <div className="p-3.5 rounded-2xl bg-floral-white shadow-neu-pressed flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div className="p-4 rounded-2xl bg-deep-slate border border-soft-slate/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div className="space-y-0.5">
-                      <div className="flex items-center gap-1.5 text-xs font-bold text-black-olive">
-                        <Layers className="w-3.5 h-3.5 text-slate-gray" />
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-soft-cyan">
+                        <Layers className="w-4 h-4 text-soft-cyan" />
                         <span>Generated Circuit</span>
                       </div>
-                      <p className="text-[11px] text-black-olive/70 font-mono">
+                      <p className="text-[11px] text-warm-ivory/80 font-mono">
                         {m.circuit_data.num_qubits} Qubits · {m.circuit_data.gates.length} Gates [{m.circuit_data.gates.map(g => g.type).join(', ')}]
                       </p>
                     </div>
                     <button
                       onClick={() => handleLoadCircuit(m.circuit_data)}
-                      className="px-3.5 py-1.5 rounded-xl bg-slate-gray text-floral-white text-[11px] font-semibold flex items-center gap-1.5 shadow-neu-raised hover:shadow-neu-pressed transition-all flex-shrink-0"
+                      className="px-4 py-2 rounded-xl bg-warm-gold text-deep-slate text-xs font-bold flex items-center gap-2 hover:bg-[#D4BA7F] transition-all shadow-sm flex-shrink-0"
                     >
-                      <Layers className="w-3 h-3" />
+                      <Layers className="w-3.5 h-3.5" />
                       <span>Load into Circuit Builder</span>
                     </button>
                   </div>
@@ -483,30 +483,30 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
 
                 {/* Verified Qiskit Code Block */}
                 {m.qiskit_code && (
-                  <div className="rounded-2xl bg-floral-white shadow-neu-pressed overflow-hidden">
-                    <div className="px-3.5 py-2 border-b border-black-olive/10 flex items-center justify-between">
-                      <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-slate-gray">
-                        <Code2 className="w-3.5 h-3.5" />
+                  <div className="rounded-2xl bg-[#0f151e] border border-soft-slate/40 overflow-hidden">
+                    <div className="px-4 py-2.5 bg-[#141b26] border-b border-soft-slate/30 flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-[10px] font-mono font-bold text-soft-cyan">
+                        <Code2 className="w-3.5 h-3.5 text-soft-cyan" />
                         <span>{m.qiskit_verified ? '✓ Verified with Qiskit 2.5' : 'Qiskit Python Code'}</span>
                       </div>
                       <button
                         onClick={() => handleCopyCode(m.qiskit_code!, m.id)}
-                        className="text-[10px] text-black-olive/70 hover:text-black-olive flex items-center gap-1 transition-colors"
+                        className="text-[11px] text-warm-ivory/70 hover:text-warm-ivory flex items-center gap-1.5 transition-colors"
                       >
                         {copiedCodeId === m.id ? (
                           <>
-                            <Check className="w-3 h-3 text-slate-gray" />
-                            <span className="text-slate-gray font-bold">Copied!</span>
+                            <Check className="w-3.5 h-3.5 text-muted-sage" />
+                            <span className="text-muted-sage font-bold">Copied!</span>
                           </>
                         ) : (
                           <>
-                            <Copy className="w-3 h-3" />
+                            <Copy className="w-3.5 h-3.5" />
                             <span>Copy</span>
                           </>
                         )}
                       </button>
                     </div>
-                    <pre className="p-3 text-[11px] font-mono text-black-olive/80 overflow-x-auto">
+                    <pre className="p-4 text-[11px] font-mono text-soft-cyan/95 overflow-x-auto leading-relaxed">
                       <code>{m.qiskit_code}</code>
                     </pre>
                   </div>
@@ -514,7 +514,7 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
 
                 {/* Autonomous Research & Grounded Source Citations */}
                 {!isUser && (
-                  <div className="pt-2 border-t border-black-olive/10">
+                  <div className="pt-2 border-t border-soft-slate/30">
                     <ResearchIndicator 
                       isGrounded={m.is_web_grounded || (Boolean(m.sources) && m.sources!.length > 0)}
                       researchCategory={m.research_category}
@@ -525,17 +525,17 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
                 )}
 
                 {/* Bottom Card Footer: Timestamp & Thumbs Up/Down Feedback */}
-                <div className="pt-2 flex items-center justify-between border-t border-black-olive/10 text-[10px]">
+                <div className="pt-2 flex items-center justify-between border-t border-soft-slate/30 text-[10px]">
                   {!isUser ? (
-                    <div className="flex items-center gap-2 text-black-olive/70">
+                    <div className="flex items-center gap-2 text-warm-ivory/60">
                       <span>Helpful?</span>
                       <button
                         onClick={() => handleFeedback(m, 1)}
                         title="Helpful response"
                         className={`p-1 rounded-lg transition-all ${
                           m.userRating === 1 
-                            ? 'text-slate-gray bg-slate-gray/20 font-bold' 
-                            : 'hover:text-slate-gray'
+                            ? 'text-soft-cyan bg-soft-cyan/20 font-bold' 
+                            : 'hover:text-soft-cyan'
                         }`}
                       >
                         <ThumbsUp className="w-3 h-3" />
@@ -545,25 +545,25 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
                         title="Not helpful"
                         className={`p-1 rounded-lg transition-all ${
                           m.userRating === -1 
-                            ? 'text-black-olive bg-black-olive/20 font-bold' 
-                            : 'hover:text-black-olive'
+                            ? 'text-warm-gold bg-warm-gold/20 font-bold' 
+                            : 'hover:text-warm-gold'
                         }`}
                       >
                         <ThumbsDown className="w-3 h-3" />
                       </button>
                       {m.feedbackSubmitted && (
-                        <span className="text-[9px] text-slate-gray font-semibold">Feedback recorded</span>
+                        <span className="text-[9px] text-soft-cyan font-semibold">Feedback recorded</span>
                       )}
                     </div>
                   ) : <div />}
-                  <span className="font-mono text-black-olive/60">
+                  <span className="font-mono text-warm-ivory/50">
                     {m.timestamp}
                   </span>
                 </div>
               </div>
 
               {isUser && (
-                <div className="w-7 h-7 rounded-xl bg-floral-white shadow-neu-pressed flex items-center justify-center text-slate-gray font-bold text-[10px] flex-shrink-0 mt-1">
+                <div className="w-8 h-8 rounded-xl bg-black-olive border border-muted-sage/30 text-warm-ivory font-bold text-[10px] flex items-center justify-center flex-shrink-0 mt-1 shadow-sm">
                   You
                 </div>
               )}
@@ -581,10 +581,10 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Suggested Starter Chips (Small raised pill buttons) */}
-      <div className="px-6 py-3 bg-floral-white border-t border-black-olive/10 overflow-x-auto">
+      {/* Suggested Starter Chips */}
+      <div className="px-6 py-3 bg-deep-slate border-t border-soft-slate/30 overflow-x-auto">
         <div className="flex items-center gap-2 pb-0.5">
-          <span className="text-[10px] uppercase font-bold tracking-wider text-black-olive/60 flex items-center gap-1 mr-1 flex-shrink-0">
+          <span className="text-[10px] uppercase font-bold tracking-wider text-warm-ivory/50 flex items-center gap-1 mr-1 flex-shrink-0">
             Prompts:
           </span>
           {STARTER_QUESTIONS.map((q, idx) => (
@@ -592,7 +592,7 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
               key={idx}
               onClick={() => handleSend(q)}
               disabled={loading}
-              className="px-3.5 py-1.5 rounded-full bg-floral-white shadow-neu-sm-raised hover:shadow-neu-sm-pressed text-xs text-black-olive/80 whitespace-nowrap transition-all flex items-center gap-1 disabled:opacity-40"
+              className="px-3.5 py-1.5 rounded-full bg-slate-glow border border-soft-slate/40 hover:border-soft-cyan text-xs text-warm-ivory/80 hover:text-floral-white hover:bg-slate-glow/80 whitespace-nowrap transition-all flex items-center gap-1 disabled:opacity-40 shadow-sm"
             >
               <span>{q}</span>
             </button>
@@ -600,8 +600,8 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
         </div>
       </div>
 
-      {/* Input Field (Pressed/Inset) and Send Button */}
-      <div className="p-4 sm:p-6 bg-floral-white border-t border-black-olive/10">
+      {/* Input Field and Send Button */}
+      <div className="p-4 sm:p-5 bg-deep-slate border-t border-soft-slate/40">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -617,13 +617,13 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
             placeholder={`Ask a quantum question in ${difficultyMode} mode...`}
             disabled={loading}
             maxLength={2500}
-            className="flex-1 bg-floral-white shadow-neu-pressed rounded-2xl px-5 py-3 text-xs sm:text-sm text-black-olive placeholder-black-olive/50 outline-none focus:ring-2 focus:ring-slate-gray/30 transition-all disabled:opacity-50"
+            className="flex-1 bg-slate-glow/90 border border-soft-slate/50 focus:border-soft-cyan rounded-2xl px-5 py-3 text-xs sm:text-sm text-warm-ivory placeholder-warm-ivory/40 outline-none focus:ring-1 focus:ring-soft-cyan/40 transition-all disabled:opacity-50"
           />
           <button
             type="submit"
             disabled={!input.trim() || loading}
             aria-label="Send message"
-            className="px-6 py-3 rounded-2xl bg-slate-gray text-floral-white font-semibold text-xs sm:text-sm shadow-neu-raised hover:shadow-neu-pressed disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 flex-shrink-0"
+            className="px-6 py-3 rounded-2xl bg-soft-cyan text-deep-slate font-bold text-xs sm:text-sm shadow-md hover:bg-[#9ED4D5] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 flex-shrink-0"
           >
             {loading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -635,9 +635,9 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
             )}
           </button>
         </form>
-        <div className="mt-2 flex items-center justify-between text-[10px] text-black-olive/60 px-2 font-mono">
-          <span className="flex items-center gap-1">
-            <ShieldCheck className="w-3 h-3 text-slate-gray" />
+        <div className="mt-2 flex items-center justify-between text-[10px] text-warm-ivory/50 px-2 font-mono">
+          <span className="flex items-center gap-1.5">
+            <ShieldCheck className="w-3.5 h-3.5 text-muted-sage" />
             <span>Anti-hallucination grounded in IBM Quantum &amp; Qiskit</span>
           </span>
           <span>{input.length}/2500</span>

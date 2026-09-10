@@ -2,8 +2,26 @@
 
 @theme {
   --color-floral-white: #FAF7EE;
+  --color-warm-ivory: #F4F0E6;
+  --color-soft-sand: #E8E1D2;
+
   --color-black-olive: #31372B;
-  --color-slate-gray: #203C3D;
+  --color-deep-olive: #252B21;
+  --color-olive-mist: #68705D;
+
+  --color-cocoa-noir: #342721;
+  --color-soft-cocoa: #5A453A;
+  --color-warm-taupe: #8B7868;
+
+  --color-slate-glow: #202C3D;
+  --color-deep-slate: #182331;
+  --color-soft-slate: #536173;
+  --color-slate-gray: #202C3D;
+
+  --color-muted-sage: #A7B09A;
+  --color-soft-cyan: #8FBFC0;
+  --color-dusty-lavender: #AAA3B8;
+  --color-warm-gold: #C5A86A;
 
   --shadow-neu-raised: 6px 6px 16px rgba(49, 55, 43, 0.12), -6px -6px 16px rgba(255, 255, 255, 0.95);
   --shadow-neu-raised-lg: 10px 10px 24px rgba(49, 55, 43, 0.14), -10px -10px 24px rgba(255, 255, 255, 0.95);
@@ -14,21 +32,113 @@
 }
 
 :root {
+  --color-floral-white: #FAF7EE;
+  --color-warm-ivory: #F4F0E6;
+  --color-soft-sand: #E8E1D2;
+
+  --color-black-olive: #31372B;
+  --color-deep-olive: #252B21;
+  --color-olive-mist: #68705D;
+
+  --color-cocoa-noir: #342721;
+  --color-soft-cocoa: #5A453A;
+  --color-warm-taupe: #8B7868;
+
+  --color-slate-glow: #202C3D;
+  --color-deep-slate: #182331;
+  --color-soft-slate: #536173;
+
+  --color-muted-sage: #A7B09A;
+  --color-soft-cyan: #8FBFC0;
+  --color-dusty-lavender: #AAA3B8;
+  --color-warm-gold: #C5A86A;
+
   --bg-surface: #FAF7EE;
   --text-main: #31372B;
-  --accent: #203C3D;
+  --accent: #202C3D;
 }
 
 body {
   background-color: #FAF7EE;
   color: #31372B;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   margin: 0;
   padding: 0;
 }
 
-/* Custom Neumorphic Utility Classes */
+/* Custom Neumorphic & Botanical Utility Classes */
+.card-light {
+  background-color: #FFFDF7;
+  border: 1px solid #E8E1D2;
+  color: #31372B;
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 20px -2px rgba(49, 55, 43, 0.05);
+}
+
+.card-dark-olive {
+  background-color: #31372B;
+  color: #FAF7EE;
+  border-radius: 1.25rem;
+  box-shadow: 0 10px 30px -5px rgba(26, 30, 22, 0.35);
+}
+
+.card-dark-cocoa {
+  background-color: #342721;
+  color: #FAF7EE;
+  border-radius: 1.25rem;
+  box-shadow: 0 10px 30px -5px rgba(52, 39, 33, 0.35);
+}
+
+.card-dark-slate {
+  background-color: #202C3D;
+  color: #FAF7EE;
+  border-radius: 1.25rem;
+  box-shadow: 0 10px 30px -5px rgba(24, 35, 49, 0.45);
+}
+
+.btn-botanical-primary {
+  background-color: #31372B;
+  color: #FAF7EE;
+  border-radius: 0.875rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px 0 rgba(49, 55, 43, 0.25);
+}
+.btn-botanical-primary:hover {
+  background-color: #252B21;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px 0 rgba(49, 55, 43, 0.35);
+}
+
+.btn-botanical-secondary {
+  background-color: transparent;
+  border: 1.5px solid #31372B;
+  color: #31372B;
+  border-radius: 0.875rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+.btn-botanical-secondary:hover {
+  background-color: #31372B;
+  color: #FAF7EE;
+  transform: translateY(-1px);
+}
+
+.btn-botanical-gold {
+  background-color: #C5A86A;
+  color: #252B21;
+  border-radius: 0.875rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px 0 rgba(197, 168, 106, 0.35);
+}
+.btn-botanical-gold:hover {
+  background-color: #bfa05d;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px 0 rgba(197, 168, 106, 0.5);
+}
+
 .neu-raised {
   background-color: #FAF7EE;
   box-shadow: 6px 6px 16px rgba(49, 55, 43, 0.12), -6px -6px 16px rgba(255, 255, 255, 0.95);
@@ -73,7 +183,7 @@ body {
 }
 
 .neu-btn-primary {
-  background-color: #203C3D;
+  background-color: #31372B;
   color: #FAF7EE;
   box-shadow: 4px 4px 12px rgba(49, 55, 43, 0.22), -3px -3px 9px rgba(255, 255, 255, 0.7);
   border-radius: 1rem;
@@ -82,7 +192,7 @@ body {
 }
 
 .neu-btn-primary:hover {
-  background-color: #182e2f;
+  background-color: #252B21;
   box-shadow: 2px 2px 6px rgba(49, 55, 43, 0.26), -2px -2px 6px rgba(255, 255, 255, 0.7);
   transform: translateY(1px);
 }

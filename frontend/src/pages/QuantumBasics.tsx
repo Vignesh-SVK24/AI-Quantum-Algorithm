@@ -49,24 +49,24 @@ export const QuantumBasics: React.FC = () => {
   const CurrentSection = sections[currentStep].component;
 
   return (
-    <div className="min-h-screen bg-floral-white text-black-olive">
+    <div className="min-h-screen bg-transparent text-black-olive">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
             <Link 
               to="/" 
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-floral-white text-xs font-semibold text-slate-gray shadow-neu-raised hover:shadow-neu-pressed transition-all"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-warm-ivory border border-soft-sand text-xs font-semibold text-black-olive shadow-sm hover:bg-soft-sand transition-all"
             >
-              <ArrowLeft className="w-3.5 h-3.5" /> Home
+              <ArrowLeft className="w-3.5 h-3.5 text-warm-gold" /> Home
             </Link>
-            <div className="w-1 h-4 rounded-full bg-black-olive/20" />
+            <div className="w-1 h-4 rounded-full bg-soft-sand" />
             <div className="flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-slate-gray" />
-              <span className="text-sm font-semibold text-black-olive">Quantum Basics</span>
+              <BookOpen className="w-4 h-4 text-warm-gold" />
+              <span className="text-sm font-bold text-black-olive">Quantum Basics</span>
             </div>
           </div>
-          <span className="text-xs font-mono text-black-olive/70 px-3 py-1 rounded-xl bg-floral-white shadow-neu-pressed">
+          <span className="text-xs font-mono text-olive-mist px-3 py-1 rounded-full bg-warm-ivory border border-soft-sand font-medium">
             Step {currentStep + 1} of {sections.length}
           </span>
         </div>
@@ -87,16 +87,16 @@ export const QuantumBasics: React.FC = () => {
                   }}
                   className={`flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-medium transition-all whitespace-nowrap ${
                     isActive
-                      ? 'bg-floral-white text-slate-gray shadow-neu-pressed font-bold'
+                      ? 'bg-black-olive text-floral-white shadow-md font-bold'
                       : isCompleted
-                      ? 'bg-floral-white text-slate-gray shadow-neu-sm-raised'
-                      : 'bg-floral-white text-black-olive/70 shadow-neu-sm-raised hover:shadow-neu-sm-pressed'
+                      ? 'bg-warm-ivory border border-soft-sand text-olive-mist hover:text-black-olive'
+                      : 'bg-[#FFFDF7] border border-soft-sand/70 text-black-olive/70 hover:bg-warm-ivory hover:text-black-olive shadow-sm'
                   }`}
                 >
                   {isCompleted ? (
-                    <CheckCircle2 className="w-3.5 h-3.5 text-slate-gray" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-muted-sage" />
                   ) : (
-                    <Icon className="w-3.5 h-3.5" />
+                    <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-warm-gold' : 'text-olive-mist'}`} />
                   )}
                   <span className="hidden sm:inline">{section.title}</span>
                   <span className="sm:hidden">{idx + 1}</span>
@@ -105,17 +105,17 @@ export const QuantumBasics: React.FC = () => {
             })}
           </div>
 
-          {/* Neumorphic Inset Progress Bar */}
-          <div className="mt-3 h-2.5 bg-floral-white shadow-neu-pressed rounded-full overflow-hidden p-0.5">
+          {/* Progress Bar */}
+          <div className="mt-3 h-2 bg-warm-ivory border border-soft-sand rounded-full overflow-hidden p-0.5">
             <div
-              className="h-full bg-slate-gray rounded-full transition-all duration-500 ease-out"
+              className="h-full bg-black-olive rounded-full transition-all duration-500 ease-out"
               style={{ width: `${((currentStep + 1) / sections.length) * 100}%` }}
             />
           </div>
         </div>
 
-        {/* Active Section Content (Rendered as Raised Card) */}
-        <div className="rounded-3xl bg-floral-white shadow-neu-raised p-6 sm:p-10">
+        {/* Active Section Content */}
+        <div className="rounded-3xl bg-[#FFFDF7] border border-soft-sand p-6 sm:p-10 shadow-sm">
           <CurrentSection
             onNext={handleNext}
             onPrev={handlePrev}
@@ -126,16 +126,16 @@ export const QuantumBasics: React.FC = () => {
 
         {/* Completion CTA */}
         {currentStep === sections.length - 1 && (
-          <div className="mt-10 text-center p-8 rounded-3xl bg-floral-white shadow-neu-raised max-w-xl mx-auto">
-            <p className="text-black-olive text-sm font-semibold mb-1">
+          <div className="mt-10 text-center p-8 rounded-3xl bg-black-olive text-floral-white shadow-xl border border-black-olive/40 max-w-xl mx-auto">
+            <p className="text-floral-white text-base font-bold mb-1">
               🎉 Congratulations on completing Quantum Basics!
             </p>
-            <p className="text-black-olive/70 text-xs mb-5">
+            <p className="text-warm-ivory/80 text-xs mb-5">
               You are ready to test these principles on live simulated circuits in the Quantum Lab.
             </p>
             <Link
               to="/lab"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-slate-gray text-floral-white font-semibold text-sm shadow-neu-raised hover:shadow-neu-pressed transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-warm-gold text-cocoa-noir font-bold text-sm shadow-md hover:bg-warm-gold/90 transition-all"
             >
               Continue to Quantum Lab →
             </Link>

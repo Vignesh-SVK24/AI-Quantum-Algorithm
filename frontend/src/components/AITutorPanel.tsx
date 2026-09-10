@@ -130,32 +130,32 @@ export const AITutorPanel: React.FC<AITutorPanelProps> = ({ context, compact = f
       {compact && !isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-slate-gray text-floral-white font-semibold text-xs shadow-neu-raised hover:shadow-neu-pressed transition-all"
+          className="flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-slate-glow text-floral-white font-semibold text-xs border border-soft-cyan/40 shadow-xl hover:bg-deep-slate transition-all"
         >
-          <Bot className="w-5 h-5 animate-pulse" />
+          <Bot className="w-5 h-5 text-soft-cyan animate-pulse" />
           <span>Ask AI Quantum Tutor</span>
-          <span className="w-2 h-2 rounded-full bg-floral-white animate-ping ml-1" />
+          <span className="w-2 h-2 rounded-full bg-soft-cyan animate-ping ml-1" />
         </button>
       )}
 
       {/* Main Panel */}
       {(!compact || isOpen) && (
-        <div className="flex flex-col h-[520px] rounded-3xl bg-floral-white shadow-neu-raised border border-black-olive/10 overflow-hidden">
+        <div className="flex flex-col h-[520px] rounded-3xl bg-slate-glow text-warm-ivory shadow-2xl border border-soft-slate/40 overflow-hidden">
           
           {/* Panel Header */}
-          <div className="p-4 bg-floral-white border-b border-black-olive/10 flex items-center justify-between">
+          <div className="p-4 bg-deep-slate border-b border-soft-slate/40 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-floral-white shadow-neu-raised flex items-center justify-center text-slate-gray">
+              <div className="w-8 h-8 rounded-xl bg-slate-glow border border-soft-cyan/40 flex items-center justify-center text-soft-cyan shadow-sm">
                 <Bot className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="text-xs font-bold text-black-olive flex items-center gap-1.5">
+                <h3 className="text-xs font-bold text-floral-white flex items-center gap-1.5">
                   Quantum AI Tutor
-                  <span className="w-1.5 h-1.5 rounded-full bg-slate-gray" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-soft-cyan" />
                 </h3>
-                <div className="text-[10px] text-slate-gray font-mono flex items-center gap-1">
-                  <span>Context:</span>
-                  <span className="truncate max-w-[170px] text-black-olive/70 font-semibold">{getContextBadge()}</span>
+                <div className="text-[10px] text-soft-cyan font-mono flex items-center gap-1">
+                  <span className="text-warm-ivory/60">Context:</span>
+                  <span className="truncate max-w-[170px] text-warm-ivory font-semibold">{getContextBadge()}</span>
                 </div>
               </div>
             </div>
@@ -164,7 +164,7 @@ export const AITutorPanel: React.FC<AITutorPanelProps> = ({ context, compact = f
               {compact && (
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-1.5 rounded-xl text-black-olive/70 hover:text-black-olive shadow-neu-sm-raised hover:shadow-neu-sm-pressed transition-all"
+                  className="p-1.5 rounded-xl text-warm-ivory/60 hover:text-warm-ivory hover:bg-slate-glow/50 transition-all"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -173,31 +173,31 @@ export const AITutorPanel: React.FC<AITutorPanelProps> = ({ context, compact = f
           </div>
 
           {/* Messages Container */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3.5 text-xs">
+          <div className="flex-1 overflow-y-auto p-4 space-y-3.5 text-xs bg-deep-slate/95">
             {messages.map((m) => (
               <div
                 key={m.id}
                 className={`flex gap-2.5 ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {m.sender === 'tutor' && (
-                  <div className="w-6 h-6 rounded-lg bg-floral-white shadow-neu-raised flex items-center justify-center text-slate-gray flex-shrink-0 mt-0.5">
-                    <Sparkles className="w-3.5 h-3.5" />
+                  <div className="w-6 h-6 rounded-lg bg-slate-glow border border-soft-cyan/40 flex items-center justify-center text-soft-cyan flex-shrink-0 mt-0.5 shadow-sm">
+                    <Sparkles className="w-3.5 h-3.5 text-soft-cyan" />
                   </div>
                 )}
 
-                {/* User = Pressed/Inset, Tutor = Raised */}
+                {/* User = Black Olive, Tutor = Slate Glow */}
                 <div
                   className={`max-w-[85%] rounded-2xl p-3.5 space-y-2 ${
                     m.sender === 'user'
-                      ? 'bg-floral-white shadow-neu-pressed text-black-olive'
-                      : 'bg-floral-white shadow-neu-raised text-black-olive'
+                      ? 'bg-black-olive text-warm-ivory border border-black-olive/60 shadow-md'
+                      : 'bg-slate-glow text-floral-white border border-soft-slate/40 shadow-md'
                   }`}
                 >
                   <p className="leading-relaxed whitespace-pre-wrap">{m.text}</p>
                   
                   {/* Autonomous Research & Grounded Source Citations */}
                   {m.sender === 'tutor' && (
-                    <div className="pt-1.5 border-t border-black-olive/10">
+                    <div className="pt-1.5 border-t border-soft-slate/30">
                       <ResearchIndicator 
                         isGrounded={m.is_web_grounded || (Boolean(m.sources) && m.sources!.length > 0)}
                         researchCategory={m.research_category}
@@ -207,7 +207,7 @@ export const AITutorPanel: React.FC<AITutorPanelProps> = ({ context, compact = f
                     </div>
                   )}
 
-                  <span className="block text-[9px] font-mono text-black-olive/50 text-right">
+                  <span className="block text-[9px] font-mono text-warm-ivory/40 text-right">
                     {m.timestamp}
                   </span>
                 </div>
@@ -222,18 +222,18 @@ export const AITutorPanel: React.FC<AITutorPanelProps> = ({ context, compact = f
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Quick Question Chips (Small raised pills) */}
-          <div className="p-2.5 bg-floral-white border-t border-black-olive/10 overflow-x-auto">
+          {/* Quick Question Chips */}
+          <div className="p-2.5 bg-deep-slate border-t border-soft-slate/30 overflow-x-auto">
             <div className="flex items-center gap-1.5 pb-0.5">
-              <span className="text-[9px] uppercase font-bold text-black-olive/60 flex items-center gap-1 flex-shrink-0">
-                <HelpCircle className="w-3 h-3 text-slate-gray" /> Prompt:
+              <span className="text-[9px] uppercase font-bold text-warm-ivory/50 flex items-center gap-1 flex-shrink-0">
+                <HelpCircle className="w-3 h-3 text-soft-cyan" /> Prompt:
               </span>
               {QUICK_QUESTIONS.map((q, idx) => (
                 <button
                   key={idx}
                   onClick={() => handleSend(q)}
                   disabled={loading}
-                  className="px-2.5 py-1 rounded-full bg-floral-white shadow-neu-sm-raised hover:shadow-neu-sm-pressed text-[10px] text-black-olive/80 whitespace-nowrap transition-all flex-shrink-0 disabled:opacity-40"
+                  className="px-2.5 py-1 rounded-full bg-slate-glow border border-soft-slate/40 hover:border-soft-cyan text-[10px] text-warm-ivory/80 whitespace-nowrap transition-all flex-shrink-0 disabled:opacity-40 hover:text-floral-white shadow-sm"
                 >
                   {q}
                 </button>
@@ -241,13 +241,13 @@ export const AITutorPanel: React.FC<AITutorPanelProps> = ({ context, compact = f
             </div>
           </div>
 
-          {/* Input Box (Pressed/Inset) */}
+          {/* Input Box */}
           <form
             onSubmit={(e) => {
               e.preventDefault();
               handleSend();
             }}
-            className="p-3 bg-floral-white border-t border-black-olive/10 flex items-center gap-2"
+            className="p-3 bg-deep-slate border-t border-soft-slate/40 flex items-center gap-2"
           >
             <input
               type="text"
@@ -255,12 +255,12 @@ export const AITutorPanel: React.FC<AITutorPanelProps> = ({ context, compact = f
               onChange={(e) => setInputQuestion(e.target.value)}
               placeholder="Ask about this circuit..."
               disabled={loading}
-              className="flex-1 bg-floral-white shadow-neu-pressed rounded-xl px-3.5 py-2 text-xs text-black-olive placeholder-black-olive/50 outline-none focus:ring-1 focus:ring-slate-gray/30 transition-all disabled:opacity-50"
+              className="flex-1 bg-slate-glow/90 border border-soft-slate/50 focus:border-soft-cyan rounded-xl px-3.5 py-2 text-xs text-warm-ivory placeholder-warm-ivory/40 outline-none focus:ring-1 focus:ring-soft-cyan/40 transition-all disabled:opacity-50"
             />
             <button
               type="submit"
               disabled={!inputQuestion.trim() || loading}
-              className="px-3.5 py-2 rounded-xl bg-slate-gray text-floral-white shadow-neu-raised hover:shadow-neu-pressed disabled:opacity-40 disabled:cursor-not-allowed transition-all flex-shrink-0"
+              className="px-3.5 py-2 rounded-xl bg-soft-cyan text-deep-slate font-bold hover:bg-[#9ED4D5] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex-shrink-0 shadow-sm"
             >
               {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
             </button>

@@ -17,61 +17,61 @@ const ProbabilityAmplitudes: React.FC<SectionProps> = ({ onNext, onPrev, isFirst
   ];
 
   return (
-    <div className="flex flex-col h-full bg-floral-white text-black-olive">
+    <div className="flex flex-col h-full bg-transparent text-black-olive">
       <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-black-olive tracking-tight">
         Probability Amplitudes
       </h2>
       
       <div className="space-y-4 text-sm sm:text-base leading-relaxed text-black-olive/80 mb-6 flex-grow">
         <p>
-          In the state equation <strong className="text-black-olive font-mono">|ψ⟩ = α|0⟩ + β|1⟩</strong>, the values <strong className="text-slate-gray font-mono">α</strong> and <strong className="text-slate-gray font-mono">β</strong> are the probability amplitudes.
+          In the state equation <strong className="text-black-olive font-mono">|ψ⟩ = α|0⟩ + β|1⟩</strong>, the values <strong className="text-black-olive font-mono">α</strong> and <strong className="text-black-olive font-mono">β</strong> are the probability amplitudes.
         </p>
-        <ul className="list-disc pl-5 space-y-2">
-          <li>They are <em>complex numbers</em> with both magnitude and relative phase.</li>
-          <li>The probability of measuring |0⟩ is the squared magnitude: <strong className="text-slate-gray font-mono">P(0) = |α|²</strong>.</li>
-          <li>The probability of measuring |1⟩ is the squared magnitude: <strong className="text-slate-gray font-mono">P(1) = |β|²</strong>.</li>
-          <li>While phase does not alter a single isolated measurement probability, it is responsible for the <em>quantum interference</em> effects that enable algorithmic speedups.</li>
+        <ul className="list-disc pl-5 space-y-2 text-olive-mist">
+          <li><span className="text-black-olive/90">They are <em>complex numbers</em> with both magnitude and relative phase.</span></li>
+          <li><span className="text-black-olive/90">The probability of measuring |0⟩ is the squared magnitude: <strong className="text-black-olive font-mono">P(0) = |α|²</strong>.</span></li>
+          <li><span className="text-black-olive/90">The probability of measuring |1⟩ is the squared magnitude: <strong className="text-black-olive font-mono">P(1) = |β|²</strong>.</span></li>
+          <li><span className="text-black-olive/90">While phase does not alter a single isolated measurement probability, it is responsible for the <em>quantum interference</em> effects that enable algorithmic speedups.</span></li>
         </ul>
       </div>
 
-      {/* Neumorphic Inset Card for Examples */}
-      <div className="bg-floral-white p-6 rounded-2xl shadow-neu-pressed mb-8 space-y-6">
+      {/* Botanical Inset Card for Examples */}
+      <div className="bg-warm-ivory/60 border border-soft-sand p-6 rounded-2xl mb-8 space-y-6 shadow-sm">
         <h3 className="text-base font-bold text-black-olive">
           Example States &amp; Measurement Probabilities
         </h3>
         
         <div className="space-y-4">
           {examples.map((ex, i) => (
-            <div key={i} className="bg-floral-white p-4 rounded-xl shadow-neu-raised space-y-2.5">
+            <div key={i} className="bg-warm-ivory border border-soft-sand p-4 rounded-xl space-y-2.5 shadow-sm">
               <div className="flex justify-between items-center text-xs">
-                <span className="font-bold text-slate-gray">{ex.state}</span>
-                <span className="font-mono text-black-olive/70">α = {ex.alpha}, β = {ex.beta}</span>
+                <span className="font-bold text-black-olive">{ex.state}</span>
+                <span className="font-mono text-olive-mist font-medium">α = {ex.alpha}, β = {ex.beta}</span>
               </div>
               
               <div className="flex items-center gap-3">
                 <div className="w-8 text-xs font-mono text-right text-black-olive font-semibold">|0⟩</div>
-                <div className="flex-1 bg-floral-white shadow-neu-pressed rounded-full h-3 p-0.5 overflow-hidden">
-                  <div className="bg-slate-gray h-full rounded-full transition-all duration-300" style={{ width: `${ex.p0}%` }} />
+                <div className="flex-1 bg-floral-white border border-soft-sand rounded-full h-3 p-0.5 overflow-hidden">
+                  <div className="bg-slate-glow h-full rounded-full transition-all duration-300" style={{ width: `${ex.p0}%` }} />
                 </div>
-                <div className="w-10 text-xs font-mono text-right text-black-olive/70">{ex.p0.toFixed(0)}%</div>
+                <div className="w-10 text-xs font-mono text-right text-olive-mist font-semibold">{ex.p0.toFixed(0)}%</div>
               </div>
               
               <div className="flex items-center gap-3">
                 <div className="w-8 text-xs font-mono text-right text-black-olive font-semibold">|1⟩</div>
-                <div className="flex-1 bg-floral-white shadow-neu-pressed rounded-full h-3 p-0.5 overflow-hidden">
-                  <div className="bg-black-olive/70 h-full rounded-full transition-all duration-300" style={{ width: `${ex.p1}%` }} />
+                <div className="flex-1 bg-floral-white border border-soft-sand rounded-full h-3 p-0.5 overflow-hidden">
+                  <div className="bg-black-olive h-full rounded-full transition-all duration-300" style={{ width: `${ex.p1}%` }} />
                 </div>
-                <div className="w-10 text-xs font-mono text-right text-black-olive/70">{ex.p1.toFixed(0)}%</div>
+                <div className="w-10 text-xs font-mono text-right text-olive-mist font-semibold">{ex.p1.toFixed(0)}%</div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Conservation Inset Highlight */}
-        <div className="p-4 bg-floral-white rounded-xl shadow-neu-pressed text-center space-y-1">
-          <p className="text-[11px] text-black-olive/70 uppercase tracking-widest font-semibold">Conservation of Probability</p>
-          <p className="text-2xl font-mono text-slate-gray font-bold">|α|² + |β|² = 1</p>
-          <p className="text-xs text-black-olive/70">The sum of all measurement probabilities in any basis is always exactly 100%.</p>
+        {/* Conservation Highlight */}
+        <div className="p-4 bg-warm-ivory border border-soft-sand rounded-xl text-center space-y-1 shadow-sm">
+          <p className="text-[11px] text-olive-mist uppercase tracking-widest font-semibold">Conservation of Probability</p>
+          <p className="text-2xl font-mono text-black-olive font-bold">|α|² + |β|² = 1</p>
+          <p className="text-xs text-olive-mist">The sum of all measurement probabilities in any basis is always exactly 100%.</p>
         </div>
       </div>
 
@@ -80,13 +80,13 @@ const ProbabilityAmplitudes: React.FC<SectionProps> = ({ onNext, onPrev, isFirst
         <button
           onClick={onPrev}
           disabled={isFirst}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium text-xs sm:text-sm text-black-olive/70 bg-floral-white shadow-neu-raised hover:shadow-neu-pressed disabled:opacity-30 disabled:pointer-events-none transition-all"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm text-black-olive bg-warm-ivory border border-soft-sand shadow-sm hover:bg-soft-sand disabled:opacity-30 disabled:pointer-events-none transition-all"
         >
           <ArrowLeft size={16} /> Previous
         </button>
         <button
           onClick={onNext}
-          className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm bg-slate-gray text-floral-white shadow-neu-raised hover:shadow-neu-pressed transition-all"
+          className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-warm-gold text-cocoa-noir shadow-md hover:bg-warm-gold/90 transition-all"
         >
           {isLast ? (
             <>Complete <Check size={16} /></>

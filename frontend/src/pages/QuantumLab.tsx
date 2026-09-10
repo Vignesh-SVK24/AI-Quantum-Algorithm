@@ -221,22 +221,22 @@ export const QuantumLab: React.FC = () => {
     <div className="flex h-[calc(100vh-4.5rem)] bg-floral-white text-black-olive overflow-hidden relative">
 
       {/* ========================================================================= */}
-      {/* LEFT PANEL: GATE PALETTE (NEUMORPHIC RAISED TILES) */}
+      {/* LEFT PANEL: GATE PALETTE */}
       {/* ========================================================================= */}
       <div 
-        className={`bg-floral-white flex flex-col flex-shrink-0 transition-all duration-300 relative z-20 border-r border-black-olive/10 shadow-neu-raised ${
+        className={`bg-[#FFFDF7] flex flex-col flex-shrink-0 transition-all duration-300 relative z-20 border-r border-soft-sand shadow-sm ${
           isPaletteCollapsed ? 'w-14' : 'w-48 lg:w-56'
         }`}
       >
         {/* Palette Header */}
-        <div className="p-3 flex items-center justify-between">
+        <div className="p-3 flex items-center justify-between border-b border-soft-sand">
           {!isPaletteCollapsed && (
             <h2 className="text-xs font-bold text-black-olive uppercase tracking-wider">Gate Palette</h2>
           )}
           <button
             onClick={() => setIsPaletteCollapsed(!isPaletteCollapsed)}
             title={isPaletteCollapsed ? "Expand Palette" : "Collapse Palette"}
-            className="p-1.5 rounded-xl bg-floral-white text-black-olive/70 hover:text-black-olive shadow-neu-sm-raised hover:shadow-neu-sm-pressed transition-all mx-auto"
+            className="p-1.5 rounded-xl bg-warm-ivory text-black-olive/80 hover:bg-soft-sand border border-soft-sand transition-all mx-auto shadow-sm"
           >
             {isPaletteCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
@@ -248,7 +248,7 @@ export const QuantumLab: React.FC = () => {
           {/* Tools */}
           <div className="space-y-1.5">
             {!isPaletteCollapsed && (
-              <h3 className="text-[10px] font-semibold text-black-olive/60 uppercase tracking-widest px-2 mb-1">Tools</h3>
+              <h3 className="text-[10px] font-semibold text-olive-mist uppercase tracking-widest px-2 mb-1">Tools</h3>
             )}
             <button
               onClick={() => { setActiveTool('CURSOR'); setPendingCNOT(null); }}
@@ -257,8 +257,8 @@ export const QuantumLab: React.FC = () => {
                 isPaletteCollapsed ? 'justify-center p-2' : 'gap-2 px-3 py-2'
               } ${
                 activeTool === 'CURSOR' 
-                  ? 'bg-floral-white text-slate-gray shadow-neu-pressed font-bold' 
-                  : 'bg-floral-white text-black-olive/70 shadow-neu-sm-raised hover:shadow-neu-sm-pressed'
+                  ? 'bg-black-olive text-floral-white font-bold shadow-sm' 
+                  : 'bg-warm-ivory/60 hover:bg-warm-ivory text-black-olive/80 border border-soft-sand'
               }`}
             >
               <MousePointer2 className="w-4 h-4 flex-shrink-0" />
@@ -271,8 +271,8 @@ export const QuantumLab: React.FC = () => {
                 isPaletteCollapsed ? 'justify-center p-2' : 'gap-2 px-3 py-2'
               } ${
                 activeTool === 'ERASER' 
-                  ? 'bg-floral-white text-slate-gray shadow-neu-pressed font-bold' 
-                  : 'bg-floral-white text-black-olive/70 shadow-neu-sm-raised hover:shadow-neu-sm-pressed'
+                  ? 'bg-black-olive text-floral-white font-bold shadow-sm' 
+                  : 'bg-warm-ivory/60 hover:bg-warm-ivory text-black-olive/80 border border-soft-sand'
               }`}
             >
               <Eraser className="w-4 h-4 flex-shrink-0" />
@@ -280,43 +280,57 @@ export const QuantumLab: React.FC = () => {
             </button>
           </div>
 
-          {/* Quantum Gates as Small Raised Tiles */}
+          {/* Quantum Gates as Distinctive Botanical Chips */}
           <div className="space-y-2">
             {!isPaletteCollapsed && (
-              <h3 className="text-[10px] font-semibold text-black-olive/60 uppercase tracking-widest px-2 mb-1">Gates</h3>
+              <h3 className="text-[10px] font-semibold text-olive-mist uppercase tracking-widest px-2 mb-1">Gates</h3>
             )}
-            {GATES.map(gate => (
-              <div key={gate.id} className="relative group">
-                <button
-                  onClick={() => { setActiveTool(gate.id); setPendingCNOT(null); }}
-                  title={`${gate.name}: ${gate.desc}`}
-                  className={`w-full flex items-center rounded-xl transition-all ${
-                    isPaletteCollapsed ? 'justify-center p-2' : 'gap-2.5 px-3 py-2'
-                  } ${
-                    activeTool === gate.id 
-                      ? 'bg-floral-white shadow-neu-pressed text-slate-gray font-bold' 
-                      : 'bg-floral-white shadow-neu-sm-raised hover:shadow-neu-sm-pressed text-black-olive'
-                  }`}
-                >
-                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold font-mono text-xs flex-shrink-0 ${
-                    activeTool === gate.id ? 'bg-slate-gray text-floral-white' : 'bg-floral-white shadow-neu-sm-raised text-slate-gray'
-                  }`}>
-                    {gate.id}
-                  </div>
-                  {!isPaletteCollapsed && (
-                    <span className="text-xs font-semibold truncate">{gate.name}</span>
-                  )}
-                </button>
+            {GATES.map(gate => {
+              const isH = gate.id === 'H';
+              const isX = gate.id === 'X';
+              const isZ = gate.id === 'Z';
+              const isCNOT = gate.id === 'CNOT';
+              const isActive = activeTool === gate.id;
 
-                {/* Tooltip on hover */}
-                <div className="absolute left-full ml-2 top-0 w-48 p-3 bg-floral-white text-[11px] text-black-olive rounded-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 shadow-neu-raised">
-                  <div className="font-semibold text-slate-gray mb-0.5 flex items-center gap-1">
-                    <Info className="w-3 h-3"/> {gate.name}
+              let gateBadgeStyle = 'bg-warm-ivory text-black-olive border-soft-sand';
+              if (isH) gateBadgeStyle = 'bg-soft-cyan/25 text-deep-slate border-soft-cyan/60';
+              if (isX) gateBadgeStyle = 'bg-muted-sage/25 text-black-olive border-muted-sage/60';
+              if (isZ) gateBadgeStyle = 'bg-dusty-lavender/25 text-black-olive border-dusty-lavender/60';
+              if (isCNOT) gateBadgeStyle = 'bg-warm-gold/25 text-cocoa-noir border-warm-gold/60';
+
+              return (
+                <div key={gate.id} className="relative group">
+                  <button
+                    onClick={() => { setActiveTool(gate.id); setPendingCNOT(null); }}
+                    title={`${gate.name}: ${gate.desc}`}
+                    className={`w-full flex items-center rounded-xl transition-all border ${
+                      isPaletteCollapsed ? 'justify-center p-2' : 'gap-2.5 px-3 py-2'
+                    } ${
+                      isActive 
+                        ? 'bg-black-olive text-floral-white border-black-olive shadow-sm font-bold' 
+                        : 'bg-warm-ivory/50 hover:bg-warm-ivory text-black-olive border-soft-sand'
+                    }`}
+                  >
+                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold font-mono text-xs flex-shrink-0 border ${
+                      isActive ? 'bg-floral-white text-black-olive border-transparent' : gateBadgeStyle
+                    }`}>
+                      {gate.id}
+                    </div>
+                    {!isPaletteCollapsed && (
+                      <span className="text-xs font-semibold truncate">{gate.name}</span>
+                    )}
+                  </button>
+
+                  {/* Tooltip on hover */}
+                  <div className="absolute left-full ml-2 top-0 w-52 p-3 bg-black-olive text-warm-ivory text-[11px] rounded-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 shadow-xl border border-black-olive/50">
+                    <div className="font-semibold text-warm-gold mb-0.5 flex items-center gap-1.5">
+                      <Info className="w-3.5 h-3.5"/> {gate.name}
+                    </div>
+                    <p className="text-warm-ivory/80">{gate.desc}</p>
                   </div>
-                  <p className="text-black-olive/70">{gate.desc}</p>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
         </div>
@@ -331,23 +345,23 @@ export const QuantumLab: React.FC = () => {
         }`}>
           
           {/* Canvas Top Bar */}
-          <div className="p-3 bg-floral-white flex flex-wrap justify-between items-center gap-2 border-b border-black-olive/10 z-10">
+          <div className="p-3 bg-[#FFFDF7] flex flex-wrap justify-between items-center gap-2 border-b border-soft-sand z-10 shadow-sm">
             
             {/* Left Controls: Title + Qubit Selector */}
             <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-              <h1 className="text-sm sm:text-base font-bold text-black-olive flex items-center gap-1.5">
-                <Cpu className="w-4 h-4 text-slate-gray hidden sm:inline" /> Circuit Workbench
+              <h1 className="text-sm sm:text-base font-bold font-serif text-black-olive flex items-center gap-1.5">
+                <Cpu className="w-4 h-4 text-olive-mist hidden sm:inline" /> Circuit Workbench
               </h1>
               
               {/* Qubit Count Selector */}
-              <div className="flex items-center gap-1 bg-floral-white p-1 rounded-xl shadow-neu-pressed text-xs">
+              <div className="flex items-center gap-1 bg-warm-ivory border border-soft-sand p-1 rounded-xl text-xs">
                 {[1, 2, 3].map(count => (
                   <button
                     key={count}
                     onClick={() => handleQubitCountChange(count)}
                     className={`px-2.5 py-0.5 rounded-lg font-mono text-[11px] font-semibold transition-all ${
                       numQubits === count 
-                        ? 'bg-slate-gray text-floral-white shadow-neu-sm-raised' 
+                        ? 'bg-black-olive text-floral-white shadow-sm' 
                         : 'text-black-olive/70 hover:text-black-olive'
                     }`}
                   >
@@ -357,19 +371,19 @@ export const QuantumLab: React.FC = () => {
               </div>
 
               {activeTool !== 'CURSOR' && (
-                <span className="px-2.5 py-1 rounded-xl bg-floral-white shadow-neu-sm-raised text-slate-gray text-[10px] font-mono uppercase tracking-wider font-bold">
+                <span className="px-2.5 py-1 rounded-full bg-warm-ivory border border-soft-sand text-black-olive text-[10px] font-mono uppercase tracking-wider font-bold">
                   {activeTool} {pendingCNOT && '(Select Target Wire)'}
                 </span>
               )}
             </div>
 
             {/* Center: View Switcher */}
-            <div className="hidden md:flex items-center bg-floral-white p-1 rounded-xl shadow-neu-pressed text-[11px]">
+            <div className="hidden md:flex items-center bg-warm-ivory border border-soft-sand p-1 rounded-xl text-[11px]">
               <button
                 onClick={() => setViewMode('split')}
                 title="Split View (Circuit + Results)"
                 className={`flex items-center gap-1 px-3 py-1 rounded-lg font-medium transition-all ${
-                  viewMode === 'split' ? 'bg-slate-gray text-floral-white shadow-neu-sm-raised' : 'text-black-olive/70 hover:text-black-olive'
+                  viewMode === 'split' ? 'bg-black-olive text-floral-white shadow-sm' : 'text-black-olive/70 hover:text-black-olive'
                 }`}
               >
                 <Columns className="w-3 h-3" /> Split
@@ -378,7 +392,7 @@ export const QuantumLab: React.FC = () => {
                 onClick={() => setViewMode('circuit')}
                 title="Full Circuit View"
                 className={`flex items-center gap-1 px-3 py-1 rounded-lg font-medium transition-all ${
-                  viewMode === 'circuit' ? 'bg-slate-gray text-floral-white shadow-neu-sm-raised' : 'text-black-olive/70 hover:text-black-olive'
+                  viewMode === 'circuit' ? 'bg-black-olive text-floral-white shadow-sm' : 'text-black-olive/70 hover:text-black-olive'
                 }`}
               >
                 <Layers className="w-3 h-3" /> Circuit
@@ -387,25 +401,25 @@ export const QuantumLab: React.FC = () => {
                 onClick={() => setViewMode('results')}
                 title="Full Results View"
                 className={`flex items-center gap-1 px-3 py-1 rounded-lg font-medium transition-all ${
-                  (viewMode as string) === 'results' ? 'bg-slate-gray text-floral-white shadow-neu-sm-raised' : 'text-black-olive/70 hover:text-black-olive'
+                  (viewMode as string) === 'results' ? 'bg-black-olive text-floral-white shadow-sm' : 'text-black-olive/70 hover:text-black-olive'
                 }`}
               >
                 <BarChart3 className="w-3 h-3" /> Results
               </button>
             </div>
 
-            {/* Right Actions: Reset & Run Circuit (Primary Slate Gray Button) */}
+            {/* Right Actions: Reset & Run Circuit (Warm Gold Primary Button) */}
             <div className="flex items-center gap-2">
               <button 
                 onClick={clearCircuit} 
-                className="px-3 py-2 rounded-xl text-xs font-semibold text-black-olive/70 bg-floral-white shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-1.5"
+                className="px-3.5 py-2 rounded-xl text-xs font-semibold text-black-olive/80 bg-warm-ivory border border-soft-sand hover:bg-soft-sand transition-all flex items-center gap-1.5 shadow-sm"
               >
-                <Trash2 className="w-3.5 h-3.5" /> Reset
+                <Trash2 className="w-3.5 h-3.5 text-olive-mist" /> Reset
               </button>
               <button
                 onClick={handleRunCircuit}
                 disabled={isSimulating}
-                className="px-5 py-2 rounded-xl text-xs font-semibold bg-slate-gray text-floral-white shadow-neu-raised hover:shadow-neu-pressed disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-1.5"
+                className="px-5 py-2 rounded-xl text-xs font-bold bg-warm-gold text-deep-slate hover:bg-[#D4BA7F] shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-1.5"
               >
                 {isSimulating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5 fill-current" />}
                 {isSimulating ? 'Simulating...' : 'Run Circuit'}
@@ -417,13 +431,13 @@ export const QuantumLab: React.FC = () => {
           {/* Interactive Quantum Wire Canvas */}
           <div className="flex-1 overflow-auto p-6 sm:p-8 flex justify-center items-center">
             <div className="relative" style={{ width: `${NUM_STEPS * 64 + 90}px`, height: `${numQubits * ROW_HEIGHT}px` }}>
-              {/* Qubit Wires as Neumorphic recessed lines */}
+              {/* Qubit Wires */}
               {Array.from({ length: numQubits }).map((_, qIdx) => (
                 <div key={`wire-${qIdx}`} className="absolute left-0 right-0 flex items-center" style={{ top: qIdx * ROW_HEIGHT, height: ROW_HEIGHT }}>
                   <div className="w-14 font-mono text-xs font-bold text-black-olive flex items-center gap-1">
-                    |0⟩ <span className="text-[10px] text-black-olive/60 font-medium">q[{qIdx}]</span>
+                    |0⟩ <span className="text-[10px] text-olive-mist font-medium">q[{qIdx}]</span>
                   </div>
-                  <div className="flex-1 h-0.5 bg-black-olive/30 rounded-full"></div>
+                  <div className="flex-1 h-0.5 bg-black-olive/25 rounded-full"></div>
                 </div>
               ))}
 
@@ -442,13 +456,13 @@ export const QuantumLab: React.FC = () => {
                           style={{ top: qIdx * ROW_HEIGHT, height: ROW_HEIGHT }}
                         >
                           {isPendingCNOTControl && (
-                            <div className="w-3.5 h-3.5 rounded-full bg-slate-gray animate-ping" />
+                            <div className="w-3.5 h-3.5 rounded-full bg-warm-gold animate-ping" />
                           )}
                         </div>
                       );
                     })}
 
-                    {/* Placed Gates: Rendered Pressed / Inset to show they are "Locked In" */}
+                    {/* Placed Gates: Rendered with Botanical Identity Colors */}
                     {circuit.filter(g => g.step === sIdx).map(gate => {
                       if (gate.type === 'CNOT') {
                         const cY = gate.control! * ROW_HEIGHT + ROW_HEIGHT / 2;
@@ -458,21 +472,27 @@ export const QuantumLab: React.FC = () => {
                         return (
                           <div key={gate.id} className="absolute left-0 right-0 pointer-events-none z-10">
                             {/* Connecting vertical line */}
-                            <div className="absolute left-1/2 w-1 bg-slate-gray -translate-x-1/2 rounded-full" style={{ top, height }} />
+                            <div className="absolute left-1/2 w-1.5 bg-warm-gold -translate-x-1/2 rounded-full" style={{ top, height }} />
                             {/* Control Node */}
-                            <div className="absolute left-1/2 w-3.5 h-3.5 rounded-full bg-slate-gray shadow-neu-sm-raised -translate-x-1/2 -translate-y-1/2" style={{ top: cY }} />
+                            <div className="absolute left-1/2 w-4 h-4 rounded-full bg-warm-gold shadow-md -translate-x-1/2 -translate-y-1/2" style={{ top: cY }} />
                             {/* Target Node (+) */}
-                            <div className="absolute left-1/2 w-7 h-7 rounded-full bg-floral-white shadow-neu-pressed border-2 border-slate-gray flex items-center justify-center -translate-x-1/2 -translate-y-1/2" style={{ top: tY }}>
-                              <div className="w-full h-0.5 bg-slate-gray absolute" />
-                              <div className="h-full w-0.5 bg-slate-gray absolute" />
+                            <div className="absolute left-1/2 w-8 h-8 rounded-full bg-[#FFFDF7] shadow-md border-2 border-warm-gold flex items-center justify-center -translate-x-1/2 -translate-y-1/2" style={{ top: tY }}>
+                              <div className="w-full h-0.5 bg-warm-gold absolute" />
+                              <div className="h-full w-0.5 bg-warm-gold absolute" />
                             </div>
                           </div>
                         );
                       }
+
+                      let chipStyle = 'bg-warm-ivory text-black-olive border-soft-sand';
+                      if (gate.type === 'H') chipStyle = 'bg-soft-cyan text-deep-slate border-soft-cyan/80';
+                      if (gate.type === 'X') chipStyle = 'bg-muted-sage text-black-olive border-muted-sage/80';
+                      if (gate.type === 'Z') chipStyle = 'bg-dusty-lavender text-black-olive border-dusty-lavender/80';
+
                       return (
                         <div
                           key={gate.id}
-                          className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-xl bg-floral-white shadow-neu-pressed border border-slate-gray/30 flex items-center justify-center font-bold font-mono text-base text-slate-gray pointer-events-none z-10"
+                          className={`absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-xl border-2 flex items-center justify-center font-bold font-mono text-base shadow-md pointer-events-none z-10 ${chipStyle}`}
                           style={{ top: gate.target * ROW_HEIGHT + ROW_HEIGHT / 2 }}
                         >
                           {gate.type}
@@ -505,11 +525,11 @@ export const QuantumLab: React.FC = () => {
       )}
 
       {/* ========================================================================= */}
-      {/* RIGHT PANEL: ENHANCED STATE VISUALIZATION (RECESSED / INSET DATA SCREEN) */}
+      {/* RIGHT PANEL: ENHANCED STATE VISUALIZATION */}
       {/* ========================================================================= */}
       {showResults && (
         <div 
-          className={`bg-floral-white border-l border-black-olive/10 flex flex-col relative overflow-hidden transition-all duration-300 shadow-neu-raised ${
+          className={`bg-[#FFFDF7] border-l border-soft-sand flex flex-col relative overflow-hidden transition-all duration-300 shadow-sm ${
             viewMode === 'results' 
               ? 'flex-1 w-full' 
               : isResultsExpanded 
@@ -518,13 +538,13 @@ export const QuantumLab: React.FC = () => {
           }`}
         >
           {/* Results Header */}
-          <div className="p-3.5 flex items-center justify-between gap-2 flex-wrap bg-floral-white border-b border-black-olive/10">
+          <div className="p-3.5 flex items-center justify-between gap-2 flex-wrap bg-[#FFFDF7] border-b border-soft-sand">
             <div className="flex items-center gap-2">
               <h2 className="text-xs font-bold text-black-olive uppercase tracking-wider flex items-center gap-1.5">
-                <BarChart3 className="w-3.5 h-3.5 text-slate-gray" /> Results &amp; Telemetry
+                <BarChart3 className="w-3.5 h-3.5 text-olive-mist" /> Results &amp; Telemetry
               </h2>
               {simResult && (
-                <span className="px-2 py-0.5 rounded-xl text-[10px] font-mono font-bold bg-floral-white shadow-neu-sm-raised text-slate-gray">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-muted-sage/20 border border-muted-sage/40 text-black-olive">
                   Ready
                 </span>
               )}
@@ -533,11 +553,11 @@ export const QuantumLab: React.FC = () => {
             <div className="flex items-center gap-1.5">
               {/* Tab Selector */}
               {simResult && (
-                <div className="flex gap-1 bg-floral-white p-1 rounded-xl shadow-neu-pressed text-[10px]">
+                <div className="flex gap-1 bg-warm-ivory border border-soft-sand p-1 rounded-xl text-[10px]">
                   <button
                     onClick={() => setActiveTab('all')}
                     className={`px-2 py-0.5 rounded-lg font-medium transition-all ${
-                      activeTab === 'all' ? 'bg-slate-gray text-floral-white shadow-neu-sm-raised' : 'text-black-olive/70 hover:text-black-olive'
+                      activeTab === 'all' ? 'bg-black-olive text-floral-white shadow-sm font-bold' : 'text-black-olive/70 hover:text-black-olive'
                     }`}
                   >
                     All
@@ -546,7 +566,7 @@ export const QuantumLab: React.FC = () => {
                     onClick={() => setActiveTab('before-after')}
                     title="Before -> After Comparison"
                     className={`px-2 py-0.5 rounded-lg font-medium transition-all ${
-                      activeTab === 'before-after' ? 'bg-slate-gray text-floral-white shadow-neu-sm-raised' : 'text-black-olive/70 hover:text-black-olive'
+                      activeTab === 'before-after' ? 'bg-black-olive text-floral-white shadow-sm font-bold' : 'text-black-olive/70 hover:text-black-olive'
                     }`}
                   >
                     B/A
@@ -555,7 +575,7 @@ export const QuantumLab: React.FC = () => {
                     onClick={() => setActiveTab('bloch')}
                     title="Bloch Sphere"
                     className={`px-2 py-0.5 rounded-lg font-medium transition-all ${
-                      activeTab === 'bloch' ? 'bg-slate-gray text-floral-white shadow-neu-sm-raised' : 'text-black-olive/70 hover:text-black-olive'
+                      activeTab === 'bloch' ? 'bg-black-olive text-floral-white shadow-sm font-bold' : 'text-black-olive/70 hover:text-black-olive'
                     }`}
                   >
                     Bloch
@@ -564,7 +584,7 @@ export const QuantumLab: React.FC = () => {
                     onClick={() => setActiveTab('histogram')}
                     title="1024-shot Measurement Histogram"
                     className={`px-2 py-0.5 rounded-lg font-medium transition-all ${
-                      activeTab === 'histogram' ? 'bg-slate-gray text-floral-white shadow-neu-sm-raised' : 'text-black-olive/70 hover:text-black-olive'
+                      activeTab === 'histogram' ? 'bg-black-olive text-floral-white shadow-sm font-bold' : 'text-black-olive/70 hover:text-black-olive'
                     }`}
                   >
                     Shots
@@ -573,7 +593,7 @@ export const QuantumLab: React.FC = () => {
                     onClick={() => setActiveTab('3d')}
                     title="Interactive 3D Quantum Engine"
                     className={`px-2 py-0.5 rounded-lg font-medium transition-all ${
-                      activeTab === '3d' ? 'bg-slate-gray text-floral-white shadow-neu-sm-raised' : 'text-black-olive/70 hover:text-black-olive'
+                      activeTab === '3d' ? 'bg-black-olive text-floral-white shadow-sm font-bold' : 'text-black-olive/70 hover:text-black-olive'
                     }`}
                   >
                     3D
@@ -585,7 +605,7 @@ export const QuantumLab: React.FC = () => {
                 <button
                   onClick={() => setIsResultsExpanded(!isResultsExpanded)}
                   title={isResultsExpanded ? "Standard Width" : "Widen Results"}
-                  className="p-1.5 rounded-xl bg-floral-white text-black-olive/70 hover:text-black-olive shadow-neu-sm-raised hover:shadow-neu-sm-pressed transition-all"
+                  className="p-1.5 rounded-xl bg-warm-ivory text-black-olive/70 hover:text-black-olive border border-soft-sand transition-all shadow-sm"
                 >
                   {isResultsExpanded ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
                 </button>
@@ -594,7 +614,7 @@ export const QuantumLab: React.FC = () => {
               {viewMode === 'results' && (
                 <button
                   onClick={() => setViewMode('split')}
-                  className="px-3 py-1 rounded-xl bg-floral-white text-black-olive text-[10px] font-semibold shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-1"
+                  className="px-3 py-1 rounded-xl bg-warm-ivory text-black-olive text-[10px] font-semibold border border-soft-sand hover:bg-soft-sand transition-all flex items-center gap-1 shadow-sm"
                 >
                   Back to Circuit
                 </button>
@@ -606,8 +626,8 @@ export const QuantumLab: React.FC = () => {
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {/* Error state */}
             {simError && (
-              <div className="p-3.5 rounded-2xl bg-floral-white shadow-neu-pressed text-slate-gray text-xs">
-                <div className="flex items-center gap-1.5 mb-1 font-bold text-slate-gray">
+              <div className="p-3.5 rounded-2xl bg-cocoa-noir/10 border border-soft-cocoa/40 text-black-olive text-xs">
+                <div className="flex items-center gap-1.5 mb-1 font-bold text-cocoa-noir">
                   <AlertTriangle className="w-4 h-4" /> Simulation Notice
                 </div>
                 <p className="whitespace-pre-wrap text-black-olive/80">{simError}</p>
@@ -617,12 +637,12 @@ export const QuantumLab: React.FC = () => {
             {/* Empty state */}
             {!simResult && !simError && !isSimulating && (
               <div className="flex-1 flex flex-col items-center justify-center text-center space-y-3 opacity-60 py-20">
-                <div className="w-14 h-14 rounded-2xl bg-floral-white shadow-neu-pressed flex items-center justify-center">
-                  <Activity className="w-7 h-7 text-black-olive/70" />
+                <div className="w-14 h-14 rounded-2xl bg-warm-ivory border border-soft-sand flex items-center justify-center shadow-sm">
+                  <Activity className="w-7 h-7 text-olive-mist" />
                 </div>
                 <div>
                   <p className="text-xs sm:text-sm font-bold text-black-olive">Awaiting Simulation</p>
-                  <p className="text-[11px] text-black-olive/70 mt-1 max-w-[220px]">
+                  <p className="text-[11px] text-olive-mist mt-1 max-w-[220px]">
                     Place gates on the wires and click <strong>Run Circuit</strong> to visualize amplitudes, Bloch rotations, and measurement histograms.
                   </p>
                 </div>
@@ -632,7 +652,7 @@ export const QuantumLab: React.FC = () => {
             {/* Loading state */}
             {isSimulating && (
               <div className="flex-1 flex flex-col items-center justify-center text-center space-y-2.5 py-20">
-                <Loader2 className="w-8 h-8 text-slate-gray animate-spin" />
+                <Loader2 className="w-8 h-8 text-black-olive animate-spin" />
                 <p className="text-xs font-semibold text-black-olive">Simulating quantum state via Qiskit...</p>
               </div>
             )}
@@ -662,11 +682,11 @@ export const QuantumLab: React.FC = () => {
 
                 {/* 3. Formatted Statevector */}
                 {(activeTab === 'all' || activeTab === 'before-after') && (
-                  <div className="p-4 bg-floral-white shadow-neu-pressed rounded-2xl text-xs space-y-1">
-                    <div className="text-[10px] uppercase font-bold text-black-olive/70 tracking-widest flex items-center gap-1.5">
-                      <Sparkles className="w-3 h-3 text-slate-gray" /> Dirac Ket Statevector
+                  <div className="p-4 bg-warm-ivory/60 border border-soft-sand rounded-2xl text-xs space-y-1 shadow-sm">
+                    <div className="text-[10px] uppercase font-bold text-olive-mist tracking-widest flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-warm-gold" /> Dirac Ket Statevector
                     </div>
-                    <div className="font-mono text-slate-gray font-bold break-all leading-relaxed text-xs pt-1">
+                    <div className="font-mono text-black-olive font-bold break-all leading-relaxed text-xs pt-1">
                       |ψ⟩ = {formatStatevectorString(simResult.statevector)}
                     </div>
                   </div>
@@ -674,7 +694,7 @@ export const QuantumLab: React.FC = () => {
 
                 {/* 4. Theoretical Probabilities */}
                 {(activeTab === 'all') && (
-                  <div className="p-4 rounded-2xl bg-floral-white shadow-neu-pressed space-y-3">
+                  <div className="p-4 rounded-2xl bg-warm-ivory/60 border border-soft-sand space-y-3 shadow-sm">
                     <div className="flex justify-between items-center">
                       <span className="text-xs font-bold text-black-olive uppercase tracking-wider">
                         Probabilities (|cₙ|²)
@@ -688,11 +708,11 @@ export const QuantumLab: React.FC = () => {
                         <div key={basis} className="space-y-1">
                           <div className="flex justify-between text-[11px]">
                             <span className="font-mono text-black-olive font-bold">{basis}</span>
-                            <span className="text-black-olive/70 font-mono">{(prob * 100).toFixed(1)}%</span>
+                            <span className="text-olive-mist font-mono">{(prob * 100).toFixed(1)}%</span>
                           </div>
-                          <div className="w-full h-3 bg-floral-white shadow-neu-pressed rounded-full overflow-hidden p-0.5">
+                          <div className="w-full h-3 bg-warm-ivory border border-soft-sand rounded-full overflow-hidden p-0.5">
                             <div
-                              className="h-full bg-slate-gray rounded-full transition-all duration-300 shadow-neu-sm-raised"
+                              className="h-full bg-slate-glow rounded-full transition-all duration-300 shadow-sm"
                               style={{ width: `${prob * 100}%` }}
                             />
                           </div>

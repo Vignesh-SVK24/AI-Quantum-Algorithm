@@ -30,6 +30,18 @@ export const App: React.FC = () => {
           </video>
           {/* Subtle overlay ensuring existing content remains readable without changing visual identity */}
           <div className="absolute inset-0 bg-[#FAF7EE]/80" />
+          {/* Subtle Botanical Quantum Orbit Curves */}
+          <svg className="absolute inset-0 w-full h-full opacity-15 pointer-events-none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="botanical-quantum-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#A7B09A" stopOpacity="0.5" />
+                <stop offset="50%" stopColor="#8FBFC0" stopOpacity="0.4" />
+                <stop offset="100%" stopColor="#C5A86A" stopOpacity="0.3" />
+              </linearGradient>
+            </defs>
+            <path d="M-100,220 C350,120 650,420 1200,240 C1650,120 1950,320 2400,180" fill="none" stroke="url(#botanical-quantum-grad)" strokeWidth="1.5" />
+            <path d="M-50,650 C420,520 780,720 1350,580 C1820,460 2150,640 2500,520" fill="none" stroke="url(#botanical-quantum-grad)" strokeWidth="1" strokeDasharray="6,6" />
+          </svg>
         </div>
 
         <Navbar />
