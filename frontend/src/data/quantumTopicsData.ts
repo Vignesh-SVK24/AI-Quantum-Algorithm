@@ -1,4 +1,58 @@
-import type { QuantumTopic } from '../services/api';
+// Quantum Knowledge Base Topics Catalog
+// Synchronized from verified SQLite database (backend/data/quantum_topics.sqlite3)
+// Strictly local, zero external search, zero Gemini calls
+
+export interface SourceItem {
+  title: string;
+  url: string;
+}
+
+export interface CanonicalCircuit {
+  num_qubits: number;
+  circuit_type: string;
+  title: string;
+  description: string;
+  gates: Array<{
+    type: string;
+    target: number;
+    step: number;
+    control?: number;
+    id?: string;
+  }>;
+}
+
+export interface QuantumTopic {
+  id: string;
+  topic_name: string;
+  slug: string;
+  category: string;
+  short_definition: string;
+  beginner_explanation: string;
+  detailed_explanation: string;
+  mathematical_explanation?: string | null;
+  formula?: string | null;
+  example?: string | null;
+  circuit_example?: string | null;
+  related_topics: string[];
+  common_mistakes: string[];
+  aliases: string[];
+  keywords: string[];
+  tags: string[];
+  source_name?: string | null;
+  source_url?: string | null;
+  additional_sources: SourceItem[];
+  verification_status: string;
+  canonical_circuit?: CanonicalCircuit | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+  status?: string | null;
+  knowledge_version?: number | null;
+  difficulty_level?: string | null;
+  subcategory?: string | null;
+  ingestion_source_id?: string | null;
+  last_verified_at?: string | null;
+  verification_notes?: string | null;
+}
 
 export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
   {
@@ -723,6 +777,612 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "control": 0,
           "target": 1,
           "step": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "quantum-advantage",
+    "topic_name": "Quantum Advantage",
+    "slug": "quantum-advantage",
+    "category": "Foundations",
+    "short_definition": "The practical and theoretical milestone where a programmable quantum computing device solves a computational problem substantially faster than any feasible classical supercomputer.",
+    "beginner_explanation": "Quantum Advantage (also known as Quantum Supremacy) is the historic threshold when a quantum computer performs a task that would take the world's most powerful classical supercomputers thousands of years to compute. It serves as empirical proof that quantum computing provides computational power beyond classical physics.",
+    "detailed_explanation": "Demonstrations of quantum advantage have focused on mathematically rigorous sampling problems: Random Circuit Sampling (RCS, e.g. Google's Sycamore in 2019) and Gaussian Boson Sampling (GBS, e.g. USTC Jiuzhang). The goal of current quantum research is 'practical quantum advantage'—achieving speedup on commercially and scientifically valuable problems like drug discovery, catalyst design, battery simulation, and financial portfolio optimization.",
+    "mathematical_explanation": "Quantum advantage relies on complexity-theoretic separations under standard assumptions (such as non-collapse of the Polynomial Hierarchy). Sampling the output distribution of random quantum circuits is #P-hard classically, while a quantum processor of depth d on n qubits samples directly in O(d) time using linear-depth unitary transformations.",
+    "formula": "T_{classical} \\gg T_{quantum} \\quad \\text{e.g.} \\quad T_{classical} \\sim 10^4 \\text{ years vs } T_{quantum} \\sim 200 \\text{ seconds}",
+    "example": "In 2019, Google demonstrated quantum supremacy using the 53-qubit Sycamore processor: it sampled a random quantum circuit in ~200 seconds, a task estimated to take Summit (the top supercomputer at the time) days to years.",
+    "circuit_example": "from qiskit import QuantumCircuit\n# Random Circuit Sampling snippet\nqc = QuantumCircuit(3)\nqc.h([0, 1, 2])\nqc.cx(0, 1)\nqc.rz(0.785, 0)\nqc.cx(1, 2)",
+    "related_topics": [
+      "Quantum Computing",
+      "Quantum Algorithms",
+      "Quantum Error Correction",
+      "Qubit"
+    ],
+    "common_mistakes": [
+      "Thinking quantum advantage means quantum computers are faster at everything.",
+      "Confusing synthetic benchmark advantage (e.g. random circuit sampling) with commercial/practical utility.",
+      "Assuming classical supercomputer simulation algorithms do not improve to challenge claims."
+    ],
+    "aliases": [
+      "quantum advantage",
+      "quantum supremacy",
+      "computational advantage",
+      "quantum computational supremacy",
+      "practical quantum advantage"
+    ],
+    "keywords": [
+      "supremacy",
+      "advantage",
+      "quantum supremacy",
+      "quantum advantage",
+      "supercomputer",
+      "sampling",
+      "sycamore",
+      "benchmarking"
+    ],
+    "tags": [
+      "foundations",
+      "quantum-advantage",
+      "milestone",
+      "benchmarking",
+      "complexity"
+    ],
+    "source_name": "Google Quantum AI & Nature",
+    "source_url": "https://www.nature.com/articles/s41586-019-1666-5",
+    "additional_sources": [
+      {
+        "title": "Arute et al. Nature (2019) Quantum Supremacy",
+        "url": "https://doi.org/10.1038/s41586-019-1666-5"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 3,
+      "circuit_type": "advantage_benchmark",
+      "title": "Quantum Supremacy Benchmark Circuit",
+      "description": "Random entangled circuit exhibiting cross-entropy sampling complexity",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 2,
+          "step": 0
+        },
+        {
+          "type": "CNOT",
+          "target": 1,
+          "control": 0,
+          "step": 1
+        },
+        {
+          "type": "Z",
+          "target": 0,
+          "step": 2
+        },
+        {
+          "type": "CNOT",
+          "target": 2,
+          "control": 1,
+          "step": 3
+        }
+      ]
+    }
+  },
+  {
+    "id": "quantum-algorithms",
+    "topic_name": "Quantum Algorithms",
+    "slug": "quantum-algorithms",
+    "category": "Algorithms",
+    "short_definition": "Step-by-step computational procedures designed to run on quantum circuits, leveraging superposition, phase kickback, and interference to achieve proven speedups over classical algorithms.",
+    "beginner_explanation": "A quantum algorithm is a recipe of quantum gates arranged to solve a specific problem. Unlike classical algorithms that test one possibility at a time, quantum algorithms prepare all inputs in superposition, encode the problem into the phase of the states, and use interference to cancel wrong answers while boosting the correct solution's probability.",
+    "detailed_explanation": "Quantum algorithms are classified by the nature of their quantum speedup: polynomial/quadratic speedups (e.g., Grover's unstructured search in O(√N)), exponential speedups (e.g., Shor's factoring in O((log N)³), HHL for linear systems), and oracle separations (Deutsch-Jozsa, Simon's algorithm). Key design primitives include Quantum Fourier Transform (QFT), Amplitude Amplification, Phase Kickback, and Variational hybrid loops.",
+    "mathematical_explanation": "Quantum speedups arise from constructive and destructive interference in Hilbert space. If classical algorithms require time T_c(N) = O(N) or O(2^N), a quantum algorithm achieves BQP solvability in time T_q(N) = poly(log N) or O(√N). For instance, Grover achieves quadratic speedup through rotation in a 2D subspace: |s⟩ → (R_s R_w)^k |s⟩ ≈ |w⟩ with k ≈ (π/4)√N iterations.",
+    "formula": "T_{quantum}(N) = O(\\sqrt{N}) \\text{ (Grover)} \\quad \\text{vs} \\quad T_{quantum}(N) = O((\\log N)^3) \\text{ (Shor)}",
+    "example": "To search an unsorted list of N = 1,000,000 items, classical search requires an average of 500,000 checks. Grover's quantum search finds the item in approximately (π/4)√1,000,000 ≈ 785 iterations.",
+    "circuit_example": "from qiskit import QuantumCircuit\n# Generalized quantum algorithm structure: Prepare, Oracle, Amplify, Measure\nqc = QuantumCircuit(3, 3)\nqc.h([0, 1, 2]) # State preparation\n# [Problem Oracle Unitary here]\n# [Interference / Diffusion here]\nqc.measure([0, 1, 2], [0, 1, 2])",
+    "related_topics": [
+      "Grover's Algorithm",
+      "Deutsch-Jozsa Algorithm",
+      "Quantum Fourier Transform",
+      "Shor's Algorithm",
+      "Phase Kickback",
+      "Variational Quantum Eigensolver (VQE)"
+    ],
+    "common_mistakes": [
+      "Assuming quantum algorithms speed up all classical algorithms equally (most classical tasks see no speedup).",
+      "Confusing quantum parallelism with having millions of computers running independently (interference is required to extract the answer).",
+      "Thinking Grover's algorithm solves NP-complete problems in polynomial time (quadratic speedup is not exponential)."
+    ],
+    "aliases": [
+      "quantum algorithms",
+      "quantum algorithm",
+      "quantum algorithmic speedup",
+      "what is a quantum algorithm",
+      "quantum speedup",
+      "algorithmic speedup"
+    ],
+    "keywords": [
+      "quantum algorithms",
+      "quantum algorithm",
+      "speedup",
+      "grover",
+      "shor",
+      "deutsch-jozsa",
+      "qft",
+      "vqe",
+      "complexity",
+      "bqp",
+      "amplitude amplification"
+    ],
+    "tags": [
+      "algorithms",
+      "quantum-algorithms",
+      "computational-complexity",
+      "speedup",
+      "core-concept"
+    ],
+    "source_name": "Nielsen & Chuang & Qiskit Algorithms",
+    "source_url": "https://qiskit-community.github.io/qiskit-algorithms/",
+    "additional_sources": [
+      {
+        "title": "Shor's Landmark Paper (1994)",
+        "url": "https://ieeexplore.ieee.org/document/365700"
+      },
+      {
+        "title": "Grover's Search Paper (1996)",
+        "url": "https://dl.acm.org/doi/10.1145/237814.237866"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 3,
+      "circuit_type": "algorithm",
+      "title": "Quantum Algorithm Template",
+      "description": "3-qubit state preparation and interference transformation",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 2,
+          "step": 0
+        },
+        {
+          "type": "X",
+          "target": 2,
+          "step": 1
+        },
+        {
+          "type": "H",
+          "target": 0,
+          "step": 2
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "quantum-annealing",
+    "topic_name": "Quantum Annealing",
+    "slug": "quantum-annealing",
+    "category": "Techniques",
+    "short_definition": "A specialized quantum computing method that uses quantum tunneling and adiabatic Hamiltonian evolution to find the global minimum of complex combinatorial optimization problems.",
+    "beginner_explanation": "Classical optimization algorithms (like simulated annealing) find optimal solutions by jumping over energy barriers using thermal energy. Quantum annealing allows the system to tunnel directly through steep energy barriers using quantum mechanics, finding the lowest valley (optimal solution) much more efficiently.",
+    "detailed_explanation": "Quantum annealing is specifically tailored for solving Quadratic Unconstrained Binary Optimization (QUBO) and Ising spin-glass problems. The system begins in the easily prepared ground state of a strong transverse magnetic field Hamiltonian H_initial. The Hamiltonian is gradually evolved toward the problem Hamiltonian H_problem over annealing time t_a. By the Adiabatic Theorem, if the evolution is slow enough, the system remains in its ground state, which encodes the problem's solution.",
+    "mathematical_explanation": "The time-dependent Hamiltonian is H(s) = A(s) H_{initial} + B(s) H_{problem}, where s = t/t_a ∈ [0, 1]. The initial Hamiltonian is H_{initial} = -∑_i σ_i^x (transverse field), and the problem Hamiltonian is H_{problem} = -∑_{i,j} J_{ij} σ_i^z σ_j^z - ∑_i h_i σ_i^z. As s: 0 → 1, A(s) → 0 and B(s) → 1.",
+    "formula": "H(t) = A(t/t_a) H_{\\text{initial}} + B(t/t_a) H_{\\text{problem}}, \\quad H_{\\text{problem}} = -\\sum_{i,j} J_{ij}\\sigma_i^z \\sigma_j^z - \\sum_i h_i \\sigma_i^z",
+    "example": "Solving the Traveling Salesperson Problem or portfolio optimization by formulating the problem as a 2000-variable QUBO matrix and mapping the couplings J_{ij} onto a D-Wave quantum annealer chip.",
+    "circuit_example": "# Quantum annealing is non-gate-based adiabatic evolution\n# Conceptual representation: continuous Hamiltonian interpolation",
+    "related_topics": [
+      "Quantum Computing",
+      "Quantum Algorithms",
+      "Variational Quantum Eigensolver (VQE)",
+      "Quantum Circuits"
+    ],
+    "common_mistakes": [
+      "Confusing quantum annealing with gate-model universal quantum computing (annealers cannot run Shor's or Grover's algorithms).",
+      "Assuming quantum annealing always finds the global minimum (finite temperature and minimum energy gap crossings cause non-adiabatic transitions).",
+      "Believing quantum annealing provides an exponential speedup for NP-hard problems (it offers empirical polynomial speedups and better energy minima)."
+    ],
+    "aliases": [
+      "quantum annealing",
+      "adiabatic quantum computation",
+      "quantum annealer",
+      "d-wave annealing",
+      "qubo optimization",
+      "adiabatic quantum optimization"
+    ],
+    "keywords": [
+      "annealing",
+      "quantum annealing",
+      "adiabatic",
+      "tunneling",
+      "ising model",
+      "optimization",
+      "qubo",
+      "d-wave",
+      "energy landscape"
+    ],
+    "tags": [
+      "techniques",
+      "quantum-annealing",
+      "adiabatic",
+      "optimization",
+      "combinatorics"
+    ],
+    "source_name": "Kadowaki & Nishimori (1998) & D-Wave Systems",
+    "source_url": "https://journals.aps.org/pre/abstract/10.1103/PhysRevE.58.5355",
+    "additional_sources": [
+      {
+        "title": "Albash & Lidar: Adiabatic quantum computation",
+        "url": "https://journals.aps.org/rmp/abstract/10.1103/RevModPhys.90.015002"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 2,
+      "circuit_type": "adiabatic_analog",
+      "title": "Quantum Annealing Ising Spin Model",
+      "description": "2-spin coupled system simulating transverse-field quantum tunneling",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 0
+        },
+        {
+          "type": "Z",
+          "target": 0,
+          "step": 1
+        },
+        {
+          "type": "Z",
+          "target": 1,
+          "step": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "quantum-circuits",
+    "topic_name": "Quantum Circuits",
+    "slug": "quantum-circuits",
+    "category": "Techniques",
+    "short_definition": "A standard computational model where quantum information is represented by quantum wires and transformed by a ordered sequence of quantum logic gates and measurements.",
+    "beginner_explanation": "Just as classical electrical circuits route electric current through AND, OR, and NOT gates, a quantum circuit routes quantum states through unitary quantum gates. Time flows from left to right: qubits are initialized, transformed by single and multi-qubit gates, and finally measured to extract classical bits.",
+    "detailed_explanation": "The quantum circuit model is universal for quantum computation. A circuit consists of n qubit wires running horizontally. Operations are represented as rectangular gate boxes (single-qubit gates like H, X, Z) or linked control dots and targets (two-qubit gates like CNOT, CZ). Since all closed quantum operations are unitary, circuits without measurements are strictly reversible.",
+    "mathematical_explanation": "A circuit on n qubits corresponds to the sequential matrix product of unitary operations U = U_m U_{m-1} ... U_1, where each U_i = G_i ⊗ I represents a gate G_i acting on specific target qubits tensored with identity on spectator qubits. Total circuit depth is the longest path of dependent gates, and circuit size is the total gate count.",
+    "formula": "U_{circuit} = \\prod_{t=1}^{T} \\left( \\bigotimes_{k} G_{k,t} \\right) \\quad \\text{with} \\quad U^{\\dagger} U = I",
+    "example": "A 2-qubit Bell circuit: Wire 0 passes through H (transforming |0⟩ into (|0⟩+|1⟩)/√2), followed by CNOT targeting wire 1 controlled by wire 0, producing the entangled Bell state (|00⟩+|11⟩)/√2.",
+    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(2, 2)\nqc.h(0)\nqc.cx(0, 1)\nqc.barrier()\nqc.measure([0, 1], [0, 1])",
+    "related_topics": [
+      "Qubit",
+      "Quantum Gates",
+      "CNOT Gate",
+      "Hadamard Gate",
+      "Circuit Builder",
+      "Measurement"
+    ],
+    "common_mistakes": [
+      "Assuming quantum wires carry moving electric charges like copper cables (they represent the temporal evolution of qubits).",
+      "Placing measurements in the middle of a circuit without realizing it causes irreversible collapse and destroys coherence.",
+      "Ignoring circuit depth and qubit connectivity constraints on physical quantum processors."
+    ],
+    "aliases": [
+      "quantum circuit",
+      "quantum circuits",
+      "circuit model",
+      "quantum circuit builder",
+      "quantum logic network",
+      "quantum wires"
+    ],
+    "keywords": [
+      "circuit",
+      "quantum circuit",
+      "quantum circuits",
+      "quantum wire",
+      "gates",
+      "unitary evolution",
+      "measurement",
+      "qiskit circuit",
+      "circuit depth"
+    ],
+    "tags": [
+      "techniques",
+      "circuit",
+      "quantum-circuit",
+      "gates",
+      "reversibility"
+    ],
+    "source_name": "IBM Qiskit Documentation & Nielsen-Chuang",
+    "source_url": "https://docs.quantum.ibm.com/build",
+    "additional_sources": [
+      {
+        "title": "Qiskit Circuit Library Guide",
+        "url": "https://docs.quantum.ibm.com/api/qiskit/circuit_library"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 3,
+      "circuit_type": "circuit_model",
+      "title": "3-Qubit Quantum Circuit Network",
+      "description": "Multi-gate circuit featuring Hadamard, Pauli-X, and CNOT operations",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "X",
+          "target": 1,
+          "step": 0
+        },
+        {
+          "type": "CNOT",
+          "target": 1,
+          "control": 0,
+          "step": 1
+        },
+        {
+          "type": "H",
+          "target": 2,
+          "step": 1
+        },
+        {
+          "type": "CNOT",
+          "target": 2,
+          "control": 1,
+          "step": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "quantum-computing",
+    "topic_name": "Quantum Computing",
+    "slug": "quantum-computing",
+    "category": "Foundations",
+    "short_definition": "A revolutionary computational paradigm that leverages quantum mechanical principles—superposition, entanglement, and interference—to process complex information and solve specific mathematical problems exponentially faster than classical computers.",
+    "beginner_explanation": "Classical computers use transistors that represent information as binary bits: strictly 0 or 1. Quantum computing uses quantum bits (qubits), which can exist in quantum states with complex probability amplitudes. By orchestrating quantum superposition, entanglement, and interference, quantum processors explore exponentially vast state spaces simultaneously, amplifying the probability of finding correct answers while canceling wrong paths.",
+    "detailed_explanation": "An n-qubit quantum processor operates in a 2^n-dimensional complex Hilbert space. While a classical register of 50 bits can only store one of 2^50 configurations at a time, a 50-qubit quantum register's statevector is a normalized linear combination of all 2^50 basis states. Quantum computation proceeds through unitary transformations (reversible gate operations) governed by the Schrödinger equation, concluding with projective measurements according to Born's rule.",
+    "mathematical_explanation": "An n-qubit quantum state is represented as |Ψ⟩ = ∑_{x ∈ {0,1}ⁿ} c_x |x⟩, where c_x ∈ ℂ are probability amplitudes constrained by the normalization condition ∑_{x} |c_x|² = 1. A quantum computation is a sequence of unitary operators U = U_k U_{k-1} ... U_1 acting on |Ψ⟩ such that U† U = I, preserving the norm of the statevector. Measurement projects |Ψ⟩ onto computational basis state |x⟩ with probability P(x) = |⟨x|Ψ⟩|² = |c_x|².",
+    "formula": "|Ψ⟩ = ∑_{x=0}^{2ⁿ-1} c_x |x⟩  with  ∑ |c_x|² = 1,  |Ψ_final⟩ = U |Ψ_0⟩",
+    "example": "A 3-qubit quantum computer processes a statevector with 2³ = 8 complex amplitudes simultaneously: |Ψ⟩ = c₀|000⟩ + c₁|001⟩ + ... + c₇|111⟩. For n = 300 qubits, 2³⁰⁰ amplitudes exceed the total number of atoms in the observable universe.",
+    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(2, 2)\nqc.h(0)        # Superposition\nqc.cx(0, 1)    # Entanglement\nqc.measure([0, 1], [0, 1])",
+    "related_topics": [
+      "Qubit",
+      "Superposition",
+      "Quantum Entanglement",
+      "Quantum Algorithms",
+      "Quantum Circuits",
+      "Quantum Advantage"
+    ],
+    "common_mistakes": [
+      "Believing quantum computers are simply 'faster classical computers' that speed up every program or video game.",
+      "Assuming qubits are 'both 0 and 1 simultaneously' rather than possessing a definite state with complex amplitudes.",
+      "Thinking quantum computers replace all classical computers, rather than acting as specialized accelerators for specific hard problems."
+    ],
+    "aliases": [
+      "quantum computing",
+      "quantum computer",
+      "quantum computation",
+      "what is quantum computing",
+      "intro to quantum computing",
+      "quantum information science",
+      "quantum tech"
+    ],
+    "keywords": [
+      "quantum computing",
+      "quantum computer",
+      "qubits",
+      "quantum advantage",
+      "quantum supremacy",
+      "hilbert space",
+      "quantum mechanics",
+      "quantum processor",
+      "quantum technology"
+    ],
+    "tags": [
+      "foundations",
+      "quantum-computing",
+      "overview",
+      "core-concept",
+      "architecture"
+    ],
+    "source_name": "IBM Quantum Learning & Nielsen-Chuang",
+    "source_url": "https://learning.quantum.ibm.com/",
+    "additional_sources": [
+      {
+        "title": "Qiskit Textbook: Introduction to Quantum Computing",
+        "url": "https://docs.quantum.ibm.com/guides"
+      },
+      {
+        "title": "Nielsen & Chuang: Quantum Computation and Quantum Information",
+        "url": "https://www.cambridge.org/core/books/quantum-computation-and-quantum-information/01E10196D0A682A6AEFFEA52D53BE9AE"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 2,
+      "circuit_type": "entanglement",
+      "title": "Foundational Quantum Computing Circuit",
+      "description": "2-qubit circuit creating superposition and maximum entanglement (Bell State |Φ⁺⟩)",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "CNOT",
+          "target": 1,
+          "control": 0,
+          "step": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "quantum-decoherence",
+    "topic_name": "Quantum Decoherence",
+    "slug": "quantum-decoherence",
+    "category": "Foundations",
+    "short_definition": "The physical process by which fragile quantum superpositions and phase relationships degrade into classical statistical mixtures through uncontrolled environmental interactions.",
+    "beginner_explanation": "Qubits are extremely sensitive to their physical surroundings. Stray electromagnetic fields, temperature fluctuations, and cosmic rays disturb the delicate quantum phases. This loss of quantum information is called decoherence. It is the primary reason quantum computers are housed in dilution refrigerators cooled to near absolute zero (-273°C).",
+    "detailed_explanation": "Decoherence is characterized by two fundamental relaxation timescales: T₁ (longitudinal or energy relaxation time, the time a qubit takes to decay from |1⟩ to ground state |0⟩) and T₂ (transverse dephasing time, the time over which the relative phase angle φ between |0⟩ and |1⟩ is randomized). Pure quantum states described by statevectors collapse into mixed states described by density matrices with vanishing off-diagonal coherence terms.",
+    "mathematical_explanation": "Under decoherence, the density matrix ρ evolves from a pure state |ψ⟩⟨ψ| (where Tr(ρ²) = 1) to a mixed state (Tr(ρ²) < 1). For phase damping with rate γ, the density matrix elements evolve as ρ₀₁(t) = ρ₀₁(0) e^(-t/T_2). As t → ∞, the off-diagonal interference terms vanish, leaving only classical diagonal probabilities.",
+    "formula": "\\rho(t) = \\begin{pmatrix} \\rho_{00} & \\rho_{01}e^{-t/T_2} \\\\ \\rho_{10}e^{-t/T_2} & \\rho_{11} \\end{pmatrix}, \\quad \\frac{1}{T_2} = \\frac{1}{2T_1} + \\frac{1}{T_\\phi}",
+    "example": "In superconducting transmon qubits, typical coherence times are T₁ ≈ 100-300 μs and T₂ ≈ 100-200 μs. A two-qubit gate takes ~20-50 ns, allowing several thousand gate operations before decoherence destroys the computation.",
+    "circuit_example": "from qiskit import QuantumCircuit\n# Simulating decoherence: state prepared in |+> degrades toward classical mix\nqc = QuantumCircuit(1, 1)\nqc.h(0)\n# Environmental thermal noise delays here\nqc.measure(0, 0)",
+    "related_topics": [
+      "Qubit",
+      "Quantum Error Correction",
+      "Bloch Sphere",
+      "Superposition",
+      "Measurement"
+    ],
+    "common_mistakes": [
+      "Confusing decoherence with active measurement collapse (decoherence is unintentional entanglement with environmental degrees of freedom).",
+      "Assuming T₂ can be larger than 2T₁ (the theoretical limit is T₂ ≤ 2T₁).",
+      "Believing decoherence completely prevents quantum computing (quantum error correction overcomes it if gate fidelities exceed fault-tolerant thresholds)."
+    ],
+    "aliases": [
+      "quantum decoherence",
+      "decoherence",
+      "t1 t2 relaxation",
+      "quantum noise",
+      "dephasing",
+      "coherence time",
+      "t1 relaxation",
+      "t2 dephasing"
+    ],
+    "keywords": [
+      "decoherence",
+      "quantum decoherence",
+      "noise",
+      "relaxation",
+      "t1",
+      "t2",
+      "dephasing",
+      "environment",
+      "mixed state",
+      "density matrix"
+    ],
+    "tags": [
+      "foundations",
+      "decoherence",
+      "quantum-noise",
+      "physics",
+      "hardware"
+    ],
+    "source_name": "Zurek (Physics Today) & Qiskit Hardware Metrics",
+    "source_url": "https://doi.org/10.1063/1.881293",
+    "additional_sources": [
+      {
+        "title": "W. H. Zurek: Decoherence and the Transition from Quantum to Classical",
+        "url": "https://arxiv.org/abs/quant-ph/0306072"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 2,
+      "circuit_type": "environment_coupling",
+      "title": "Decoherence Environmental Entanglement Model",
+      "description": "System qubit coupling irreversibly with an environmental noise ancilla qubit",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "CNOT",
+          "target": 1,
+          "control": 0,
+          "step": 1
         }
       ]
     }
@@ -1596,6 +2256,102 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "control": 0,
           "target": 2,
           "step": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "variational-quantum-eigensolver",
+    "topic_name": "Variational Quantum Eigensolver (VQE)",
+    "slug": "variational-quantum-eigensolver",
+    "category": "Algorithms",
+    "short_definition": "A hybrid quantum-classical algorithm that finds the ground state energy of a physical Hamiltonian by parameterizing a quantum circuit and optimizing the parameters classically using the variational principle.",
+    "beginner_explanation": "Calculating the lowest energy state (ground state) of molecules is essential for chemistry and materials science, but classically intractable for large systems. VQE solves this by teamwork: a quantum computer prepares trial quantum states and measures their energy, while a classical computer optimizes the gate angles to find the lowest possible energy.",
+    "detailed_explanation": "VQE is the flagship algorithm for Noisy Intermediate-Scale Quantum (NISQ) devices because it uses shallow-depth circuits that are robust against decoherence. The quantum processor prepares a parameterized ansatz state |ψ(θ)⟩ = U(θ)|0⟩ and measures expectation values of Pauli string observables ⟨H⟩. A classical optimizer (e.g. COBYLA, SPSA) iteratively adjusts parameters θ to minimize ⟨H⟩.",
+    "mathematical_explanation": "By the Rayleigh-Ritz variational principle, for any trial state |ψ(θ)⟩ and Hamiltonian H, the expectation value is an upper bound on the true ground state energy E_0: E(θ) = ⟨ψ(θ)|H|ψ(θ)⟩ ≥ E_0. The Hamiltonian is decomposed into a weighted sum of Pauli strings H = ∑_i w_i P_i (where P_i ∈ {I, X, Y, Z}^⊗n). The classical optimizer solves θ* = argmin_θ E(θ).",
+    "formula": "\\langle H \\rangle_{\\theta} = \\langle \\psi(\\theta) | H | \\psi(\\theta) \\rangle \\ge E_0, \\quad \\theta^* = \\arg\\min_{\\theta} \\langle H \\rangle_{\\theta}",
+    "example": "Finding the ground state binding energy of the Hydrogen molecule (H₂) as a function of bond distance by encoding the electron orbitals into a 2-qubit Hamiltonian and measuring Pauli strings Z₀, Z₁, and Z₀Z₁.",
+    "circuit_example": "from qiskit import QuantumCircuit\nfrom qiskit.circuit import Parameter\ntheta = Parameter('θ')\nqc = QuantumCircuit(2)\nqc.ry(theta, 0)\nqc.cx(0, 1)\nqc.ry(theta, 1)",
+    "related_topics": [
+      "Quantum Algorithms",
+      "Quantum Computing",
+      "Quantum Circuits",
+      "Phase Kickback"
+    ],
+    "common_mistakes": [
+      "Assuming VQE is a pure quantum algorithm (it relies on a classical optimization feedback loop).",
+      "Overlooking barren plateaus—phenomena in deep ansatz circuits where gradients vanish exponentially.",
+      "Expecting exact results on unmitigated noisy hardware without error mitigation techniques."
+    ],
+    "aliases": [
+      "vqe",
+      "variational quantum eigensolver",
+      "variational algorithm",
+      "quantum chemistry vqe",
+      "hybrid quantum classical algorithm"
+    ],
+    "keywords": [
+      "vqe",
+      "variational",
+      "eigensolver",
+      "ansatz",
+      "hamiltonian",
+      "ground state",
+      "nisq",
+      "quantum chemistry",
+      "optimization"
+    ],
+    "tags": [
+      "algorithms",
+      "vqe",
+      "hybrid-quantum-classical",
+      "nisq",
+      "chemistry"
+    ],
+    "source_name": "Peruzzo et al. (Nature Communications 2014) & Qiskit Chemistry",
+    "source_url": "https://www.nature.com/articles/ncomms5213",
+    "additional_sources": [
+      {
+        "title": "McClean et al. The theory of variational hybrid quantum-classical algorithms",
+        "url": "https://iopscience.iop.org/article/10.1088/1367-2630/18/2/023023"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 2,
+      "circuit_type": "variational_ansatz",
+      "title": "VQE Parameterized Hardware-Efficient Ansatz",
+      "description": "2-qubit parameterized rotational circuit for molecular ground-state estimation",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 0
+        },
+        {
+          "type": "CNOT",
+          "target": 1,
+          "control": 0,
+          "step": 1
+        },
+        {
+          "type": "Z",
+          "target": 0,
+          "step": 2
         }
       ]
     }

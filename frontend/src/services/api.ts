@@ -972,8 +972,8 @@ export interface QuantumTopic {
   source_url?: string | null;
   additional_sources: QuantumTopicSource[];
   verification_status: string;
-  created_at?: string;
-  updated_at?: string;
+  created_at?: string | null;
+  updated_at?: string | null;
   [key: string]: any;
 }
 
