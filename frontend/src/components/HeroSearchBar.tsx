@@ -10,17 +10,24 @@ import {
   ExternalLink, 
   MessageSquare, 
   AlertCircle,
-  HelpCircle
+  HelpCircle,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  Code2,
+  AlertTriangle,
+  Layers
 } from 'lucide-react';
-import { searchQuantum, type QuantumSearchResponse } from '../services/api';
+import { searchQuantum, type QuantumTopicSearchResponse } from '../services/api';
 
 export const HeroSearchBar: React.FC = () => {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState<QuantumSearchResponse | null>(null);
+  const [result, setResult] = useState<QuantumTopicSearchResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
+  const [isDetailsExpanded, setIsDetailsExpanded] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSearch = async (overrideQuery?: string) => {
@@ -34,12 +41,13 @@ export const HeroSearchBar: React.FC = () => {
     setIsLoading(true);
     setError(null);
     setHasSearched(true);
+    setIsDetailsExpanded(false);
 
     try {
       const data = await searchQuantum(textToSearch);
       setResult(data);
     } catch (err: any) {
-      setError(err?.message || "Couldn't find a confident answer — try rephrasing, or ask the AI Tutor directly.");
+      setError(err?.message || "No matching quantum topic was found in the Quantum Knowledge Base.");
       setResult(null);
     } finally {
       setIsLoading(false);
@@ -58,19 +66,31 @@ export const HeroSearchBar: React.FC = () => {
     setResult(null);
     setError(null);
     setHasSearched(false);
+    setIsDetailsExpanded(false);
     inputRef.current?.focus();
   };
 
+  const handleRelatedTopicClick = (topicName: string) => {
+    handleSearch(topicName);
+  };
+
   const handleOpenTutorFollowUp = () => {
-    if (!result) {
+    if (!result?.topic) {
       navigate('/tutor');
       return;
     }
     navigate('/tutor', {
       state: {
-        initialQuestion: result.query || query,
-        initialAnswer: result.answer,
-        sources: result.sources
+        initialQuestion: `Can you explain more about ${result.topic.topic_name}?`,
+        initialAnswer: result.topic.short_definition,
+        sources: [
+          {
+            name: result.topic.source_name || 'IBM Quantum Learning',
+            title: result.topic.topic_name,
+            url: result.topic.source_url,
+            source_type: 'platform'
+          }
+        ]
       }
     });
   };
@@ -102,7 +122,7 @@ export const HeroSearchBar: React.FC = () => {
             disabled={isLoading}
             placeholder="Ask anything about quantum computing — e.g. What is a qubit?"
             className="flex-1 bg-transparent text-floral-white placeholder:text-floral-white/50 text-sm sm:text-base font-medium outline-none tracking-wide disabled:opacity-60"
-            aria-label="Quantum knowledge search query"
+            aria-label="Quantum topic encyclopedia search query"
           />
 
           {/* Action Buttons */}
@@ -127,7 +147,7 @@ export const HeroSearchBar: React.FC = () => {
                   ? 'bg-slate-gray text-floral-white hover:brightness-110 shadow-md active:scale-95'
                   : 'bg-floral-white/10 text-floral-white/30 cursor-not-allowed'
               }`}
-              title="Search quantum knowledge"
+              title="Search Quantum Encyclopedia"
             >
               {isLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin text-floral-white" />
@@ -143,12 +163,13 @@ export const HeroSearchBar: React.FC = () => {
       {!hasSearched && (
         <div className="flex flex-wrap items-center gap-2 pt-1 text-xs text-black-olive/75">
           <span className="font-semibold text-slate-gray flex items-center gap-1">
-            <HelpCircle className="w-3.5 h-3.5" /> Try asking:
+            <HelpCircle className="w-3.5 h-3.5" /> Try topics:
           </span>
           {[
             'What is a qubit?',
-            'What companies are building quantum computers?',
-            'How does the Hadamard gate work?'
+            'Hadamard Gate',
+            'Quantum Entanglement',
+            "Grover's Algorithm"
           ].map((promptText) => (
             <button
               key={promptText}
@@ -167,17 +188,17 @@ export const HeroSearchBar: React.FC = () => {
         <div className="p-6 rounded-3xl bg-floral-white shadow-neu-raised border border-black-olive/5 animate-pulse space-y-3">
           <div className="flex items-center gap-2 text-xs font-bold text-slate-gray">
             <Loader2 className="w-4 h-4 animate-spin" />
-            <span>Querying Quantum Knowledge Base (PostgreSQL)...</span>
+            <span>Searching Quantum Encyclopedia Database...</span>
           </div>
-          <div className="h-4 bg-black-olive/10 rounded w-3/4" />
+          <div className="h-5 bg-black-olive/10 rounded w-1/3" />
           <div className="h-4 bg-black-olive/10 rounded w-full" />
           <div className="h-4 bg-black-olive/10 rounded w-5/6" />
         </div>
       )}
 
-      {/* Error / Empty State Panel */}
+      {/* Error / Offline Alert */}
       {error && !isLoading && (
-        <div className="p-5 sm:p-6 rounded-3xl bg-floral-white shadow-neu-raised border border-black-olive/10 space-y-3.5 animate-in fade-in duration-200">
+        <div className="p-5 sm:p-6 rounded-3xl bg-floral-white shadow-neu-raised border border-black-olive/10 space-y-3 animate-in fade-in duration-200">
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 rounded-xl bg-floral-white shadow-neu-pressed flex items-center justify-center text-slate-gray flex-shrink-0 mt-0.5">
               <AlertCircle className="w-4 h-4" />
@@ -187,105 +208,260 @@ export const HeroSearchBar: React.FC = () => {
                 {error}
               </p>
               <p className="text-xs text-black-olive/70">
-                Try searching for fundamental topics like <strong>qubit</strong>, <strong>superposition</strong>, <strong>Hadamard</strong>, or <strong>Grover's algorithm</strong>.
+                Try searching for verified topics like <strong>Qubit</strong>, <strong>Superposition</strong>, <strong>Hadamard Gate</strong>, or <strong>Bloch Sphere</strong>.
               </p>
             </div>
-          </div>
-          <div className="pt-1 flex items-center justify-end">
-            <button
-              type="button"
-              onClick={handleOpenTutorFollowUp}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-gray text-floral-white text-xs font-bold shadow-neu-raised hover:shadow-neu-pressed transition-all"
-            >
-              <MessageSquare className="w-3.5 h-3.5" />
-              <span>Ask the AI Tutor Directly</span>
-              <ArrowRight className="w-3.5 h-3.5 ml-0.5" />
-            </button>
           </div>
         </div>
       )}
 
-      {/* Results Panel: Light Neumorphic Raised Card */}
+      {/* Results Display */}
       {result && !isLoading && (
-        <div className="p-5 sm:p-6 rounded-3xl bg-floral-white shadow-neu-raised border border-black-olive/5 space-y-4 animate-in fade-in duration-300">
-          {/* Header Bar */}
-          <div className="flex items-center justify-between border-b border-black-olive/10 pb-3">
-            <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-floral-white shadow-neu-pressed text-slate-gray">
-                {result.classification === 'off_topic' ? 'Scope Guide' : 'Database Knowledge Match'}
-              </span>
-              {result.is_verified && (
-                <span className="text-[11px] text-slate-gray font-medium flex items-center gap-1">
-                  • Verified IBM / Qiskit Curriculum
-                </span>
-              )}
-            </div>
-            <button
-              type="button"
-              onClick={() => setResult(null)}
-              className="text-xs text-black-olive/50 hover:text-black-olive transition-colors p-1"
-              title="Close results"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          {/* Main Answer Content */}
-          <div className="prose prose-sm max-w-none text-black-olive/90 leading-relaxed text-xs sm:text-sm space-y-2 whitespace-pre-line">
-            {result.answer}
-          </div>
-
-          {/* Verified Database Sources */}
-          {result.sources && result.sources.length > 0 && (
-            <div className="pt-2 border-t border-black-olive/10 space-y-2.5">
-              <div className="text-[11px] font-bold text-black-olive uppercase tracking-wider flex items-center justify-between">
-                <span>Verified Documentation References:</span>
-                <span className="text-[10px] text-slate-gray font-mono font-normal">
-                  ⚡ Direct Local Database Query
-                </span>
+        <div className="p-5 sm:p-7 rounded-3xl bg-floral-white shadow-neu-raised border border-black-olive/5 space-y-5 animate-in fade-in duration-300">
+          
+          {/* CASE 1: MATCHED TOPIC */}
+          {result.matched && result.topic && (
+            <>
+              {/* Header: Title, Category badge, Verification status, Close button */}
+              <div className="flex items-start justify-between border-b border-black-olive/10 pb-3 gap-3">
+                <div className="space-y-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h3 className="text-xl sm:text-2xl font-black text-black-olive tracking-tight">
+                      {result.topic.topic_name}
+                    </h3>
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-floral-white shadow-neu-pressed text-slate-gray">
+                      {result.topic.category}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1 text-[11px] text-slate-gray font-medium">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-slate-gray" />
+                    <span>Verified IBM & Qiskit Educational Curriculum</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setResult(null)}
+                  className="text-xs text-black-olive/50 hover:text-black-olive transition-colors p-1"
+                  title="Close result card"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2">
-                {result.sources.map((s, idx) => (
-                  <div
-                    key={`src-${idx}`}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-floral-white shadow-neu-sm-raised text-[11px] text-slate-gray font-medium border border-slate-gray/15"
-                    title={s.title}
-                  >
-                    <BookOpen className="w-3.5 h-3.5 text-slate-gray flex-shrink-0" />
-                    <span className="font-bold text-slate-gray">{s.name}:</span>
-                    <span className="truncate max-w-[170px] sm:max-w-[240px] text-black-olive/90">{s.title}</span>
-                    {s.url && (
-                      <a
-                        href={s.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:text-slate-gray ml-0.5"
-                      >
-                        <ExternalLink className="w-3 h-3 text-slate-gray" />
-                      </a>
+              {/* Core Definition & Beginner Explanation */}
+              <div className="space-y-3">
+                <p className="text-xs sm:text-sm font-semibold text-black-olive leading-relaxed">
+                  {result.topic.short_definition}
+                </p>
+                <p className="text-xs sm:text-sm text-black-olive/85 leading-relaxed">
+                  {result.topic.beginner_explanation}
+                </p>
+              </div>
+
+              {/* Formula Block (if available) */}
+              {result.topic.formula && (
+                <div className="p-3.5 rounded-2xl bg-floral-white shadow-neu-pressed border border-slate-gray/15 space-y-1">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-slate-gray flex items-center gap-1.5">
+                    <Code2 className="w-3 h-3" />
+                    <span>Mathematical Representation</span>
+                  </div>
+                  <div className="font-mono text-xs sm:text-sm text-black-olive font-semibold overflow-x-auto py-1">
+                    {result.topic.formula}
+                  </div>
+                </div>
+              )}
+
+              {/* Worked Example Block (if available) */}
+              {result.topic.example && (
+                <div className="p-3.5 rounded-2xl bg-black-olive/5 border border-black-olive/5 space-y-1">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-black-olive/80">
+                    💡 Worked Example
+                  </div>
+                  <p className="text-xs text-black-olive/85 leading-relaxed">
+                    {result.topic.example}
+                  </p>
+                </div>
+              )}
+
+              {/* Expandable "Learn More" Section */}
+              <div className="pt-1 border-t border-black-olive/10">
+                <button
+                  type="button"
+                  onClick={() => setIsDetailsExpanded(!isDetailsExpanded)}
+                  className="w-full flex items-center justify-between py-2 px-3 rounded-xl bg-floral-white shadow-neu-sm-raised hover:shadow-neu-sm-pressed text-xs font-bold text-slate-gray transition-all"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <Layers className="w-3.5 h-3.5" />
+                    {isDetailsExpanded ? 'Hide In-Depth Theory & Circuit' : 'Learn More: Detailed Theory & Circuit Example'}
+                  </span>
+                  {isDetailsExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                </button>
+
+                {isDetailsExpanded && (
+                  <div className="mt-3 space-y-3.5 p-4 rounded-2xl bg-floral-white shadow-neu-pressed border border-black-olive/5 animate-in fade-in duration-200">
+                    {/* Detailed Explanation */}
+                    <div className="space-y-1">
+                      <div className="text-[11px] font-bold uppercase tracking-wider text-slate-gray">
+                        Detailed Theory
+                      </div>
+                      <p className="text-xs text-black-olive/90 leading-relaxed">
+                        {result.topic.detailed_explanation}
+                      </p>
+                    </div>
+
+                    {/* Mathematical Explanation */}
+                    {result.topic.mathematical_explanation && (
+                      <div className="space-y-1 pt-2 border-t border-black-olive/10">
+                        <div className="text-[11px] font-bold uppercase tracking-wider text-slate-gray">
+                          Rigorous Mathematical Formulation
+                        </div>
+                        <p className="text-xs font-mono text-black-olive/90 leading-relaxed whitespace-pre-line bg-black-olive/5 p-2.5 rounded-xl">
+                          {result.topic.mathematical_explanation}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Circuit Example */}
+                    {result.topic.circuit_example && (
+                      <div className="space-y-1 pt-2 border-t border-black-olive/10">
+                        <div className="text-[11px] font-bold uppercase tracking-wider text-slate-gray flex items-center gap-1">
+                          <Code2 className="w-3 h-3" />
+                          <span>Qiskit Circuit Code</span>
+                        </div>
+                        <pre className="p-3 rounded-xl bg-[#203C3D] text-[#FAF7EE] text-[11px] font-mono overflow-x-auto leading-tight">
+                          {result.topic.circuit_example}
+                        </pre>
+                      </div>
+                    )}
+
+                    {/* Common Mistakes */}
+                    {result.topic.common_mistakes && result.topic.common_mistakes.length > 0 && (
+                      <div className="space-y-1.5 pt-2 border-t border-black-olive/10">
+                        <div className="text-[11px] font-bold uppercase tracking-wider text-[#A34B24] flex items-center gap-1.5">
+                          <AlertTriangle className="w-3.5 h-3.5 text-[#A34B24]" />
+                          <span>Common Misconceptions & Pitfalls</span>
+                        </div>
+                        <ul className="list-disc pl-4 space-y-1 text-xs text-black-olive/85">
+                          {result.topic.common_mistakes.map((mistake, mIdx) => (
+                            <li key={`m-${mIdx}`}>{mistake}</li>
+                          ))}
+                        </ul>
+                      </div>
                     )}
                   </div>
-                ))}
+                )}
+              </div>
+
+              {/* Clickable Related Topics */}
+              {result.related_topics && result.related_topics.length > 0 && (
+                <div className="pt-2 border-t border-black-olive/10 space-y-2">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-black-olive">
+                    Related Quantum Topics:
+                  </span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {result.related_topics.map((rt) => (
+                      <button
+                        key={rt}
+                        type="button"
+                        onClick={() => handleRelatedTopicClick(rt)}
+                        className="px-3 py-1.5 rounded-xl bg-floral-white shadow-neu-sm-raised hover:shadow-neu-sm-pressed active:scale-95 text-xs font-semibold text-slate-gray transition-all hover:text-black-olive"
+                        title={`Explore ${rt}`}
+                      >
+                        {rt} →
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Citations / Sources */}
+              <div className="pt-2 border-t border-black-olive/10 flex flex-wrap items-center justify-between gap-2 text-[11px] text-black-olive/75">
+                <div className="flex items-center gap-1.5">
+                  <BookOpen className="w-3.5 h-3.5 text-slate-gray" />
+                  <span>Source:</span>
+                  {result.topic.source_url ? (
+                    <a
+                      href={result.topic.source_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-bold text-slate-gray hover:underline inline-flex items-center gap-1"
+                    >
+                      {result.topic.source_name || 'IBM Quantum Learning'}
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  ) : (
+                    <span className="font-bold text-slate-gray">{result.topic.source_name}</span>
+                  )}
+                </div>
+
+                <span className="font-mono text-[10px] text-slate-gray/80">
+                  Engine: {result.storage_engine.replace('_', ' ')}
+                </span>
+              </div>
+            </>
+          )}
+
+          {/* CASE 2: MISSPELLED SEARCH / DID YOU MEAN */}
+          {!result.matched && result.did_you_mean && (
+            <div className="space-y-3.5 text-black-olive">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-xl bg-floral-white shadow-neu-pressed flex items-center justify-center text-slate-gray flex-shrink-0 mt-0.5">
+                  <AlertCircle className="w-4 h-4" />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs sm:text-sm font-semibold">
+                    No exact match found for "{result.query}".
+                  </p>
+                  <p className="text-xs text-black-olive/75">
+                    Did you mean:
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => handleSearch(result.did_you_mean!)}
+                    className="mt-1 px-3.5 py-1.5 rounded-xl bg-slate-gray text-floral-white text-xs font-bold shadow-neu-raised hover:shadow-neu-pressed transition-all inline-flex items-center gap-1.5"
+                  >
+                    <span>→ {result.did_you_mean}</span>
+                  </button>
+                </div>
               </div>
             </div>
           )}
 
-          {/* Follow-up CTA Button */}
-          <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 bg-black-olive/5 p-3 rounded-2xl">
+          {/* CASE 3: NO MATCH FOUND */}
+          {!result.matched && !result.did_you_mean && (
+            <div className="space-y-3 text-black-olive">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-xl bg-floral-white shadow-neu-pressed flex items-center justify-center text-slate-gray flex-shrink-0 mt-0.5">
+                  <HelpCircle className="w-4 h-4" />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs sm:text-sm font-bold">
+                    No matching quantum topic was found in the Quantum Knowledge Base.
+                  </p>
+                  <p className="text-xs text-black-olive/70">
+                    Try searching for fundamental concepts such as <strong>Qubit</strong>, <strong>Superposition</strong>, <strong>Hadamard Gate</strong>, <strong>CNOT Gate</strong>, or <strong>Grover's Algorithm</strong>.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Separate AI Tutor Note / Link */}
+          <div className="pt-2 border-t border-black-olive/10 flex flex-col sm:flex-row items-center justify-between gap-3 bg-black-olive/5 p-3 rounded-2xl">
             <span className="text-xs text-black-olive/75">
-              Want to dive deeper, ask follow-up questions, or build a circuit?
+              Need personalized conversational guidance or circuit simulations?
             </span>
             <button
               type="button"
               onClick={handleOpenTutorFollowUp}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-gray text-floral-white text-xs font-bold shadow-neu-raised hover:shadow-neu-pressed transition-all whitespace-nowrap active:scale-98"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-gray text-floral-white text-xs font-bold shadow-neu-raised hover:shadow-neu-pressed transition-all whitespace-nowrap active:scale-98"
             >
               <MessageSquare className="w-3.5 h-3.5" />
-              <span>Ask a follow-up in the AI Tutor</span>
+              <span>Ask AI Tutor</span>
               <ArrowRight className="w-3.5 h-3.5 ml-0.5" />
             </button>
           </div>
+
         </div>
       )}
     </div>

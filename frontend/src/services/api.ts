@@ -577,42 +577,49 @@ export async function sendTutorFeedback(payload: TutorFeedbackPayload): Promise<
   }
 }
 
-export interface QuantumSearchResultItem {
-  id: string;
-  topic: string;
+export interface QuantumTopicSource {
   title: string;
-  tags: string[];
-  summary: string;
-  source: string;
   url: string;
-  match_score?: number;
 }
 
-export interface QuantumSearchSource {
-  id?: string;
-  name: string;
-  title: string;
-  url?: string;
-  snippet?: string;
-  source_type: 'platform' | 'database' | 'web';
-  topic?: string;
-  storage_engine?: string;
+export interface QuantumTopic {
+  id: string;
+  topic_name: string;
+  slug: string;
+  category: string;
+  short_definition: string;
+  beginner_explanation: string;
+  detailed_explanation: string;
+  mathematical_explanation?: string | null;
+  formula?: string | null;
+  example?: string | null;
+  circuit_example?: string | null;
+  related_topics: string[];
+  common_mistakes: string[];
+  aliases: string[];
+  keywords: string[];
+  tags: string[];
+  source_name?: string | null;
+  source_url?: string | null;
+  additional_sources: QuantumTopicSource[];
+  verification_status: string;
 }
 
-export interface QuantumSearchResponse {
+export interface QuantumTopicSearchResponse {
   query: string;
-  answer: string;
-  classification: string;
-  results?: QuantumSearchResultItem[];
-  sources: QuantumSearchSource[];
-  storage_engine?: string;
+  matched: boolean;
+  topic?: QuantumTopic | null;
+  did_you_mean?: string | null;
+  related_topics: string[];
+  storage_engine: string;
   is_verified: boolean;
+  message?: string | null;
 }
 
-export async function searchQuantum(query: string): Promise<QuantumSearchResponse> {
+export async function searchQuantum(query: string): Promise<QuantumTopicSearchResponse> {
   const trimmed = query.trim();
   if (!trimmed) {
-    throw new Error('Please enter a question to search.');
+    throw new Error('Please enter a quantum topic to search.');
   }
 
   let response: Response;
@@ -623,48 +630,86 @@ export async function searchQuantum(query: string): Promise<QuantumSearchRespons
       body: JSON.stringify({ query: trimmed })
     });
   } catch (networkErr: any) {
-    // Offline fallback for demo resiliency if backend server is not running
+    // Offline / Demo fallback when backend connection is unavailable
     const qLower = trimmed.toLowerCase();
     if (qLower.includes('qubit')) {
       return {
         query: trimmed,
-        answer: "A **qubit** (quantum bit) is the fundamental unit of quantum information, analogous to the classical bit. Unlike classical bits which are strictly 0 or 1, qubits exist in a linear combination called a superposition: $|\\psi\\rangle = \\alpha|0\\rangle + \\beta|1\\rangle$. Born's rule tells us that the probability of measuring 0 is $|\\alpha|^2$ and 1 is $|\\beta|^2$.",
-        classification: 'concept_explanation',
-        sources: [
-          {
-            name: 'IBM Quantum Learning — Single Systems',
-            title: 'What is a Qubit?',
-            url: 'https://learning.quantum.ibm.com/course/basics-of-quantum-information/single-systems',
-            source_type: 'platform'
-          }
-        ],
-        is_verified: true
+        matched: true,
+        topic: {
+          id: 'qubit',
+          topic_name: 'Qubit',
+          slug: 'qubit',
+          category: 'Foundations',
+          short_definition: 'The fundamental unit of quantum information, represented as a two-level quantum system with continuous state amplitudes.',
+          beginner_explanation: 'In classical computing, a bit is like an electric switch that is either strictly OFF (0) or ON (1). A qubit (quantum bit) is described by a quantum state vector whose mathematical weights determine the probability of finding it as 0 or 1 upon measurement. It is not "0 and 1 at the same time"—rather, it has a precise, definite quantum state with complex probability amplitudes.',
+          detailed_explanation: 'A physical qubit can be implemented using electron spin, photon polarization, or superconducting transmon circuits. The state is represented in a two-dimensional complex Hilbert space spanned by the orthonormal computational basis vectors |0⟩ and |1⟩. The coefficients α and β are probability amplitudes whose squared magnitudes satisfy the normalization condition |α|² + |β|² = 1.',
+          mathematical_explanation: 'State vector in Dirac notation: |ψ⟩ = α|0⟩ + β|1⟩, where α, β ∈ ℂ. In matrix form, |0⟩ = [1, 0]ᵀ and |1⟩ = [0, 1]ᵀ, yielding |ψ⟩ = [α, β]ᵀ.',
+          formula: '|ψ⟩ = α|0⟩ + β|1⟩  where  |α|² + |β|² = 1',
+          example: 'Consider a state with α = 1/√2 and β = 1/√2: |ψ⟩ = (1/√2)|0⟩ + (1/√2)|1⟩. Measuring this qubit gives outcome 0 with probability 50% and outcome 1 with probability 50%.',
+          circuit_example: 'from qiskit import QuantumCircuit\nqc = QuantumCircuit(1, 1)\nqc.h(0)\nqc.measure(0, 0)',
+          related_topics: ['Superposition', 'Measurement', 'Bloch Sphere', 'Hadamard Gate'],
+          common_mistakes: [
+            'Believing a qubit is "0 and 1 simultaneously" rather than possessing a definite state with probabilistic measurement outcomes.',
+            'Assuming reading or measuring a qubit preserves its superposition state.'
+          ],
+          aliases: ['quantum bit', 'qubits', 'what is a qubit'],
+          keywords: ['qubit', 'quantum bit', 'amplitudes', 'basis states'],
+          tags: ['foundations', 'qubit', 'basis-states'],
+          source_name: 'IBM Quantum Learning',
+          source_url: 'https://learning.quantum.ibm.com/course/basics-of-quantum-information/single-systems',
+          additional_sources: [{ title: 'Qiskit Fundamentals Guide', url: 'https://docs.quantum.ibm.com/' }],
+          verification_status: 'verified'
+        },
+        did_you_mean: null,
+        related_topics: ['Superposition', 'Measurement', 'Bloch Sphere', 'Hadamard Gate'],
+        storage_engine: 'local_offline_cache',
+        is_verified: true,
+        message: null
       };
-    } else if (qLower.includes('company') || qLower.includes('companies') || qLower.includes('building')) {
+    } else if (qLower.includes('hadamard') || qLower.includes('h gate')) {
       return {
         query: trimmed,
-        answer: "Major commercial organizations and specialized quantum startups are actively constructing quantum hardware. Key leaders include **IBM** (superconducting quantum processors), **Google Quantum AI** (superconducting Sycamore processor), **Quantinuum** (trapped-ion systems), **IonQ**, **Rigetti**, and **Xanadu** (photonic quantum computers).",
-        classification: 'concept_explanation',
-        sources: [
-          {
-            name: 'Live Web Search',
-            title: 'Quantum computing hardware companies',
-            url: 'https://en.wikipedia.org/wiki/Quantum_computing',
-            source_type: 'web'
-          }
-        ],
-        is_verified: true
-      };
-    } else if (qLower.includes('pizza') || qLower.includes('weather') || qLower.includes('recipe')) {
-      return {
-        query: trimmed,
-        answer: "I am specialized in answering questions about **quantum computing**! Feel free to ask about qubits, superposition, quantum logic gates (like Hadamard or CNOT), entanglement, algorithms (Grover's, Deutsch-Jozsa), or companies building quantum computers.",
-        classification: 'off_topic',
-        sources: [],
-        is_verified: true
+        matched: true,
+        topic: {
+          id: 'hadamard-gate',
+          topic_name: 'Hadamard Gate',
+          slug: 'hadamard-gate',
+          category: 'Quantum Gates',
+          short_definition: 'A fundamental single-qubit gate that maps computational basis states into equal superpositions and vice versa.',
+          beginner_explanation: 'The Hadamard gate (H gate) creates quantum superpositions. Starting from |0⟩, applying H produces an equal superposition where measuring 0 or 1 is equally likely (50% each).',
+          detailed_explanation: 'The Hadamard transformation corresponds to a 180-degree rotation around the diagonal (X+Z)/√2 axis on the Bloch sphere. Because H is unitary and Hermitian, H² = I.',
+          mathematical_explanation: 'Matrix: H = (1/√2) [ [1, 1], [1, -1] ]. Transformation: H|0⟩ = |+⟩, H|1⟩ = |-⟩.',
+          formula: 'H = (1/√2) [[1, 1], [1, -1]]',
+          example: 'Applying H to state |0⟩: H[1, 0]ᵀ = [1/√2, 1/√2]ᵀ.',
+          circuit_example: 'from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.h(0)',
+          related_topics: ['Superposition', 'Quantum Interference', 'Qubit'],
+          common_mistakes: ['Assuming H creates a random classical coin toss rather than a coherent reversible superposition.'],
+          aliases: ['h gate', 'hadamard', 'h operator'],
+          keywords: ['hadamard', 'h gate', 'superposition gate'],
+          tags: ['gates', 'single-qubit', 'superposition'],
+          source_name: 'IBM Quantum Learning',
+          source_url: 'https://learning.quantum.ibm.com/',
+          additional_sources: [{ title: 'Qiskit API Reference: HGate', url: 'https://docs.quantum.ibm.com/' }],
+          verification_status: 'verified'
+        },
+        did_you_mean: null,
+        related_topics: ['Superposition', 'Quantum Interference', 'Qubit'],
+        storage_engine: 'local_offline_cache',
+        is_verified: true,
+        message: null
       };
     }
-    throw new Error('Unable to reach Quantum Backend (http://127.0.0.1:8000). Please ensure backend is running.');
+    return {
+      query: trimmed,
+      matched: false,
+      topic: null,
+      did_you_mean: qLower.includes('gatee') ? 'Hadamard Gate' : null,
+      related_topics: [],
+      storage_engine: 'local_offline_cache',
+      is_verified: false,
+      message: 'No matching quantum topic was found in the Quantum Knowledge Base.'
+    };
   }
 
   if (!response.ok) {
