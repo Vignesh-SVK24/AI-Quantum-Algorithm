@@ -62,7 +62,7 @@ export const LandingPage: React.FC = () => {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-transparent text-black-olive">
+    <div className="flex flex-col min-h-screen bg-floral-white text-black-olive">
       {/* Hero Section */}
       <section className="relative pt-8 pb-16 sm:pt-14 sm:pb-24 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

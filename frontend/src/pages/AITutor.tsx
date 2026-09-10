@@ -78,7 +78,7 @@ export const AITutor: React.FC = () => {
   const selected = SAMPLE_SCENARIOS.find(s => s.id === activeScenario) || SAMPLE_SCENARIOS[0];
 
   return (
-    <div className="min-h-screen bg-transparent text-black-olive">
+    <div className="min-h-screen bg-floral-white text-black-olive">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         
         {/* Header */}

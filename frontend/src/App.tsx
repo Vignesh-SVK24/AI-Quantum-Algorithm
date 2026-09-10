@@ -10,13 +10,28 @@ import { AITutor } from './pages/AITutor';
 import { Practice } from './pages/Practice';
 import { Dashboard } from './pages/Dashboard';
 import { About } from './pages/About';
-import { BackgroundVideo } from './components/BackgroundVideo';
 
 export const App: React.FC = () => {
   return (
     <HashRouter>
-      <div className="min-h-screen flex flex-col relative bg-floral-white/75 text-black-olive transition-colors">
-        <BackgroundVideo />
+      <div className="min-h-screen flex flex-col relative text-black-olive">
+        {/* Decorative Background Video Layer */}
+        <div className="fixed inset-0 w-full h-full -z-50 pointer-events-none overflow-hidden" aria-hidden="true">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover object-center"
+          >
+            <source src={`${import.meta.env.BASE_URL}video/Animate_this_image.mp4`} type="video/mp4" />
+            <source src="./video/Animate_this_image.mp4" type="video/mp4" />
+            <source src="/video/Animate_this_image.mp4" type="video/mp4" />
+          </video>
+          {/* Subtle overlay ensuring existing content remains readable without changing visual identity */}
+          <div className="absolute inset-0 bg-[#FAF7EE]/80" />
+        </div>
+
         <Navbar />
         <main className="flex-1 relative z-10">
           <Routes>

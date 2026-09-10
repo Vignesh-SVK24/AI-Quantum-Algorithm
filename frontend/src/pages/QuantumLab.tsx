@@ -218,7 +218,7 @@ export const QuantumLab: React.FC = () => {
   const showResults = viewMode === 'split' || viewMode === 'results';
 
   return (
-    <div className="flex h-[calc(100vh-4.5rem)] bg-transparent text-black-olive overflow-hidden relative">
+    <div className="flex h-[calc(100vh-4.5rem)] bg-floral-white text-black-olive overflow-hidden relative">
 
       {/* ========================================================================= */}
       {/* LEFT PANEL: GATE PALETTE (NEUMORPHIC RAISED TILES) */}
