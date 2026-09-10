@@ -577,20 +577,35 @@ export async function sendTutorFeedback(payload: TutorFeedbackPayload): Promise<
   }
 }
 
+export interface QuantumSearchResultItem {
+  id: string;
+  topic: string;
+  title: string;
+  tags: string[];
+  summary: string;
+  source: string;
+  url: string;
+  match_score?: number;
+}
+
 export interface QuantumSearchSource {
   id?: string;
   name: string;
   title: string;
   url?: string;
   snippet?: string;
-  source_type: 'platform' | 'web';
+  source_type: 'platform' | 'database' | 'web';
+  topic?: string;
+  storage_engine?: string;
 }
 
 export interface QuantumSearchResponse {
   query: string;
   answer: string;
   classification: string;
+  results?: QuantumSearchResultItem[];
   sources: QuantumSearchSource[];
+  storage_engine?: string;
   is_verified: boolean;
 }
 

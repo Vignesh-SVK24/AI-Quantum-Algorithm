@@ -7,7 +7,6 @@ import {
   X, 
   ArrowRight, 
   BookOpen, 
-  Globe, 
   ExternalLink, 
   MessageSquare, 
   AlertCircle,
@@ -75,9 +74,6 @@ export const HeroSearchBar: React.FC = () => {
       }
     });
   };
-
-  const platformSources = result?.sources.filter(s => s.source_type === 'platform') || [];
-  const webSources = result?.sources.filter(s => s.source_type === 'web') || [];
 
   return (
     <div className="w-full max-w-2xl space-y-4">
@@ -171,7 +167,7 @@ export const HeroSearchBar: React.FC = () => {
         <div className="p-6 rounded-3xl bg-floral-white shadow-neu-raised border border-black-olive/5 animate-pulse space-y-3">
           <div className="flex items-center gap-2 text-xs font-bold text-slate-gray">
             <Loader2 className="w-4 h-4 animate-spin" />
-            <span>Consulting curated platform knowledge & live web search...</span>
+            <span>Querying Quantum Knowledge Base (PostgreSQL)...</span>
           </div>
           <div className="h-4 bg-black-olive/10 rounded w-3/4" />
           <div className="h-4 bg-black-olive/10 rounded w-full" />
@@ -191,7 +187,7 @@ export const HeroSearchBar: React.FC = () => {
                 {error}
               </p>
               <p className="text-xs text-black-olive/70">
-                You can try rephrasing your search or jump straight into the full conversational AI Tutor for step-by-step assistance.
+                Try searching for fundamental topics like <strong>qubit</strong>, <strong>superposition</strong>, <strong>Hadamard</strong>, or <strong>Grover's algorithm</strong>.
               </p>
             </div>
           </div>
@@ -216,11 +212,11 @@ export const HeroSearchBar: React.FC = () => {
           <div className="flex items-center justify-between border-b border-black-olive/10 pb-3">
             <div className="flex items-center gap-2">
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-floral-white shadow-neu-pressed text-slate-gray">
-                {result.classification === 'off_topic' ? 'Scope Guide' : 'Beginner Explanation'}
+                {result.classification === 'off_topic' ? 'Scope Guide' : 'Database Knowledge Match'}
               </span>
               {result.is_verified && (
                 <span className="text-[11px] text-slate-gray font-medium flex items-center gap-1">
-                  • Verified Accurate
+                  • Verified IBM / Qiskit Curriculum
                 </span>
               )}
             </div>
@@ -239,46 +235,25 @@ export const HeroSearchBar: React.FC = () => {
             {result.answer}
           </div>
 
-          {/* Categorized Sources */}
+          {/* Verified Database Sources */}
           {result.sources && result.sources.length > 0 && (
             <div className="pt-2 border-t border-black-olive/10 space-y-2.5">
-              <div className="text-[11px] font-bold text-black-olive uppercase tracking-wider">
-                Sources Cited:
+              <div className="text-[11px] font-bold text-black-olive uppercase tracking-wider flex items-center justify-between">
+                <span>Verified Documentation References:</span>
+                <span className="text-[10px] text-slate-gray font-mono font-normal">
+                  ⚡ Direct Local Database Query
+                </span>
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                {/* Platform Sources */}
-                {platformSources.map((s, idx) => (
+                {result.sources.map((s, idx) => (
                   <div
-                    key={`plat-${idx}`}
+                    key={`src-${idx}`}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-floral-white shadow-neu-sm-raised text-[11px] text-slate-gray font-medium border border-slate-gray/15"
                     title={s.title}
                   >
                     <BookOpen className="w-3.5 h-3.5 text-slate-gray flex-shrink-0" />
-                    <span className="font-bold text-slate-gray">From this platform:</span>
-                    <span className="truncate max-w-[170px] sm:max-w-[240px] text-black-olive/90">{s.title}</span>
-                    {s.url && (
-                      <a
-                        href={s.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:text-slate-gray ml-0.5"
-                      >
-                        <ExternalLink className="w-3 h-3 text-slate-gray" />
-                      </a>
-                    )}
-                  </div>
-                ))}
-
-                {/* Web Sources */}
-                {webSources.map((s, idx) => (
-                  <div
-                    key={`web-${idx}`}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-floral-white shadow-neu-sm-pressed text-[11px] text-black-olive/80 font-medium border border-black-olive/10"
-                    title={s.title}
-                  >
-                    <Globe className="w-3.5 h-3.5 text-slate-gray flex-shrink-0" />
-                    <span className="font-bold text-slate-gray">From the web:</span>
+                    <span className="font-bold text-slate-gray">{s.name}:</span>
                     <span className="truncate max-w-[170px] sm:max-w-[240px] text-black-olive/90">{s.title}</span>
                     {s.url && (
                       <a

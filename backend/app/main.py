@@ -16,9 +16,9 @@ from app.gemini_tutor import (
     check_rate_limit,
     validate_and_sanitize_message,
     call_gemini_api,
-    process_tutor_chat,
-    search_quantum_grounded
+    process_tutor_chat
 )
+from app.services.local_search import search_quantum_db
 from app.feedback import FeedbackPayload, record_feedback, get_feedback_summary
 from app.accuracy_test import run_accuracy_tests
 
@@ -266,10 +266,11 @@ class SearchRequest(BaseModel):
 @app.post("/api/search/quantum")
 async def search_quantum_endpoint(req: SearchRequest, request: Request = None):
     """
-    Hero Search Bar Endpoint:
-    Combines local curated Quantum Knowledge Base (RAG) and live web search
-    to deliver beginner-simplified answers with distinct source attribution.
-    Protected by rate limiting and anti-hallucination verification.
+    Hero Search Bar Endpoint (Local Database Search):
+    Executes fast, deterministic search directly against the Quantum Knowledge Base
+    table in Supabase PostgreSQL (with automatic local SQLite fallback).
+    Strictly zero Gemini LLM calls, zero live web requests.
+    Protected by rate limiting.
     """
     client_ip = "127.0.0.1"
     if request:
@@ -289,14 +290,14 @@ async def search_quantum_endpoint(req: SearchRequest, request: Request = None):
         )
 
     try:
-        result = search_quantum_grounded(req.query)
+        result = search_quantum_db(req.query)
         return result
     except ValueError as ve:
         raise HTTPException(status_code=400, detail={"message": str(ve)})
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail={"message": "An error occurred while searching for quantum insights."}
+            detail={"message": "An error occurred while querying the Quantum Knowledge Base database."}
         )
 
 
