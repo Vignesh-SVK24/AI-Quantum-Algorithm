@@ -164,6 +164,7 @@ def clear_topic_cache() -> None:
 def normalize_query(query: str) -> str:
     """Normalizes search query: lowercases, trims, removes excess whitespace, punctuation, and possessive 's."""
     q = query.lower().strip()
+    q = q.replace("–", "-").replace("—", "-")
     q = q.replace("|0⟩", "|0>").replace("|1⟩", "|1>").replace("|+⟩", "|+>").replace("|-⟩", "|->")
     q = re.sub(r"['’]s\b", "", q)
     q = re.sub(r'[^\w\s\-\+>]', ' ', q)
@@ -196,6 +197,16 @@ def search_quantum_db(query: str) -> QuantumTopicSearchResponse:
     norm_q = normalize_query(raw_query)
     stripped_q = strip_filler_words(norm_q)
 
+    # Parenthetical variants (e.g., "Quantum Fourier Transform (QFT)" -> "Quantum Fourier Transform", "QFT")
+    no_paren_raw = re.sub(r'\s*\([^)]*\)', '', raw_query).strip()
+    norm_no_paren = normalize_query(no_paren_raw) if no_paren_raw != raw_query else ""
+    stripped_no_paren = strip_filler_words(norm_no_paren) if norm_no_paren else ""
+
+    paren_match = re.search(r'\(([^)]+)\)', raw_query)
+    paren_inner = normalize_query(paren_match.group(1)) if paren_match else ""
+
+    query_variants = {v for v in [norm_q, stripped_q, norm_no_paren, stripped_no_paren, paren_inner] if v}
+
     topics, engine = load_all_topics()
     if not topics:
         return {
@@ -221,20 +232,20 @@ def search_quantum_db(query: str) -> QuantumTopicSearchResponse:
         name_norm = normalize_query(t_name)
         slug_lower = t.get("slug", "").lower().strip()
 
-        if norm_q in (name_lower, slug_lower, name_norm) or norm_q.replace("s ", " ") == name_norm:
-            return _build_match_response(raw_query, t, engine)
+        target_names = {name_lower, slug_lower, name_norm, name_norm.replace("-", " "), name_lower.replace("-", " ")}
+        for qv in query_variants:
+            if qv in target_names or qv.replace("-", " ") in target_names or qv.replace("s ", " ") in target_names:
+                return _build_match_response(raw_query, t, engine)
 
     # Pass 1b: Exact alias match across ALL topics
     for t in topics:
         aliases = [a.lower().strip() for a in t.get("aliases", []) if a]
         norm_aliases = [normalize_query(a) for a in aliases if a]
+        all_alias_forms = set(aliases + norm_aliases + [a.replace("-", " ") for a in norm_aliases])
 
-        if (
-            norm_q in aliases
-            or norm_q in norm_aliases
-            or norm_q.replace("s ", " ") in norm_aliases
-        ):
-            return _build_match_response(raw_query, t, engine)
+        for qv in query_variants:
+            if qv in all_alias_forms or qv.replace("-", " ") in all_alias_forms or qv.replace("s ", " ") in all_alias_forms:
+                return _build_match_response(raw_query, t, engine)
 
     # Pass 1c: Stripped conversational query match across ALL topics
     if stripped_q and stripped_q != norm_q:
@@ -245,12 +256,12 @@ def search_quantum_db(query: str) -> QuantumTopicSearchResponse:
             slug_lower = t.get("slug", "").lower().strip()
             aliases = [a.lower().strip() for a in t.get("aliases", []) if a]
             norm_aliases = [normalize_query(a) for a in aliases if a]
+            all_forms = set([name_lower, slug_lower, name_norm] + aliases + norm_aliases)
 
             if (
-                stripped_q in (name_lower, slug_lower, name_norm)
-                or stripped_q.replace("s ", " ") == name_norm
-                or stripped_q in aliases
-                or stripped_q in norm_aliases
+                stripped_q in all_forms
+                or stripped_q.replace("s ", " ") in all_forms
+                or stripped_q.replace("-", " ") in all_forms
             ):
                 return _build_match_response(raw_query, t, engine)
 
@@ -258,13 +269,11 @@ def search_quantum_db(query: str) -> QuantumTopicSearchResponse:
     for t in topics:
         keywords = [k.lower().strip() for k in t.get("keywords", []) if k]
         norm_keywords = [normalize_query(k) for k in keywords if k]
+        all_keywords = set(keywords + norm_keywords)
 
-        if (
-            norm_q in keywords
-            or norm_q in norm_keywords
-            or (stripped_q and (stripped_q in keywords or stripped_q in norm_keywords))
-        ):
-            return _build_match_response(raw_query, t, engine)
+        for qv in query_variants:
+            if qv in all_keywords or qv.replace("-", " ") in all_keywords:
+                return _build_match_response(raw_query, t, engine)
 
     # =========================================================================
     # STEP 2: CLOSE MISSPELLING / DID-YOU-MEAN CHECK

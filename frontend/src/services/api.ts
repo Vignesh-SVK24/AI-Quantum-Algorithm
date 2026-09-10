@@ -970,7 +970,7 @@ export interface QuantumTopic {
   tags: string[];
   source_name?: string | null;
   source_url?: string | null;
-  additional_sources: QuantumTopicSource[];
+  additional_sources?: QuantumTopicSource[];
   verification_status: string;
   created_at?: string | null;
   updated_at?: string | null;
@@ -1031,34 +1031,55 @@ export async function searchQuantum(query: string): Promise<QuantumTopicSearchRe
 }
 
 function searchOfflineCatalog(rawQuery: string): QuantumTopicSearchResponse {
-  const query = rawQuery.trim().toLowerCase();
+  const query = rawQuery.trim().toLowerCase().replace(/[–—]/g, '-');
+  const noParen = query.replace(/\s*\([^)]*\)/g, '').trim();
+  const parenMatch = rawQuery.match(/\(([^)]+)\)/);
+  const parenInner = parenMatch ? parenMatch[1].trim().toLowerCase() : '';
   const stripped = query
     .replace(/^(what\s+is\s+(a\s+|an\s+|the\s+)?|how\s+does\s+(a\s+|the\s+)?|tell\s+me\s+about\s+(a\s+|the\s+)?|explain\s+(a\s+|the\s+)?)/i, '')
     .trim();
+  const strippedNoParen = noParen
+    .replace(/^(what\s+is\s+(a\s+|an\s+|the\s+)?|how\s+does\s+(a\s+|the\s+)?|tell\s+me\s+about\s+(a\s+|the\s+)?|explain\s+(a\s+|the\s+)?)/i, '')
+    .trim();
+
+  const queryVariants = Array.from(new Set([query, noParen, stripped, strippedNoParen, parenInner].filter(Boolean)));
 
   // 1. Exact slug or exact topic_name
-  let match = QUANTUM_TOPICS_CATALOG.find(t => t.slug.toLowerCase() === query || t.topic_name.toLowerCase() === query);
+  let match = QUANTUM_TOPICS_CATALOG.find(t => {
+    const slug = t.slug.toLowerCase();
+    const name = t.topic_name.toLowerCase();
+    return queryVariants.some(qv => 
+      slug === qv || name === qv ||
+      slug.replace(/-/g, ' ') === qv.replace(/-/g, ' ') ||
+      name.replace(/-/g, ' ') === qv.replace(/-/g, ' ')
+    );
+  });
   if (match) return buildOfflineResponse(rawQuery, match);
 
   // 2. Exact alias
-  match = QUANTUM_TOPICS_CATALOG.find(t => t.aliases?.some(a => a.toLowerCase() === query));
+  match = QUANTUM_TOPICS_CATALOG.find(t => 
+    t.aliases?.some(a => {
+      const aLower = a.toLowerCase().replace(/[–—]/g, '-');
+      return queryVariants.some(qv => 
+        aLower === qv || aLower.replace(/-/g, ' ') === qv.replace(/-/g, ' ')
+      );
+    })
+  );
   if (match) return buildOfflineResponse(rawQuery, match);
 
-  // 3. Stripped query
-  if (stripped && stripped !== query) {
-    match = QUANTUM_TOPICS_CATALOG.find(t => t.slug.toLowerCase() === stripped || t.topic_name.toLowerCase() === stripped);
-    if (match) return buildOfflineResponse(rawQuery, match);
-
-    match = QUANTUM_TOPICS_CATALOG.find(t => t.aliases?.some(a => a.toLowerCase() === stripped));
-    if (match) return buildOfflineResponse(rawQuery, match);
-  }
-
-  // 4. Keywords exact match
-  match = QUANTUM_TOPICS_CATALOG.find(t => t.keywords?.some(k => k.toLowerCase() === query || (stripped && k.toLowerCase() === stripped)));
+  // 3. Keywords exact match
+  match = QUANTUM_TOPICS_CATALOG.find(t => 
+    t.keywords?.some(k => {
+      const kLower = k.toLowerCase().replace(/[–—]/g, '-');
+      return queryVariants.some(qv => 
+        kLower === qv || kLower.replace(/-/g, ' ') === qv.replace(/-/g, ' ')
+      );
+    })
+  );
   if (match) return buildOfflineResponse(rawQuery, match);
 
-  // 5. Partial / substring match
-  const searchKey = stripped || query;
+  // 4. Partial / substring match
+  const searchKey = strippedNoParen || stripped || noParen || query;
   match = QUANTUM_TOPICS_CATALOG.find(t => 
     t.topic_name.toLowerCase().includes(searchKey) || 
     t.slug.toLowerCase().includes(searchKey) ||
@@ -1067,7 +1088,7 @@ function searchOfflineCatalog(rawQuery: string): QuantumTopicSearchResponse {
   );
   if (match) return buildOfflineResponse(rawQuery, match);
 
-  // 6. Reverse contains (e.g. user typed "grover algorithm simulation")
+  // 5. Reverse contains (e.g. user typed "grover algorithm simulation")
   match = QUANTUM_TOPICS_CATALOG.find(t => 
     searchKey.includes(t.topic_name.toLowerCase()) ||
     searchKey.includes(t.slug.toLowerCase()) ||
@@ -1099,7 +1120,7 @@ function searchOfflineCatalog(rawQuery: string): QuantumTopicSearchResponse {
   };
 }
 
-function buildOfflineResponse(rawQuery: string, topic: QuantumTopic): QuantumTopicSearchResponse {
+function buildOfflineResponse(rawQuery: string, topic: any): QuantumTopicSearchResponse {
   return {
     query: rawQuery,
     matched: true,

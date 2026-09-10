@@ -1,25 +1,5 @@
-// Quantum Knowledge Base Topics Catalog
-// Synchronized from verified SQLite database (backend/data/quantum_topics.sqlite3)
-// Strictly local, zero external search, zero Gemini calls
-
-export interface SourceItem {
-  title: string;
-  url: string;
-}
-
-export interface CanonicalCircuit {
-  num_qubits: number;
-  circuit_type: string;
-  title: string;
-  description: string;
-  gates: Array<{
-    type: string;
-    target: number;
-    step: number;
-    control?: number;
-    id?: string;
-  }>;
-}
+// AUTO-GENERATED FROM SQLite Knowledge Base (55 Curated Quantum Topics)
+// Supports full offline search, 0ms latency, and GitHub Pages deployments.
 
 export interface QuantumTopic {
   id: string;
@@ -40,21 +20,157 @@ export interface QuantumTopic {
   tags: string[];
   source_name?: string | null;
   source_url?: string | null;
-  additional_sources: SourceItem[];
+  additional_sources?: Array<{ title: string; url: string }>;
   verification_status: string;
-  canonical_circuit?: CanonicalCircuit | null;
   created_at?: string | null;
   updated_at?: string | null;
   status?: string | null;
   knowledge_version?: number | null;
-  difficulty_level?: string | null;
-  subcategory?: string | null;
-  ingestion_source_id?: string | null;
   last_verified_at?: string | null;
   verification_notes?: string | null;
+  ingestion_source_id?: string | null;
+  difficulty_level?: string | null;
+  subcategory?: string | null;
+  canonical_circuit?: any;
 }
 
 export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
+  {
+    "id": "amplitude-amplification",
+    "topic_name": "Amplitude Amplification",
+    "slug": "amplitude-amplification",
+    "category": "Algorithms",
+    "short_definition": "A fundamental quantum algorithm design technique that generalizes Grover search, boosting the probability of measuring a target subspace from p to near 1 in O(1/√p) iterations.",
+    "beginner_explanation": "Suppose you have any randomized quantum algorithm that produces a desired result with a small probability p (say 1%). Classically, to succeed with high probability, you would have to repeat the algorithm ~100 times. Amplitude Amplification acts as a quantum magnifying lens, amplifying the probability amplitude of success so you only need ~√100 = 10 quantum iterations!",
+    "detailed_explanation": "Formalized by Brassard, Høyer, Mosca, and Tapp (2000), amplitude amplification generalizes Grover's algorithm to arbitrary initial state preparations A|0⟩ instead of uniform Hadamard superpositions. The Grover iteration Q = -A S₀ A† S_χ consists of an oracle phase reflection S_χ on the good states followed by a diffusion reflection about the state A|0⟩. The state rotates in a 2D subspace spanned by good and bad states by angle 2θ, where sin(θ) = √p.",
+    "mathematical_explanation": "Let |ψ⟩ = A|0⟩ = sin(θ)|ψ_good⟩ + cos(θ)|ψ_bad⟩, where p = sin²(θ). The unitary operator Q = -A S₀ A† S_χ rotates the state in this 2D plane: Q^k |ψ⟩ = sin((2k + 1)θ)|ψ_good⟩ + cos((2k + 1)θ)|ψ_bad⟩. Choosing k = ⌊π / (4θ)⌋ ≈ (π/4)/√p yields sin²((2k+1)θ) ≈ 1.",
+    "formula": "Q = -A S_0 A^\\dagger S_\\chi, \\quad k_{opt} \\approx \\frac{\\pi}{4\\sqrt{p}} \\text{ queries vs } O(1/p) \\text{ classically}",
+    "example": "If a quantum heuristic algorithm finds a valid graph coloring with probability p = 0.0001, classical repetition requires ~10,000 runs. Amplitude amplification requires only ~ (π/4)/√0.0001 ≈ (π/4)·100 ≈ 78 iterations.",
+    "circuit_example": "from qiskit import QuantumCircuit\n# Generalized structure: A -> (Oracle -> A_dagger -> Zero_Reflect -> A)^k\nqc = QuantumCircuit(2)\nqc.h([0, 1]) # State preparation A\n# Grover/Amplification operator Q\nqc.cz(0, 1)  # Oracle phase flip\nqc.h([0, 1]); qc.x([0, 1])\nqc.cz(0, 1); qc.x([0, 1]); qc.h([0, 1])",
+    "related_topics": [
+      "Grover's Algorithm",
+      "Quantum Counting",
+      "Quantum Amplitude Estimation (QAE)",
+      "Quantum Oracle",
+      "Quantum Algorithms"
+    ],
+    "common_mistakes": [
+      "Assuming amplitude amplification only works on uniform Hadamard states (it works with any unitary state preparation A).",
+      "Overcooking: applying more than the optimal number of iterations rotates past the target state and reduces success probability.",
+      "Confusing amplitude amplification with phase estimation (QAE combines both)."
+    ],
+    "aliases": [
+      "amplitude amplification",
+      "quantum amplitude amplification",
+      "qaa",
+      "generalized grover",
+      "grover amplification"
+    ],
+    "keywords": [
+      "amplitude amplification",
+      "grover",
+      "brassard",
+      "speedup",
+      "quadratic",
+      "rotation",
+      "magnification",
+      "quantum search"
+    ],
+    "tags": [
+      "algorithms",
+      "technique",
+      "quadratic-speedup",
+      "core-concept"
+    ],
+    "source_name": "Brassard, Høyer, Mosca, & Tapp (2000)",
+    "source_url": "https://arxiv.org/abs/quant-ph/0005055",
+    "additional_sources": [
+      {
+        "title": "Qiskit Documentation: Amplitude Amplification",
+        "url": "https://docs.quantum.ibm.com/"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 2,
+      "circuit_type": "amplification_operator",
+      "title": "Amplitude Amplification Operator Q",
+      "description": "Reflection about target followed by reflection about initial state A|0⟩",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 0
+        },
+        {
+          "type": "CZ",
+          "target": 1,
+          "control": 0,
+          "step": 1
+        },
+        {
+          "type": "H",
+          "target": 0,
+          "step": 2
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 2
+        },
+        {
+          "type": "X",
+          "target": 0,
+          "step": 3
+        },
+        {
+          "type": "X",
+          "target": 1,
+          "step": 3
+        },
+        {
+          "type": "CZ",
+          "target": 1,
+          "control": 0,
+          "step": 4
+        },
+        {
+          "type": "X",
+          "target": 0,
+          "step": 5
+        },
+        {
+          "type": "X",
+          "target": 1,
+          "step": 5
+        },
+        {
+          "type": "H",
+          "target": 0,
+          "step": 6
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 6
+        }
+      ]
+    }
+  },
   {
     "id": "bell-state",
     "topic_name": "Bell State",
@@ -133,6 +249,133 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "control": 0,
           "target": 1,
           "step": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "bernstein-vazirani-algorithm",
+    "topic_name": "Bernstein–Vazirani Algorithm",
+    "slug": "bernstein-vazirani-algorithm",
+    "category": "Algorithms",
+    "short_definition": "A landmark quantum algorithm that learns an unknown n-bit secret string s hidden inside a linear oracle function f(x) = s · x in exactly 1 query, compared to n classical queries.",
+    "beginner_explanation": "Imagine someone sets a secret n-digit binary password, and you have a box that tells you whether your guess shares an even or odd parity with the password. Classically, to uncover an 8-bit password, you must test at least 8 queries (10000000, 01000000, etc.). The Bernstein-Vazirani quantum algorithm finds the entire secret string in just ONE single query, regardless of how long the string is!",
+    "detailed_explanation": "The oracle computes the inner product modulo 2: f(x) = s · x = (s₀x₀ ⊕ s₁x₁ ⊕ ... ⊕ s_{n-1}x_{n-1}). The algorithm initializes n input qubits to |0⟩ and an ancilla qubit to |1⟩. Applying Hadamard gates gives |+⟩^⊗n |−⟩. When queried, phase kickback encodes (-1)^(s · x) into each basis amplitude. A final Hadamard transform on the n input qubits inverts the Walsh-Hadamard basis, transforming the state directly into the computational basis state |s⟩.",
+    "mathematical_explanation": "Step-by-step state transformation:\n|ψ₀⟩ = |0⟩^⊗n |1⟩\n|ψ₁⟩ = H^⊗(n+1) |ψ₀⟩ = (1/√2ⁿ) ∑_{x} |x⟩ |−⟩\nU_f|ψ₁⟩ = (1/√2ⁿ) ∑_{x} (-1)^{s · x} |x⟩ |−⟩\nH^⊗n (1/√2ⁿ) ∑_{x} (-1)^{s · x} |x⟩ = |s⟩.\nMeasuring the n input qubits yields string s with probability 1.0.",
+    "formula": "H^{\\otimes n} \\left( \\frac{1}{\\sqrt{2^n}} \\sum_{x} (-1)^{s \\cdot x} |x\\rangle \\right) = |s\\rangle",
+    "example": "For a secret string s = '1011', classical algorithms require 4 separate queries to uncover each bit. Bernstein-Vazirani inputs |0000⟩|1⟩, executes H gates, queries the oracle once, applies H gates, and measures '1011' with 100% probability.",
+    "circuit_example": "from qiskit import QuantumCircuit\n# Secret string: s = '101'\nqc = QuantumCircuit(4, 3)\nqc.x(3); qc.h([0,1,2,3])\n# Oracle for s='101': CNOT from q0 and q2 to q3\nqc.cx(0, 3); qc.cx(2, 3)\nqc.h([0,1,2])\nqc.measure([0,1,2], [0,1,2])",
+    "related_topics": [
+      "Deutsch-Jozsa Algorithm",
+      "Quantum Oracle",
+      "Hadamard Gate",
+      "Phase Kickback",
+      "Quantum Algorithms"
+    ],
+    "common_mistakes": [
+      "Assuming Bernstein-Vazirani provides exponential speedup (it provides an O(n) vs 1 query separation, which is a linear speedup in queries).",
+      "Forgetting to apply CNOT gates only to qubits where the secret bit s_i is 1.",
+      "Thinking the oracle can be any nonlinear function (the promise requires f(x) = s · x)."
+    ],
+    "aliases": [
+      "bernstein-vazirani algorithm",
+      "bernstein vazirani",
+      "bv algorithm",
+      "bv",
+      "secret string algorithm",
+      "inner product algorithm"
+    ],
+    "keywords": [
+      "bernstein-vazirani",
+      "bernstein",
+      "vazirani",
+      "bv",
+      "secret string",
+      "inner product",
+      "oracle",
+      "linear function"
+    ],
+    "tags": [
+      "algorithms",
+      "oracle",
+      "linear-speedup",
+      "exact-algorithm"
+    ],
+    "source_name": "Bernstein & Vazirani (SIAM J. Comput. 1997)",
+    "source_url": "https://doi.org/10.1137/S0097539796300921",
+    "additional_sources": [
+      {
+        "title": "IBM Quantum Learning: Bernstein-Vazirani",
+        "url": "https://learning.quantum.ibm.com/"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 4,
+      "circuit_type": "oracle_algorithm",
+      "title": "Bernstein-Vazirani Secret String (s='101')",
+      "description": "Finds hidden bitstring 101 in a single quantum query",
+      "gates": [
+        {
+          "type": "X",
+          "target": 3,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 0,
+          "step": 1
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 1
+        },
+        {
+          "type": "H",
+          "target": 2,
+          "step": 1
+        },
+        {
+          "type": "H",
+          "target": 3,
+          "step": 1
+        },
+        {
+          "type": "CNOT",
+          "target": 3,
+          "control": 0,
+          "step": 2
+        },
+        {
+          "type": "CNOT",
+          "target": 3,
+          "control": 2,
+          "step": 3
+        },
+        {
+          "type": "H",
+          "target": 0,
+          "step": 4
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 4
+        },
+        {
+          "type": "H",
+          "target": 2,
+          "step": 4
         }
       ]
     }
@@ -299,6 +542,104 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
     }
   },
   {
+    "id": "deutsch-algorithm",
+    "topic_name": "Deutsch Algorithm",
+    "slug": "deutsch-algorithm",
+    "category": "Algorithms",
+    "short_definition": "The historical first quantum algorithm (David Deutsch, 1985) proving that a quantum computer can determine whether a 1-bit function is constant or balanced in a single query.",
+    "beginner_explanation": "Imagine you have a black-box coin that can either be fair (balanced: heads on one side, tails on the other) or biased (constant: identical on both sides). Classically, you must look at both sides (2 queries) to know for sure. The Deutsch algorithm uses quantum superposition and interference to determine if the coin is constant or balanced in just ONE single query.",
+    "detailed_explanation": "The algorithm examines a function f: {0, 1} → {0, 1}. The circuit initializes input qubit 0 in |0⟩ and ancilla qubit 1 in |1⟩. Both pass through Hadamard gates to create |+⟩|−⟩. The oracle U_f maps |x⟩|y⟩ → |x⟩|y ⊕ f(x)⟩. Due to phase kickback from the |−⟩ ancilla, the state becomes (-1)^f(0) [ |0⟩ + (-1)^(f(0)⊕f(1)) |1⟩ ] / √2. A final Hadamard on qubit 0 maps it to |0⟩ if f is constant (f(0) = f(1)) and |1⟩ if f is balanced (f(0) ≠ f(1)).",
+    "mathematical_explanation": "Action on the state:\n|ψ₀⟩ = |01⟩\n|ψ₁⟩ = (H ⊗ H)|01⟩ = (|0⟩ + |1⟩)/√2 ⊗ (|0⟩ - |1⟩)/√2\nU_f|ψ₁⟩ = (-1)^f(0) / 2 [ |0⟩ + (-1)^(f(0)⊕f(1)) |1⟩ ] (|0⟩ - |1⟩)\n(H ⊗ I)U_f|ψ₁⟩ = ± |f(0) ⊕ f(1)⟩ |−⟩.\nMeasurement of qubit 0 yields: 0 if constant, 1 if balanced with 100% certainty.",
+    "formula": "|\\psi_{\\text{final}}\\rangle = \\pm |f(0) \\oplus f(1)\\rangle |-\\rangle",
+    "example": "If f(0)=0 and f(1)=0 (constant), measuring qubit 0 yields 0 with 100% probability. If f(0)=0 and f(1)=1 (balanced), measuring qubit 0 yields 1 with 100% probability.",
+    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(2, 1)\nqc.x(1)          # Ancilla to |1>\nqc.h([0, 1])     # Superposition |+>|->\n# [Insert Oracle U_f here]\nqc.h(0)          # Interference on input\nqc.measure(0, 0)",
+    "related_topics": [
+      "Deutsch-Jozsa Algorithm",
+      "Phase Kickback",
+      "Hadamard Gate",
+      "Quantum Oracle",
+      "Superposition"
+    ],
+    "common_mistakes": [
+      "Confusing Deutsch Algorithm (1 input qubit) with Deutsch-Jozsa Algorithm (n input qubits).",
+      "Believing the algorithm reveals the actual values f(0) and f(1) (it only extracts the global property f(0) ⊕ f(1)).",
+      "Omitting the |1⟩ initialization on the ancilla qubit required for phase kickback."
+    ],
+    "aliases": [
+      "deutsch algorithm",
+      "deutsch's algorithm",
+      "deutsch problem",
+      "single qubit deutsch"
+    ],
+    "keywords": [
+      "deutsch",
+      "deutsch algorithm",
+      "constant",
+      "balanced",
+      "oracle",
+      "phase kickback",
+      "first quantum algorithm"
+    ],
+    "tags": [
+      "algorithms",
+      "foundations",
+      "oracle",
+      "exact-speedup"
+    ],
+    "source_name": "David Deutsch (Proc. R. Soc. Lond. A 1985)",
+    "source_url": "https://doi.org/10.1098/rspa.1985.0070",
+    "additional_sources": [
+      {
+        "title": "Qiskit Textbook: Deutsch-Jozsa Algorithm",
+        "url": "https://docs.quantum.ibm.com/guides"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 2,
+      "circuit_type": "oracle_algorithm",
+      "title": "Deutsch 1-Qubit Algorithm",
+      "description": "Determines if 1-bit function is constant or balanced in 1 query",
+      "gates": [
+        {
+          "type": "X",
+          "target": 1,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 0,
+          "step": 1
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 1
+        },
+        {
+          "type": "CNOT",
+          "target": 1,
+          "control": 0,
+          "step": 2
+        },
+        {
+          "type": "H",
+          "target": 0,
+          "step": 3
+        }
+      ]
+    }
+  },
+  {
     "id": "deutsch-jozsa-algorithm",
     "topic_name": "Deutsch-Jozsa Algorithm",
     "slug": "deutsch-jozsa-algorithm",
@@ -321,9 +662,12 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "Overlooking that the quantum oracle must be implemented as a reversible unitary transformation."
     ],
     "aliases": [
-      "deutsch jozsa",
+      "deutsch-jozsa algorithm",
+      "deutsch jozsa algorithm",
+      "deutsch–jozsa algorithm",
       "deutsch-jozsa",
-      "deutsch algorithm",
+      "deutsch jozsa",
+      "deutsch–jozsa",
       "constant vs balanced"
     ],
     "keywords": [
@@ -416,6 +760,11 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "Running too many iterations (over-rotation: running beyond (π/4)√N decreases the success probability back down)."
     ],
     "aliases": [
+      "grover's algorithm",
+      "grovers algorithm",
+      "grover's search algorithm",
+      "grovers search algorithm",
+      "grover search algorithm",
       "grover search",
       "grover",
       "quantum search algorithm",
@@ -628,6 +977,301 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
     }
   },
   {
+    "id": "hhl-algorithm",
+    "topic_name": "HHL Algorithm (Harrow–Hassidim–Lloyd)",
+    "slug": "hhl-algorithm",
+    "category": "Algorithms",
+    "short_definition": "The foundational quantum algorithm for solving systems of linear equations Ax = b, providing an exponential speedup in matrix dimension N over classical solvers.",
+    "beginner_explanation": "Linear systems of equations (Ax = b) are used everywhere in science: weather forecasts, aerodynamics, structural engineering, and machine learning. If A is an N x N matrix, classical computers take O(N) or O(N³) operations to solve it. For N = 1 trillion, classical supercomputers grind to a halt. The HHL algorithm solves for the quantum state |x⟩ in time proportional to log(N)—an exponential speedup!",
+    "detailed_explanation": "Published in 2009 by Aram Harrow, Avinatan Hassidim, and Seth Lloyd, HHL operates under the assumption that A is a Hermitian s-sparse matrix. The algorithm proceeds in three major stages: 1) Quantum Phase Estimation using unitary e^(i A t) decomposes vector |b⟩ into the eigenbasis of A: ∑_j β_j |u_j⟩ |λ_j⟩. 2) Controlled auxiliary rotation inverts the eigenvalues: |λ_j⟩|0⟩ → |λ_j⟩ (C/λ_j |1⟩ + √(1 - C²/λ_j²) |0⟩). 3) Inverse Phase Estimation uncomputes the eigenvalue register, leaving the state |x⟩ = A⁻¹|b⟩ / ||A⁻¹|b||.",
+    "mathematical_explanation": "Let A = \\sum_j \\lambda_j |u_j\\rangle\\langle u_j| and |b\\rangle = \\sum_j \\beta_j |u_j\\rangle.\n1. QPE: \\sum_j \\beta_j |u_j\\rangle |\\lambda_j\\rangle\n2. Controlled rotation on ancilla: \\sum_j \\beta_j |u_j\\rangle |\\lambda_j\\rangle \\left( \\frac{C}{\\lambda_j}|1\\rangle + \\sqrt{1 - \\frac{C^2}{\\lambda_j^2}}|0\\rangle \\right)\n3. QPE^\\dagger and post-selection on ancilla = 1: |x\\rangle \\propto \\sum_j \\frac{\\beta_j}{\\lambda_j} |u_j\\rangle = A^{-1}|b\\rangle.",
+    "formula": "T_{HHL} = O\\left( \\kappa^2 s^2 \\frac{\\log N}{\\epsilon} \\right) \\quad \\text{vs} \\quad T_{classical} = O(N s \\kappa \\log(1/\\epsilon))",
+    "example": "For a sparse matrix with N = 1,000,000,000 dimensions (10⁹) and condition number κ = 10: classical algorithms require billions of floating-point operations. HHL processes the system on roughly log₂(10⁹) ≈ 30 qubits in O(log N) runtime.",
+    "circuit_example": "from qiskit import QuantumCircuit\n# HHL framework: Phase Estimation -> Controlled Rotation -> Inverse QPE\nqc = QuantumCircuit(3, 1)\nqc.h(0)\n# Controlled Hamiltonian evolution e^(iAt)\nqc.cp(1.2, 0, 1)\n# Controlled ancilla rotation based on eigenvalue\nqc.cry(0.8, 0, 2)\nqc.h(0)\nqc.measure(2, 0)",
+    "related_topics": [
+      "Quantum Phase Estimation",
+      "Quantum Linear Systems",
+      "Quantum Singular Value Transformation (QSVT)",
+      "Quantum Algorithms"
+    ],
+    "common_mistakes": [
+      "Assuming HHL outputs all N entries of vector x as classical numbers (it prepares the quantum state |x⟩; reading all entries would take O(N) measurements!).",
+      "Ignoring the condition number κ (if κ is large, the speedup degrades as κ²).",
+      "Overlooking the difficulty of efficiently encoding the classical vector b into the quantum state |b⟩."
+    ],
+    "aliases": [
+      "hhl algorithm",
+      "harrow-hassidim-lloyd",
+      "hhl",
+      "quantum linear systems solver",
+      "quantum matrix inversion"
+    ],
+    "keywords": [
+      "hhl",
+      "linear systems",
+      "matrix inversion",
+      "ax=b",
+      "eigenvalues",
+      "exponential speedup",
+      "harrow",
+      "lloyd"
+    ],
+    "tags": [
+      "algorithms",
+      "linear-algebra",
+      "exponential-speedup",
+      "core-concept"
+    ],
+    "source_name": "Harrow, Hassidim, & Lloyd (Phys. Rev. Lett. 2009)",
+    "source_url": "https://doi.org/10.1103/PhysRevLett.103.150502",
+    "additional_sources": [
+      {
+        "title": "Qiskit Tutorials: Linear Solvers (HHL)",
+        "url": "https://qiskit-community.github.io/"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 3,
+      "circuit_type": "linear_solver",
+      "title": "HHL Core Inversion Stage",
+      "description": "Eigenvalue estimation, controlled harmonic rotation, and uncomputation",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "CZ",
+          "target": 1,
+          "control": 0,
+          "step": 1
+        },
+        {
+          "type": "CNOT",
+          "target": 2,
+          "control": 0,
+          "step": 2
+        },
+        {
+          "type": "H",
+          "target": 0,
+          "step": 3
+        }
+      ]
+    }
+  },
+  {
+    "id": "hidden-subgroup-problem",
+    "topic_name": "Hidden Subgroup Problem (HSP)",
+    "slug": "hidden-subgroup-problem",
+    "category": "Algorithms",
+    "short_definition": "The overarching algebraic problem that unifies almost all known exponential quantum speedups (Shor's, Simon's, and Deutsch-Jozsa algorithms) as special cases over group theory.",
+    "beginner_explanation": "In mathematics, symmetries are described by groups. The Hidden Subgroup Problem asks: if a function has hidden symmetries (a subgroup H), can a computer discover that symmetry efficiently? For regular 'Abelian' groups (like numbers on a clock), quantum computers solve this exponentially faster than classical computers (which breaks RSA!). For complex 'non-Abelian' groups, it remains one of the deepest frontiers in quantum computing.",
+    "detailed_explanation": "Given a group G, a finite set X, and a function f: G → X that is constant on cosets of an unknown subgroup H ≤ G and distinct on different cosets (f(g₁) = f(g₂) ⟺ g₁H = g₂H), the goal is to determine a generating set for H. When G is finite Abelian (G = ℤ_N or ℤ₂ⁿ), the standard quantum Fourier sampling algorithm solves HSP in poly(log |G|) time. When G is non-Abelian (e.g., the symmetric group S_n), solving HSP would yield polynomial-time algorithms for Graph Isomorphism and the Shortest Vector Problem in lattice cryptography.",
+    "mathematical_explanation": "General Quantum Algorithm for Abelian HSP:\n1. Prepare |0⟩_G |0⟩_X\n2. Create uniform superposition: (1/√|G|) ∑_{g ∈ G} |g⟩ |0⟩\n3. Query oracle U_f: (1/√|G|) ∑_{g ∈ G} |g⟩ |f(g)⟩\n4. Measure target register, collapsing source to a random coset state |g₀ + H⟩ = (1/√|H|) ∑_{h ∈ H} |g₀ + h⟩\n5. Apply QFT_G and sample: outputs a character χ orthogonal to H (i.e. χ(h) = 1 for all h ∈ H).\nPolynomial samples determine H.",
+    "formula": "f(g_1) = f(g_2) \\iff g_1 H = g_2 H, \\quad G = \\mathbb{Z}_2^n \\implies \\text{Simon}, \\quad G = \\mathbb{Z}_N \\implies \\text{Shor}",
+    "example": "Deutsch-Jozsa is HSP with G = ℤ₂ and H ∈ {{0}, ℤ₂}. Simon's algorithm is HSP with G = ℤ₂ⁿ and H = {0ⁿ, s}. Shor's factoring algorithm is HSP with G = ℤ and H = rℤ (period finding).",
+    "circuit_example": "from qiskit import QuantumCircuit\n# Generalized Abelian HSP framework\nqc = QuantumCircuit(4, 2)\nqc.h([0, 1])     # QFT over G = Z_2 x Z_2\n# [Coset Oracle U_f]\nqc.h([0, 1])     # Inverse QFT over G\nqc.measure([0, 1], [0, 1])",
+    "related_topics": [
+      "Shor's Algorithm",
+      "Simon's Algorithm",
+      "Quantum Fourier Transform",
+      "Quantum Algorithms",
+      "Quantum Cryptography"
+    ],
+    "common_mistakes": [
+      "Assuming non-Abelian HSP is efficiently solved by quantum computers (it remains open and is the foundation of post-quantum lattice security).",
+      "Thinking Shor's and Simon's algorithms are unrelated (they are mathematically the same algorithm over different groups).",
+      "Believing the coset state measurement immediately gives H (Fourier sampling is required to extract generators)."
+    ],
+    "aliases": [
+      "hidden subgroup problem",
+      "hsp",
+      "abelian hidden subgroup",
+      "non-abelian hsp",
+      "coset problem"
+    ],
+    "keywords": [
+      "hsp",
+      "hidden subgroup",
+      "group theory",
+      "abelian",
+      "non-abelian",
+      "shor",
+      "simon",
+      "fourier sampling"
+    ],
+    "tags": [
+      "algorithms",
+      "algebra",
+      "complexity",
+      "unifying-framework"
+    ],
+    "source_name": "Boneh & Lipton (1995) & Mosca & Ekert (1998)",
+    "source_url": "https://doi.org/10.1007/3-540-68697-5_34",
+    "additional_sources": [
+      {
+        "title": "Nielsen & Chuang: The Hidden Subgroup Problem",
+        "url": "https://www.cambridge.org/core/books/quantum-computation-and-quantum-information/01E10196D0A682A6AEFFEA52D53BE9AE"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 4,
+      "circuit_type": "algebraic_framework",
+      "title": "Hidden Subgroup Fourier Sampling",
+      "description": "Group superposition, coset oracle, and Fourier transform extraction",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 0
+        },
+        {
+          "type": "CNOT",
+          "target": 2,
+          "control": 0,
+          "step": 1
+        },
+        {
+          "type": "CNOT",
+          "target": 3,
+          "control": 1,
+          "step": 1
+        },
+        {
+          "type": "H",
+          "target": 0,
+          "step": 2
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "iterative-quantum-phase-estimation",
+    "topic_name": "Iterative Quantum Phase Estimation (IQPE)",
+    "slug": "iterative-quantum-phase-estimation",
+    "category": "Algorithms",
+    "short_definition": "A resource-efficient variant of QPE that estimates the phase eigenvalue of a unitary operator bit-by-bit using only a single auxiliary qubit and classical feedback.",
+    "beginner_explanation": "Standard Quantum Phase Estimation requires many auxiliary qubits (one for every bit of precision) and a large multi-qubit Inverse Quantum Fourier Transform. Iterative QPE achieves the exact same precision using only ONE single helper qubit by measuring the least significant bit first, applying a phase correction based on the result, and reusing that same qubit for the next bit.",
+    "detailed_explanation": "To estimate an m-bit phase φ = 0.φ₁φ₂...φₘ, IQPE runs sequentially for m steps (from k = m down to 1). At step k, the single ancilla is initialized to |+⟩, a controlled-U^(2^(k-1)) gate is applied to the eigenstate register, and a classical phase correction based on previously measured bits is applied. Measuring the ancilla in the X-basis determines bit φ_k with certainty.",
+    "mathematical_explanation": "At step k, previously measured bits \\{ \\varphi_{k+1}, \\dots, \\varphi_m \\} produce a known phase shift \\omega_k = 2\\pi \\sum_{l=2}^{m-k+1} \\varphi_{k+l-1} 2^{-l}.\nA phase rotation R_z(-\\omega_k) is applied to the ancilla before the final Hadamard: H R_z(-\\omega_k) |\\psi\\rangle = |\\varphi_k\\rangle.\nQubit requirement is reduced from m + n to 1 + n.",
+    "formula": "R_z(-\\omega_k) = \\exp\\left(-i \\pi \\sum_{j=2}^{m-k+1} \\frac{\\varphi_{k+j-1}}{2^{j-1}}\\right)",
+    "example": "To estimate a phase to 20 bits of precision, standard QPE requires 20 ancilla qubits. IQPE requires only 1 ancilla qubit, executing 20 successive measurements and dynamic classical feedforward rotations.",
+    "circuit_example": "from qiskit import QuantumCircuit\n# 1 ancilla qubit + 1 system qubit\nqc = QuantumCircuit(2, 1)\nqc.h(0)\nqc.cp(0.785, 0, 1) # Controlled-U\nqc.h(0)\nqc.measure(0, 0)\n# Classical feedback resets qubit 0 for next bit",
+    "related_topics": [
+      "Quantum Phase Estimation",
+      "Quantum Fourier Transform",
+      "Shor's Algorithm",
+      "Variational Quantum Eigensolver (VQE)"
+    ],
+    "common_mistakes": [
+      "Assuming IQPE requires parallel execution of all bits (it is strictly sequential, from least significant to most significant bit).",
+      "Thinking IQPE requires mid-circuit measurement without classical feedforward (dynamic circuit reset and feedforward are required).",
+      "Believing IQPE has lower accuracy than standard QPE (the precision is mathematically identical)."
+    ],
+    "aliases": [
+      "iterative quantum phase estimation",
+      "iterative qpe",
+      "iqpe",
+      "single ancilla qpe",
+      "kitaev phase estimation"
+    ],
+    "keywords": [
+      "iqpe",
+      "iterative qpe",
+      "phase estimation",
+      "single ancilla",
+      "nisq",
+      "feedforward",
+      "kitaev",
+      "eigenvalue"
+    ],
+    "tags": [
+      "algorithms",
+      "qpe",
+      "nisq-friendly",
+      "resource-optimization"
+    ],
+    "source_name": "Kitaev (1995) & Dobšíček et al. (Phys. Rev. A 2007)",
+    "source_url": "https://doi.org/10.1103/PhysRevA.76.030306",
+    "additional_sources": [
+      {
+        "title": "Qiskit Tutorials: Iterative Phase Estimation",
+        "url": "https://docs.quantum.ibm.com/"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 2,
+      "circuit_type": "iterative_algorithm",
+      "title": "Iterative Phase Estimation Cycle",
+      "description": "Single ancilla coupled to eigenstate with dynamic phase feedback",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "CZ",
+          "target": 1,
+          "control": 0,
+          "step": 1
+        },
+        {
+          "type": "Z",
+          "target": 0,
+          "step": 2
+        },
+        {
+          "type": "H",
+          "target": 0,
+          "step": 3
+        }
+      ]
+    }
+  },
+  {
     "id": "measurement",
     "topic_name": "Measurement",
     "slug": "measurement",
@@ -691,6 +1335,275 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
     "difficulty_level": null,
     "subcategory": null,
     "canonical_circuit": null
+  },
+  {
+    "id": "no-cloning-theorem",
+    "topic_name": "No-Cloning Theorem",
+    "slug": "no-cloning-theorem",
+    "category": "Foundations",
+    "short_definition": "A fundamental theorem of quantum mechanics proving that it is mathematically impossible to create an identical, independent copy of an arbitrary unknown quantum state.",
+    "beginner_explanation": "In classical computing, copying data is trivial: you copy a file or clone a variable millions of times without altering the original. In quantum computing, copying is forbidden by the laws of physics! If you have an unknown qubit |ψ⟩, no machine can produce |ψ⟩|ψ⟩. This restriction makes quantum computers secure against eavesdropping (BB84), but it also means quantum error correction cannot simply duplicate bits.",
+    "detailed_explanation": "Formulated by Wootters, Zurek, and Dieks in 1982, the No-Cloning Theorem is an immediate consequence of the linearity of quantum mechanics and unitary evolution. Suppose there existed a unitary cloning operator U such that for any state |ψ⟩ and blank target |e⟩: U(|ψ⟩|e⟩) = |ψ⟩|ψ⟩. If we test this on two orthogonal states |0⟩ and |1⟩, linearity demands that for a superposition |+⟩ = (|0⟩+|1⟩)/√2, U(|+⟩|e⟩) = (|00⟩+|11⟩)/√2. However, true cloning would require |+⟩|+⟩ = (|00⟩+|01⟩+|10⟩+|11⟩)/2. These two states are completely different!",
+    "mathematical_explanation": "Proof by inner product preservation:\nSuppose U|\\psi\\rangle|e\\rangle = |\\psi\\rangle|\\psi\\rangle and U|\\phi\\rangle|e\\rangle = |\\phi\\rangle|\\phi\\rangle.\nSince U is unitary, it preserves inner products:\n\\langle \\psi|\\phi \\rangle \\langle e|e \\rangle = \\langle \\psi|\\phi \\rangle = \\langle \\psi|\\langle \\psi| \\cdot |\\phi\\rangle|\\phi\\rangle = (\\langle \\psi|\\phi \\rangle)^2.\nTherefore:\n\\langle \\psi|\\phi \\rangle - (\\langle \\psi|\\phi \\rangle)^2 = 0 \\implies \\langle \\psi|\\phi \\rangle (1 - \\langle \\psi|\\phi \\rangle) = 0.\nThis equation has only two solutions:\n1) \\langle \\psi|\\phi \\rangle = 0 (orthogonal states)\n2) \\langle \\psi|\\phi \\rangle = 1 (identical states).\nHence, cloning is impossible for non-orthogonal states.",
+    "formula": "U|\\psi\\rangle|e\\rangle = |\\psi\\rangle|\\psi\\rangle \\implies \\langle \\psi|\\phi \\rangle = (\\langle \\psi|\\phi \\rangle)^2 \\iff \\langle \\psi|\\phi \\rangle \\in \\{0, 1\\}",
+    "example": "Attempting to copy a qubit in state |+⟩ using a CNOT gate with target |0⟩ produces the entangled Bell state (|00⟩+|11⟩)/√2, NOT the cloned independent state |+⟩|+⟩ = (|00⟩+|01⟩+|10⟩+|11⟩)/2.",
+    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(2)\nqc.h(0) # Prepare |+>\nqc.cx(0, 1) # Entangles instead of cloning! Output is Bell state, not |+>|+>",
+    "related_topics": [
+      "Quantum Key Distribution",
+      "Quantum Teleportation",
+      "Quantum Error Correction",
+      "Qubit",
+      "Quantum State"
+    ],
+    "common_mistakes": [
+      "Thinking known quantum states cannot be prepared multiple times (you CAN prepare 1,000 copies of a KNOWN state; you cannot clone an UNKNOWN arbitrary state).",
+      "Believing CNOT clones qubits (CNOT only copies classical computational basis states |0⟩ and |1⟩; on superpositions, it creates entanglement).",
+      "Thinking quantum teleportation violates no-cloning (teleportation destroys the original state, transferring it rather than duplicating it)."
+    ],
+    "aliases": [
+      "no-cloning theorem",
+      "no cloning",
+      "no cloning theorem",
+      "quantum no-cloning",
+      "wootters zurek theorem"
+    ],
+    "keywords": [
+      "no-cloning",
+      "cloning",
+      "linearity",
+      "unitarity",
+      "wootters",
+      "zurek",
+      "dieks",
+      "cryptography",
+      "quantum law"
+    ],
+    "tags": [
+      "foundations",
+      "theorems",
+      "quantum-mechanics",
+      "security"
+    ],
+    "source_name": "Wootters & Zurek (Nature 1982) & Dieks (Phys. Lett. A 1982)",
+    "source_url": "https://doi.org/10.1038/299802a0",
+    "additional_sources": [
+      {
+        "title": "Dieks: Communication by EPR devices",
+        "url": "https://doi.org/10.1016/0375-9601(82)90084-6"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 2,
+      "circuit_type": "theorem_demonstration",
+      "title": "CNOT Failed Cloning / Entanglement Test",
+      "description": "Shows that trying to clone superposition |+⟩ produces entangled Bell pair instead of independent copy",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "CNOT",
+          "target": 1,
+          "control": 0,
+          "step": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "pauli-gates",
+    "topic_name": "Pauli Gates",
+    "slug": "pauli-gates",
+    "category": "Quantum Gates",
+    "short_definition": "The foundational set of three single-qubit Hermitian and unitary operators (Pauli-X, Pauli-Y, and Pauli-Z) that represent 180° rotations about the coordinate axes and form a basis for 2x2 matrices.",
+    "beginner_explanation": "The Pauli gates (X, Y, and Z) are the building blocks of quantum circuits: Pauli-X is the quantum bit-flip (NOT gate), Pauli-Z is the quantum phase-flip (changing 1 to -1), and Pauli-Y is both a bit-flip and a phase-flip combined. Together with the Identity matrix I, they form the bedrock of quantum error correction and spin mechanics.",
+    "detailed_explanation": "The Pauli group on 1 qubit is 𝒫₁ = {±I, ±iI, ±X, ±iX, ±Y, ±iY, ±Z, ±iZ}. The Pauli matrices are both Hermitian (σ = σ†, representing physical observables) and unitary (σ† σ = I, acting as quantum logic gates). They satisfy the commutation and anti-commutation relations: [σ_a, σ_b] = 2i ε_abc σ_c and {σ_a, σ_b} = 2 δ_ab I. Any arbitrary 2x2 complex Hermitian matrix M can be uniquely decomposed as M = c_0 I + c_1 X + c_2 Y + c_3 Z with real coefficients c_i.",
+    "mathematical_explanation": "Matrix representations:\nX = \\begin{pmatrix} 0 & 1 \\\\ 1 & 0 \\end{pmatrix}, \\quad Y = \\begin{pmatrix} 0 & -i \\\\ i & 0 \\end{pmatrix}, \\quad Z = \\begin{pmatrix} 1 & 0 \\\\ 0 & -1 \\end{pmatrix}.\nFundamental algebra:\nX^2 = Y^2 = Z^2 = I,\nXY = iZ, \\quad YZ = iX, \\quad ZX = iY,\nYX = -iZ, \\quad ZY = -iX, \\quad XZ = -iY.",
+    "formula": "X = \\begin{pmatrix} 0 & 1 \\\\ 1 & 0 \\end{pmatrix}, \\quad Y = \\begin{pmatrix} 0 & -i \\\\ i & 0 \\end{pmatrix}, \\quad Z = \\begin{pmatrix} 1 & 0 \\\\ 0 & -1 \\end{pmatrix}",
+    "example": "Pauli-X flips |0⟩ → |1⟩. Pauli-Z flips |+⟩ → |−⟩. The product XZ applied to |0⟩ yields X(Z|0⟩) = X|0⟩ = |1⟩, while ZX|0⟩ = Z(X|0⟩) = Z|1⟩ = -|1⟩, demonstrating non-commutativity: XZ = -ZX.",
+    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.x(0) # Bit-flip\nqc.y(0) # Bit + Phase flip\nqc.z(0) # Phase-flip",
+    "related_topics": [
+      "X Gate",
+      "Y Gate",
+      "Z Gate",
+      "Bloch Sphere",
+      "Quantum Error Correction",
+      "Quantum Gates"
+    ],
+    "common_mistakes": [
+      "Assuming Pauli gates commute with each other (they anti-commute: XY = -YX).",
+      "Thinking Pauli gates are only gates (they are also the fundamental spin observables measured in quantum physics).",
+      "Forgetting that all Pauli matrices square to the Identity matrix (X² = Y² = Z² = I)."
+    ],
+    "aliases": [
+      "pauli gates",
+      "pauli-x, y, z gates",
+      "pauli-x,y,z gates",
+      "pauli-x y z gates",
+      "pauli x, y, z gates",
+      "pauli x y z gates",
+      "pauli xyz gates",
+      "pauli matrices",
+      "pauli operators",
+      "sigma matrices",
+      "pauli group",
+      "pauli-x y z"
+    ],
+    "keywords": [
+      "pauli",
+      "pauli-x",
+      "pauli-y",
+      "pauli-z",
+      "sigma",
+      "bit flip",
+      "phase flip",
+      "hermitian",
+      "quantum gates"
+    ],
+    "tags": [
+      "quantum-gates",
+      "pauli",
+      "foundations",
+      "clifford"
+    ],
+    "source_name": "Wolfgang Pauli (1927) & Nielsen-Chuang",
+    "source_url": "https://www.cambridge.org/core/books/quantum-computation-and-quantum-information/01E10196D0A682A6AEFFEA52D53BE9AE",
+    "additional_sources": [
+      {
+        "title": "Qiskit Documentation: Pauli Operators",
+        "url": "https://docs.quantum.ibm.com/api/qiskit/qiskit.quantum_info.Pauli"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 1,
+      "circuit_type": "pauli_sequence",
+      "title": "Pauli X, Y, Z Rotation Sequence",
+      "description": "Applies Pauli bit-flip, bit-phase flip, and phase-flip operations",
+      "gates": [
+        {
+          "type": "X",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "Y",
+          "target": 0,
+          "step": 1
+        },
+        {
+          "type": "Z",
+          "target": 0,
+          "step": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "phase-gate",
+    "topic_name": "Phase Gate (S Gate)",
+    "slug": "phase-gate",
+    "category": "Quantum Gates",
+    "short_definition": "A fundamental single-qubit Clifford gate that maps |0⟩ → |0⟩ and |1⟩ → i|1⟩, implementing a π/2 (90°) rotation about the Z-axis of the Bloch sphere.",
+    "beginner_explanation": "The Phase Gate (commonly called the S gate) is the 'square root of Z'. While the Pauli-Z gate flips the phase by 180° (multiplying |1⟩ by -1), the S gate rotates the phase by 90° (multiplying |1⟩ by the imaginary unit i). Applying two S gates in a row equals a single Z gate (S² = Z).",
+    "detailed_explanation": "The S gate is a key element of the single-qubit Clifford group. It leaves the computational basis state |0⟩ invariant while applying a phase factor of e^(iπ/2) = i to |1⟩. On the Bloch sphere, the S gate corresponds to a counter-clockwise rotation by π/2 radians about the Z-axis. It transforms the X-basis states into Y-basis states: S|+⟩ = |+i⟩ = (|0⟩ + i|1⟩)/√2, and S|−⟩ = |−i⟩ = (|0⟩ - i|1⟩)/√2.",
+    "mathematical_explanation": "Matrix representation in computational basis:\nS = \\begin{pmatrix} 1 & 0 \\\\ 0 & i \\end{pmatrix} = \\begin{pmatrix} 1 & 0 \\\\ 0 & e^{i\\pi/2} \\end{pmatrix}.\nAction on basis states:\nS|0\\rangle = |0\\rangle, \\quad S|1\\rangle = i|1\\rangle.\nAlgebraic properties: S^2 = Z, \\quad S^4 = I, \\quad S^\\dagger = S^{-1} = \\begin{pmatrix} 1 & 0 \\\\ 0 & -i \\end{pmatrix} = S^3.",
+    "formula": "S = \\begin{pmatrix} 1 & 0 \\\\ 0 & i \\end{pmatrix}, \\quad S^2 = Z, \\quad S|1\\rangle = i|1\\rangle",
+    "example": "Applying S to state |+⟩ = (|0⟩+|1⟩)/√2 produces (|0⟩ + i|1⟩)/√2, moving the state vector from the X-axis to the positive Y-axis on the Bloch sphere equator.",
+    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.h(0) # Prepare |+>\nqc.s(0) # Rotate to |+i>\nqc.sdg(0) # Inverse S gate (S-dagger)",
+    "related_topics": [
+      "Z Gate",
+      "T Gate",
+      "Bloch Sphere",
+      "Quantum Gates",
+      "Rotation Gates"
+    ],
+    "common_mistakes": [
+      "Confusing S gate with the SWAP gate (S is single-qubit phase gate; SWAP is two-qubit exchange gate).",
+      "Assuming S affects measurement probabilities in computational basis (|0⟩, |1⟩ probabilities remain identical; only relative phase changes).",
+      "Thinking S is non-Clifford (S is a Clifford gate; T is non-Clifford)."
+    ],
+    "aliases": [
+      "phase gate",
+      "s gate",
+      "s-gate",
+      "sqrt z gate",
+      "z90 gate",
+      "pi/2 phase gate"
+    ],
+    "keywords": [
+      "phase gate",
+      "s gate",
+      "z gate",
+      "clifford",
+      "imaginary",
+      "bloch sphere",
+      "rotation",
+      "pi/2"
+    ],
+    "tags": [
+      "quantum-gates",
+      "clifford",
+      "single-qubit",
+      "phase"
+    ],
+    "source_name": "Qiskit Gate Documentation & Nielsen-Chuang",
+    "source_url": "https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.SGate",
+    "additional_sources": [
+      {
+        "title": "Nielsen & Chuang: Single-qubit operations",
+        "url": "https://www.cambridge.org/core/books/quantum-computation-and-quantum-information/01E10196D0A682A6AEFFEA52D53BE9AE"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 1,
+      "circuit_type": "single_qubit_gate",
+      "title": "Phase (S) Gate Operation",
+      "description": "Applies π/2 relative phase shift mapping |+⟩ to |+i⟩",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "S",
+          "target": 0,
+          "step": 1
+        }
+      ]
+    }
   },
   {
     "id": "phase-kickback",
@@ -777,6 +1690,426 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "control": 0,
           "target": 1,
           "step": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "qaoa",
+    "topic_name": "Quantum Approximate Optimization Algorithm (QAOA)",
+    "slug": "qaoa",
+    "category": "Algorithms",
+    "short_definition": "A hybrid quantum-classical variational algorithm designed to find approximate solutions to combinatorial optimization problems (such as Max-Cut) on NISQ devices.",
+    "beginner_explanation": "Many real-world problems (like scheduling flights, logistics routing, or network partitioning) are NP-hard optimization puzzles. QAOA is a quantum algorithm tailored for modern near-term quantum processors. It alternates between applying a 'cost' phase (which rewards good solutions) and a 'mixer' phase (which explores new combinations), letting a classical computer optimize the timing angles to find near-optimal solutions.",
+    "detailed_explanation": "Introduced by Farhi, Goldstone, and Gutmann (2014), QAOA maps an optimization problem to an Ising spin Hamiltonian H_C. The circuit starts with an equal superposition |+⟩^⊗n and applies p layers of alternating unitaries: U(C, γ) = e^(-i γ H_C) (cost unitary) and U(B, β) = e^(-i β H_B) (mixer unitary, where H_B = ∑ X_i). The 2p continuous parameters (γ, β) are optimized classically to maximize the expectation value ⟨ψ(γ, β)| H_C |ψ(γ, β)⟩. As layer depth p → ∞, QAOA converges to the exact adiabatic ground state.",
+    "mathematical_explanation": "The trial state after p layers:\n|\\psi(\\vec{\\gamma}, \\vec{\\beta})\\rangle = \\prod_{k=1}^{p} e^{-i \\beta_k H_B} e^{-i \\gamma_k H_C} |+\\rangle^{\\otimes n}.\nCost expectation:\nF_p(\\vec{\\gamma}, \\vec{\\beta}) = \\langle \\psi(\\vec{\\gamma}, \\vec{\\beta}) | H_C | \\psi(\\vec{\\gamma}, \\vec{\\beta}) \\rangle.\nClassical optimization solves (\\vec{\\gamma}^*, \\vec{\\beta}^*) = \\arg\\max F_p.",
+    "formula": "|\\psi(\\vec{\\gamma}, \\vec{\\beta})\\rangle = e^{-i\\beta_p H_B} e^{-i\\gamma_p H_C} \\dots e^{-i\\beta_1 H_B} e^{-i\\gamma_1 H_C} |+\\rangle^{\\otimes n}",
+    "example": "Solving Max-Cut on a 3-node triangle graph: H_C = 0.5(Z₀Z₁ + Z₁Z₂ + Z₀Z₂). QAOA applies parameterized ZZ rotations followed by single-qubit X rotations, optimizing γ and β to yield a cut value of 2 with high probability.",
+    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(2)\nqc.h([0, 1]) # Initial superposition\n# Cost layer (gamma): ZZ rotation\nqc.cx(0, 1); qc.rz(0.5, 1); qc.cx(0, 1)\n# Mixer layer (beta): Rx rotation\nqc.rx(0.8, [0, 1])",
+    "related_topics": [
+      "Variational Quantum Eigensolver (VQE)",
+      "Quantum Annealing",
+      "Variational Quantum Algorithms (VQAs)",
+      "Quantum Algorithms"
+    ],
+    "common_mistakes": [
+      "Assuming QAOA solves NP-complete problems in polynomial time (it provides approximation ratios, not exact polynomial solutions).",
+      "Overlooking that p=1 QAOA is limited in reach on high-degree graphs, requiring deeper layers p > 1.",
+      "Confusing QAOA with quantum annealing (QAOA is a digitized, gate-model algorithm with variational optimization)."
+    ],
+    "aliases": [
+      "qaoa",
+      "quantum approximate optimization algorithm",
+      "quantum approximate optimization",
+      "quantum combinatorial optimization"
+    ],
+    "keywords": [
+      "qaoa",
+      "optimization",
+      "max-cut",
+      "variational",
+      "farhi",
+      "combinatorial",
+      "mixer",
+      "cost hamiltonian",
+      "nisq"
+    ],
+    "tags": [
+      "algorithms",
+      "optimization",
+      "hybrid-quantum-classical",
+      "nisq"
+    ],
+    "source_name": "Farhi, Goldstone, & Gutmann (arXiv 2014)",
+    "source_url": "https://arxiv.org/abs/1411.4028",
+    "additional_sources": [
+      {
+        "title": "Qiskit Optimization Tutorials: QAOA",
+        "url": "https://qiskit-community.github.io/qiskit-optimization/"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 2,
+      "circuit_type": "variational_qaoa",
+      "title": "QAOA Layer 1 Circuit",
+      "description": "Cost Hamiltonian ZZ evolution followed by transverse-field X mixer",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 0
+        },
+        {
+          "type": "CNOT",
+          "target": 1,
+          "control": 0,
+          "step": 1
+        },
+        {
+          "type": "Z",
+          "target": 1,
+          "step": 2
+        },
+        {
+          "type": "CNOT",
+          "target": 1,
+          "control": 0,
+          "step": 3
+        },
+        {
+          "type": "X",
+          "target": 0,
+          "step": 4
+        },
+        {
+          "type": "X",
+          "target": 1,
+          "step": 4
+        }
+      ]
+    }
+  },
+  {
+    "id": "qpca",
+    "topic_name": "Quantum Principal Component Analysis (qPCA)",
+    "slug": "qpca",
+    "category": "Machine Learning",
+    "short_definition": "A quantum machine learning algorithm that reveals the principal eigenvectors and eigenvalues of an unknown low-rank density matrix ρ in exponential speedup O(log d) time.",
+    "beginner_explanation": "Principal Component Analysis (PCA) is the workhorse of data science, compressing massive datasets by finding the most important underlying directions (principal components). For a dataset of dimension d, classical PCA takes O(d²) to O(d³) time, which becomes impossible for billions of dimensions. Quantum PCA performs dimensional reduction exponentially faster in O(log d) time!",
+    "detailed_explanation": "Introduced by Lloyd, Mohseni, and Rebentrost (Nature Physics 2014), qPCA treats an unknown density matrix ρ as a Hamiltonian and performs density matrix exponentiation: e^(-i ρ t). By applying Quantum Phase Estimation (QPE) using e^(-i ρ t) as the unitary operator, the algorithm directly reveals the eigenvalues λ_i and projects the state onto the corresponding principal eigenvectors |v_i⟩ in O(log d) gate steps.",
+    "mathematical_explanation": "Given multiple copies of quantum state \\rho = \\sum_i \\lambda_i |v_i\\rangle\\langle v_i|:\nUsing swap operators, the operation e^{-i \\rho \\Delta t} is applied to a target state.\nApplying Quantum Phase Estimation yields:\n\\sum_i \\sqrt{\\lambda_i} |v_i\\rangle |\\tilde{\\lambda}_i\\rangle.\nMeasurement of the register outputs the largest eigenvalues and their corresponding principal vectors.",
+    "formula": "T_{quantum} = O((\\log d)^2) \\quad \\text{vs} \\quad T_{classical} = O(d^2)",
+    "example": "Compressing high-dimensional facial recognition features with d = 1,000,000 dimensions: classical PCA requires calculating a trillion matrix elements (10¹²), whereas qPCA operates on log₂(10⁶) ≈ 20 qubits.",
+    "circuit_example": "from qiskit import QuantumCircuit\n# Density matrix exponentiation and Phase Estimation core\nqc = QuantumCircuit(3, 1)\nqc.h(0)\nqc.cswap(0, 1, 2) # Controlled-SWAP for density matrix evolution\nqc.h(0)\nqc.measure(0, 0)",
+    "related_topics": [
+      "Quantum Machine Learning",
+      "Quantum Phase Estimation",
+      "HHL Algorithm",
+      "Quantum State"
+    ],
+    "common_mistakes": [
+      "Assuming data can be loaded from classical hard drives without state preparation cost (requires efficient quantum RAM or state preparation).",
+      "Believing qPCA outputs the full d-dimensional classical vector to screen (it prepares the quantum state |v_i⟩).",
+      "Confusing classical linear algebra PCA with density matrix spectral decomposition."
+    ],
+    "aliases": [
+      "qpca",
+      "quantum principal component analysis",
+      "quantum pca",
+      "quantum dimensionality reduction"
+    ],
+    "keywords": [
+      "qpca",
+      "principal component analysis",
+      "pca",
+      "machine learning",
+      "eigenvectors",
+      "density matrix",
+      "exponential speedup",
+      "lloyd"
+    ],
+    "tags": [
+      "machine-learning",
+      "qml",
+      "spectral-analysis",
+      "exponential-speedup"
+    ],
+    "source_name": "Lloyd, Mohseni, & Rebentrost (Nature Physics 2014)",
+    "source_url": "https://doi.org/10.1038/nphys3029",
+    "additional_sources": [
+      {
+        "title": "MIT Technology Review: Quantum PCA",
+        "url": "https://www.technologyreview.com/"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 3,
+      "circuit_type": "spectral_analysis",
+      "title": "Quantum PCA Controlled-SWAP Unitary",
+      "description": "Density matrix evolution via controlled-swap operations for spectral decomposition",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "CSWAP",
+          "target": 2,
+          "control": 0,
+          "step": 1
+        },
+        {
+          "type": "H",
+          "target": 0,
+          "step": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "qsvm",
+    "topic_name": "Quantum Support Vector Machine (QSVM)",
+    "slug": "qsvm",
+    "category": "Machine Learning",
+    "short_definition": "A quantum machine learning algorithm that maps classical data points into quantum states in a high-dimensional Hilbert space, evaluating kernel functions with quantum speedup.",
+    "beginner_explanation": "Classical Support Vector Machines (SVMs) classify data (like spam vs non-spam emails) by finding a dividing boundary. When data cannot be cleanly separated on a flat surface, SVMs use a mathematical 'kernel trick' to map data into higher dimensions where a clean separating boundary exists. QSVM uses quantum circuits as the ultimate feature space, calculating similarities that classical computers cannot compute efficiently!",
+    "detailed_explanation": "QSVM operates primarily via Quantum Kernel Estimation (Havlíček et al., Nature 2019). Classical feature vector x is mapped into quantum state |Φ(x)⟩ using a parameterized feature map circuit U_Φ(x). The quantum kernel K(x, x') = |⟨Φ(x)|Φ(x')⟩|² represents transition fidelity between two states, computed by executing U_Φ(x) followed by U_Φ†(x') and measuring all-zero outcome probability |0...0⟩. Once the kernel matrix is evaluated on the quantum computer, a standard classical SVM optimizer determines the optimal separating hyperplane.",
+    "mathematical_explanation": "Quantum feature map:\n|\\Phi(x)\\rangle = U_{\\Phi}(x) |0\\rangle^{\\otimes n}.\nQuantum Kernel:\nK(x, x') = |\\langle \\Phi(x') | \\Phi(x) \\rangle|^2 = |\\langle 0^{\\otimes n} | U_{\\Phi}^\\dagger(x') U_{\\Phi}(x) | 0^{\\otimes n} \\rangle|^2.\nMeasurement probability of state |00...0\\rangle directly equals K(x, x').",
+    "formula": "K(x_i, x_j) = |\\langle \\Phi(x_j) | \\Phi(x_i) \\rangle|^2 = P(|0\\rangle^{\\otimes n})",
+    "example": "Classifying complex biomedical gene expression datasets that have non-linear entanglement correlations: QSVM maps 8 gene markers into an 8-qubit entangled state space (2⁸ = 256 dimensions) where linear separation is achieved.",
+    "circuit_example": "from qiskit import QuantumCircuit\n# Quantum Kernel Circuit: U(x) followed by U_dagger(x')\nqc = QuantumCircuit(2, 2)\nqc.h([0, 1]); qc.rz(0.5, [0, 1]); qc.cx(0, 1) # Feature map x\nqc.cx(0, 1); qc.rz(-0.3, [0, 1]); qc.h([0, 1]) # Inverse feature map x'\nqc.measure([0, 1], [0, 1])",
+    "related_topics": [
+      "Quantum Machine Learning",
+      "Quantum Circuits",
+      "Variational Quantum Algorithms (VQAs)",
+      "Qubit"
+    ],
+    "common_mistakes": [
+      "Believing QSVM replaces all classical machine learning algorithms on tabular data.",
+      "Overlooking data encoding overhead (loading classical data into quantum states can become a bottleneck without efficient feature maps).",
+      "Assuming quantum kernels always outperform classical RBF kernels without testing dataset structure."
+    ],
+    "aliases": [
+      "qsvm",
+      "quantum support vector machine",
+      "quantum kernel method",
+      "quantum svm",
+      "quantum kernel estimation"
+    ],
+    "keywords": [
+      "qsvm",
+      "support vector machine",
+      "quantum machine learning",
+      "qml",
+      "kernel",
+      "feature map",
+      "hilbert space",
+      "classification"
+    ],
+    "tags": [
+      "machine-learning",
+      "qml",
+      "classification",
+      "kernel-methods"
+    ],
+    "source_name": "Havlíček et al. (Nature 2019)",
+    "source_url": "https://doi.org/10.1038/s41586-019-0980-2",
+    "additional_sources": [
+      {
+        "title": "Qiskit Machine Learning Documentation",
+        "url": "https://qiskit-community.github.io/qiskit-machine-learning/"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 2,
+      "circuit_type": "quantum_kernel",
+      "title": "QSVM Quantum Kernel Estimator",
+      "description": "Feature map encoding x followed by adjoint feature map encoding x' to evaluate fidelity",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 0
+        },
+        {
+          "type": "Z",
+          "target": 0,
+          "step": 1
+        },
+        {
+          "type": "CNOT",
+          "target": 1,
+          "control": 0,
+          "step": 2
+        },
+        {
+          "type": "Z",
+          "target": 1,
+          "step": 3
+        },
+        {
+          "type": "CNOT",
+          "target": 1,
+          "control": 0,
+          "step": 4
+        },
+        {
+          "type": "H",
+          "target": 0,
+          "step": 5
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 5
+        }
+      ]
+    }
+  },
+  {
+    "id": "qsvt",
+    "topic_name": "Quantum Singular Value Transformation (QSVT)",
+    "slug": "qsvt",
+    "category": "Algorithms",
+    "short_definition": "A monumental unifying framework that transforms the singular values of a block-encoded matrix using polynomial operations, subsuming almost all known quantum algorithms as special cases.",
+    "beginner_explanation": "For decades, quantum computing had separate, disparate algorithms: Grover for search, Shor and QPE for eigenvalues, HHL for linear equations, and Trotter for simulation. In 2019, mathematicians discovered Quantum Singular Value Transformation (QSVT)—often called 'the grand unification of quantum algorithms'. QSVT proves that virtually ALL quantum algorithms are just special polynomial transformations applied to the singular values of a matrix!",
+    "detailed_explanation": "Introduced by Gilyén, Su, Low, and Wiebe (STOC 2019), QSVT applies polynomial transformations P(A) to any matrix A that has been 'block-encoded' into the top-left corner of a larger unitary matrix U = [[A, *], [*, *]]. By interleaving U, U†, and single-qubit phase rotations e^(i φ_k Π), QSVT transforms each singular value σ_i of A into P(σ_i), where P is an arbitrary polynomial bounded by |P(x)| ≤ 1. When P(x) approximates 1/x, QSVT yields matrix inversion (HHL); when P(x) approximates e^(-i x t), it yields optimal Hamiltonian simulation; when P(x) approximates Chebyshev sign functions, it yields Grover search.",
+    "mathematical_explanation": "Singular Value Decomposition: A = W \\Sigma V^\\dagger = \\sum_k \\sigma_k |w_k\\rangle\\langle v_k|.\nBlock encoding: U_A = \\begin{pmatrix} A & \\cdot \\\\ \\cdot & \\cdot \\end{pmatrix}.\nAlternating phase sequence \\Phi = (\\phi_1, \\dots, \\phi_d):\nU_\\Phi = e^{i \\phi_1 \\Pi} U_A e^{i \\phi_2 \\tilde{\\Pi}} U_A^\\dagger \\dots\nTop-left block of U_\\Phi becomes:\nP_{SV}(A) = \\sum_k P(\\sigma_k) |w_k\\rangle\\langle v_k|.",
+    "formula": "A = W \\Sigma V^\\dagger \\implies P_{SV}(A) = W P(\\Sigma) V^\\dagger \\quad \\text{via } d \\text{ alternating phase rotations}",
+    "example": "To perform optimal Hamiltonian simulation e^(-i H t): QSVT approximates the function f(x) = e^(-i x t) using a Jacobi-Anger expansion of Bessel polynomials of degree d = O(t + log(1/ε)), achieving optimal query complexity matching theoretical lower bounds.",
+    "circuit_example": "from qiskit import QuantumCircuit\n# Block-encoding unitary U interleaved with projector phase rotations\nqc = QuantumCircuit(3)\nqc.h(0) # Projector ancilla\nqc.cx(0, 1); qc.rz(0.4, 0); qc.cx(0, 1) # U and phase rotation\nqc.h(0)",
+    "related_topics": [
+      "HHL Algorithm",
+      "Grover's Algorithm",
+      "Quantum Linear Systems",
+      "Quantum Algorithms"
+    ],
+    "common_mistakes": [
+      "Believing QSVT is limited to square Hermitian matrices (it works on arbitrary rectangular, non-Hermitian matrices).",
+      "Assuming finding the phase angles φ_k is trivial (computing angles for high-degree polynomials requires specialized classical optimization algorithms).",
+      "Thinking QSVT is an entirely new separate algorithm (it is a unifying mathematical meta-framework)."
+    ],
+    "aliases": [
+      "qsvt",
+      "quantum singular value transformation",
+      "quantum signal processing",
+      "qsp",
+      "grand unification of quantum algorithms",
+      "block encoding"
+    ],
+    "keywords": [
+      "qsvt",
+      "singular value",
+      "qsp",
+      "quantum signal processing",
+      "polynomial",
+      "block encoding",
+      "gilyen",
+      "unification",
+      "hamiltonian simulation"
+    ],
+    "tags": [
+      "algorithms",
+      "advanced",
+      "unifying-framework",
+      "meta-algorithm"
+    ],
+    "source_name": "Gilyén, Su, Low, & Wiebe (STOC 2019)",
+    "source_url": "https://doi.org/10.1145/3313276.3316366",
+    "additional_sources": [
+      {
+        "title": "Martyn et al. Grand Unification of Quantum Algorithms (PRX Quantum 2021)",
+        "url": "https://doi.org/10.1103/PRXQuantum.2.040203"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 3,
+      "circuit_type": "qsvt_sequence",
+      "title": "QSVT Alternating Phase Operator",
+      "description": "Block-encoding interleaving with single-qubit projector phase rotations",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "Z",
+          "target": 0,
+          "step": 1
+        },
+        {
+          "type": "CNOT",
+          "target": 1,
+          "control": 0,
+          "step": 2
+        },
+        {
+          "type": "Z",
+          "target": 0,
+          "step": 3
+        },
+        {
+          "type": "CNOT",
+          "target": 1,
+          "control": 0,
+          "step": 4
+        },
+        {
+          "type": "H",
+          "target": 0,
+          "step": 5
         }
       ]
     }
@@ -1002,6 +2335,104 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
     }
   },
   {
+    "id": "quantum-amplitude-estimation",
+    "topic_name": "Quantum Amplitude Estimation (QAE)",
+    "slug": "quantum-amplitude-estimation",
+    "category": "Algorithms",
+    "short_definition": "A fundamental quantum subroutine that estimates the probability amplitude a of a quantum state with precision ε in O(1/ε) queries, achieving a quadratic speedup over classical Monte Carlo.",
+    "beginner_explanation": "Suppose you want to estimate the probability of a rare financial crash, or evaluate a complex multidimensional integral. Classically, using Monte Carlo simulation, to get an estimate accurate to 1 in 10,000 (ε = 0.0001), you must run 1/ε² = 100,000,000 random samples. Quantum Amplitude Estimation achieves the exact same precision in only 1/ε = 10,000 quantum operations—a quadratic speedup that transforms computational finance!",
+    "detailed_explanation": "QAE integrates the Amplitude Amplification operator Q with Quantum Phase Estimation. If A|0⟩ = √a |ψ₁⟩|1⟩ + √(1-a) |ψ₀⟩|0⟩, the Grover operator Q has eigenvalues e^(±i 2θ) where a = sin²(θ). QAE applies QPE with m evaluation qubits to the operator Q, measuring an estimate of 2θ in binary. The estimated probability is then computed as a_est = sin²(θ_est). Modern variations (Maximum Likelihood QAE, Iterative QAE) eliminate the expensive multi-qubit QFT, making it feasible for near-term hardware.",
+    "mathematical_explanation": "State decomposition: A|0\\rangle = \\sin(\\theta)|\\psi_1\\rangle|1\\rangle + \\cos(\\theta)|\\psi_0\\rangle|0\\rangle.\nEigenvalues of Q: e^{\\pm i 2\\theta}.\nRunning QPE with m qubits produces an estimate \\tilde{\\theta} such that:\n|a - \\sin^2(\\tilde{\\theta})| \\le \\frac{2\\pi \\sqrt{a(1-a)}}{2^m} + \\frac{\\pi^2}{2^{2m}}.\nTotal queries: N_{queries} = 2^m - 1 = O(1/\\epsilon).",
+    "formula": "a = \\sin^2(\\theta), \\quad \\text{Queries: } O\\left(\\frac{1}{\\epsilon}\\right) \\text{ vs } O\\left(\\frac{1}{\\epsilon^2}\\right) \\text{ classical Monte Carlo}",
+    "example": "Estimating financial Credit Value at Risk (CVaR) with precision ε = 10⁻⁴: classical Monte Carlo requires 10⁸ sample iterations. QAE achieves this with 10⁴ queries, a 10,000x reduction in query count.",
+    "circuit_example": "from qiskit import QuantumCircuit\n# Evaluation register (m qubits) + State register (n qubits)\nqc = QuantumCircuit(4, 2)\nqc.h([0, 1]) # QPE register\nqc.h(2)       # State preparation\n# Controlled-Q and Controlled-Q^2\n# Inverse QFT on [0, 1]\nqc.measure([0, 1], [0, 1])",
+    "related_topics": [
+      "Amplitude Amplification",
+      "Quantum Phase Estimation",
+      "Quantum Monte Carlo",
+      "Grover's Algorithm"
+    ],
+    "common_mistakes": [
+      "Confusing Amplitude Estimation with Amplitude Amplification (amplification maximizes probability; estimation measures the numerical value of the probability).",
+      "Assuming QAE requires fault-tolerant hardware (modern Iterative QAE variants run on NISQ devices).",
+      "Overlooking that the quadratic speedup applies to estimation error ε, not problem dimension N."
+    ],
+    "aliases": [
+      "quantum amplitude estimation",
+      "qae",
+      "amplitude estimation algorithm",
+      "quantum monte carlo estimation"
+    ],
+    "keywords": [
+      "qae",
+      "amplitude estimation",
+      "monte carlo",
+      "quadratic speedup",
+      "finance",
+      "qpe",
+      "brassard",
+      "risk analysis"
+    ],
+    "tags": [
+      "algorithms",
+      "estimation",
+      "quadratic-speedup",
+      "finance"
+    ],
+    "source_name": "Brassard, Høyer, Mosca, & Tapp (2000)",
+    "source_url": "https://arxiv.org/abs/quant-ph/0005055",
+    "additional_sources": [
+      {
+        "title": "Woerner & Egger: Quantum Risk Analysis (npj Quantum Information 2019)",
+        "url": "https://doi.org/10.1038/s41534-019-0130-6"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 3,
+      "circuit_type": "amplitude_estimation",
+      "title": "Quantum Amplitude Estimation (QAE) Core",
+      "description": "Evaluation register coupled to Grover operator Q for phase-based amplitude estimation",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 2,
+          "step": 0
+        },
+        {
+          "type": "CZ",
+          "target": 2,
+          "control": 0,
+          "step": 1
+        },
+        {
+          "type": "H",
+          "target": 0,
+          "step": 2
+        }
+      ]
+    }
+  },
+  {
     "id": "quantum-annealing",
     "topic_name": "Quantum Annealing",
     "slug": "quantum-annealing",
@@ -1026,6 +2457,8 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
     ],
     "aliases": [
       "quantum annealing",
+      "quantum annealing algorithms",
+      "quantum annealing algorithm",
       "adiabatic quantum computation",
       "quantum annealer",
       "d-wave annealing",
@@ -1297,6 +2730,123 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
     }
   },
   {
+    "id": "quantum-counting",
+    "topic_name": "Quantum Counting",
+    "slug": "quantum-counting",
+    "category": "Algorithms",
+    "short_definition": "A hybrid quantum algorithm combining Grover's search operator with Quantum Phase Estimation to estimate the number of solutions M to a search problem in O(√(N/M)) queries.",
+    "beginner_explanation": "If you have an unstructured list of N items, Grover's algorithm finds one marked solution, but only if you know roughly how many solutions exist! What if you just want to know HOW MANY solutions exist (e.g. how many paths exist in a network)? Quantum counting solves this by treating the Grover iteration as a rotation and measuring its rotation angle to count solutions with a quadratic speedup.",
+    "detailed_explanation": "In Grover search, the iteration operator G rotates the state in a 2D plane by angle 2θ, where sin²(θ) = M/N (with M being the number of solutions among N items). The eigenvalues of G are e^(±i 2θ). Quantum counting applies Quantum Phase Estimation (QPE) to G, estimating the eigenphase 2θ into an auxiliary register. Once θ is determined, M is calculated directly as M = N sin²(θ).",
+    "mathematical_explanation": "Eigenvalues of Grover operator G: λ = e^{\\pm i 2\\theta}, where \\sin(\\theta) = \\sqrt{M/N}.\nApplying QPE with t counting qubits yields an estimate \\tilde{\\theta} with precision \\Delta \\theta = O(1/2^t).\nThe estimated count is \\tilde{M} = N \\sin^2(\\tilde{\\theta}).\nQuery complexity is O(\\sqrt{N/M}) to achieve relative error \\epsilon.",
+    "formula": "M = N \\sin^2(\\theta), \\quad T_{quantum} = O\\left(\\sqrt{\\frac{N}{M}}\\right) \\text{ vs } O(N) \\text{ classically}",
+    "example": "For N = 1024 with M = 64 solutions, classical counting requires checking almost all 1024 items. Quantum counting executes QPE on the Grover operator and estimates M ≈ 64 in roughly √1024 = 32 queries.",
+    "circuit_example": "from qiskit import QuantumCircuit\n# Quantum Counting: QPE register (t qubits) + Grover register (n qubits)\nqc = QuantumCircuit(6, 4) # 4 counting qubits, 2 state qubits\nqc.h([0, 1, 2, 3])\nqc.h([4, 5])\n# Controlled-Grover powers here\n# Inverse QFT on [0, 1, 2, 3]\nqc.measure([0, 1, 2, 3], [0, 1, 2, 3])",
+    "related_topics": [
+      "Grover's Algorithm",
+      "Quantum Phase Estimation",
+      "Amplitude Amplification",
+      "Quantum Amplitude Estimation (QAE)"
+    ],
+    "common_mistakes": [
+      "Assuming quantum counting finds and lists all solutions (it counts the cardinality M without printing the solutions).",
+      "Thinking M must be 1 (quantum counting is specifically designed for arbitrary M ≥ 0).",
+      "Overlooking that if M = 0, the angle θ = 0, which also diagnoses if NO solutions exist."
+    ],
+    "aliases": [
+      "quantum counting",
+      "quantum counting algorithm",
+      "counting algorithm",
+      "quantum approximate counting",
+      "approximate counting",
+      "approximate quantum counting",
+      "grover counting",
+      "brassard hoyer mosca tapp"
+    ],
+    "keywords": [
+      "quantum counting",
+      "grover",
+      "phase estimation",
+      "solution count",
+      "qpe",
+      "cardinality",
+      "quadratic speedup"
+    ],
+    "tags": [
+      "algorithms",
+      "counting",
+      "quadratic-speedup",
+      "qpe"
+    ],
+    "source_name": "Brassard, Høyer, & Tapp (ICALP 1998)",
+    "source_url": "https://doi.org/10.1007/BFb0055082",
+    "additional_sources": [
+      {
+        "title": "Qiskit Textbook: Quantum Counting",
+        "url": "https://docs.quantum.ibm.com/"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 4,
+      "circuit_type": "hybrid_algorithm",
+      "title": "Quantum Counting Circuit Core",
+      "description": "QPE register coupled via controlled-Grover rotations to determine solution count",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 2,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 3,
+          "step": 0
+        },
+        {
+          "type": "CNOT",
+          "target": 3,
+          "control": 1,
+          "step": 1
+        },
+        {
+          "type": "CZ",
+          "target": 2,
+          "control": 0,
+          "step": 2
+        },
+        {
+          "type": "H",
+          "target": 0,
+          "step": 3
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 3
+        }
+      ]
+    }
+  },
+  {
     "id": "quantum-decoherence",
     "topic_name": "Quantum Decoherence",
     "slug": "quantum-decoherence",
@@ -1493,14 +3043,18 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "Confusing decoherence time (T₁, T₂) with the error correction timescale — syndrome extraction must be faster than T₂."
     ],
     "aliases": [
+      "quantum error correction",
+      "quantum error-correction",
+      "quantum error correction algorithms",
+      "quantum error-correction algorithms",
       "qec",
       "quantum error correcting codes",
-      "quantum error correcting",
-      "error correction quantum computing",
       "fault tolerant quantum computing",
       "surface code",
       "stabilizer codes",
-      "shor code"
+      "shor code",
+      "quantum error correcting",
+      "error correction quantum computing"
     ],
     "keywords": [
       "error correction",
@@ -1571,6 +3125,9 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "Forgetting that qubit endianness and bit-reversal SWAP gates are required at the end of the circuit."
     ],
     "aliases": [
+      "quantum fourier transform",
+      "quantum fourier transform (qft)",
+      "quantum fourier transform qft",
       "qft",
       "quantum fourier",
       "fourier transform",
@@ -1767,6 +3324,293 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
     "canonical_circuit": null
   },
   {
+    "id": "quantum-linear-systems",
+    "topic_name": "Quantum Linear Systems Algorithms",
+    "slug": "quantum-linear-systems",
+    "category": "Algorithms",
+    "short_definition": "A class of advanced quantum algorithms (including HHL, Fourier series approaches, and QSVT) that solve systems of linear equations and differential equations with exponential speedups.",
+    "beginner_explanation": "Solving linear equations (finding x such that Ax = b) is the most computationally intensive calculation in science and big data. Classical computers struggle when equations involve millions of variables. Quantum Linear Systems Algorithms use quantum interference to output a quantum state representing the solution vector exponentially faster than classical computers can compute it.",
+    "detailed_explanation": "The field began with the HHL algorithm (2009) with complexity O(κ² s² log(N)/ε). Modern Quantum Linear Systems Algorithms use Quantum Singular Value Transformation (QSVT) and Linear Combinations of Unitaries (LCU) to dramatically improve the dependencies on precision: from polynomial in 1/ε to optimal polylogarithmic dependence O(poly(log(1/ε))). Applications include solving partial differential equations (finite element analysis), electromagnetic scattering, machine learning regression, and PageRank.",
+    "mathematical_explanation": "Given s-sparse matrix A ∈ ℂ^{N × N} with condition number κ = λ_max / λ_min, and state |b⟩:\nState prepared: |x⟩ = A⁻¹|b⟩ / ||A⁻¹|b||.\nModern QSVT-based solver runtime:\nT = O(s \\kappa \\log(s \\kappa / \\epsilon) \\log N),\nachieving optimal linear scaling in condition number κ and exponential improvement in precision log(1/ε).",
+    "formula": "T_{optimal} = O\\left( s \\kappa \\log\\left(\\frac{1}{\\epsilon}\\right) \\log N \\right)",
+    "example": "Simulating heat diffusion or aerodynamic airflows over aircraft wings modeled by a 100,000,000-variable finite difference mesh in minutes rather than weeks.",
+    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(3)\nqc.h([0, 1])\nqc.cp(0.6, 0, 1)\nqc.cry(0.5, 0, 2)",
+    "related_topics": [
+      "HHL Algorithm",
+      "Quantum Singular Value Transformation (QSVT)",
+      "Quantum Algorithms"
+    ],
+    "common_mistakes": [
+      "Confusing the quantum state |x⟩ with having all classical entries printed out.",
+      "Assuming any matrix A can be solved (A must be well-conditioned and efficiently block-encodable).",
+      "Overlooking data loading issues for arbitrary non-sparse matrices."
+    ],
+    "aliases": [
+      "quantum linear systems algorithms",
+      "quantum linear systems",
+      "qlsp",
+      "quantum linear solvers",
+      "quantum differential equations"
+    ],
+    "keywords": [
+      "quantum linear systems",
+      "hhl",
+      "linear equations",
+      "qsvt",
+      "differential equations",
+      "matrix inversion",
+      "condition number"
+    ],
+    "tags": [
+      "algorithms",
+      "linear-algebra",
+      "differential-equations",
+      "exponential-speedup"
+    ],
+    "source_name": "Childs, Kothari, & Somma (SIAM J. Comput. 2017)",
+    "source_url": "https://doi.org/10.1137/16M1087072",
+    "additional_sources": [
+      {
+        "title": "Ambainis: Variable time amplitude amplification and quantum linear systems",
+        "url": "https://arxiv.org/abs/1010.4458"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 3,
+      "circuit_type": "linear_system",
+      "title": "Quantum Linear Systems Architecture",
+      "description": "Block encoding and eigenvalue harmonic inversion circuit",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "CNOT",
+          "target": 1,
+          "control": 0,
+          "step": 1
+        },
+        {
+          "type": "Z",
+          "target": 1,
+          "step": 2
+        },
+        {
+          "type": "H",
+          "target": 0,
+          "step": 3
+        }
+      ]
+    }
+  },
+  {
+    "id": "quantum-monte-carlo",
+    "topic_name": "Quantum Monte Carlo",
+    "slug": "quantum-monte-carlo",
+    "category": "Algorithms",
+    "short_definition": "A quantum algorithmic paradigm that uses Quantum Amplitude Estimation to compute expected values, high-dimensional integrals, and risk metrics with quadratic speedup over classical Monte Carlo.",
+    "beginner_explanation": "Monte Carlo methods solve problems by rolling virtual dice millions of times—simulating everything from stock market fluctuations and insurance risks to neutron transport in nuclear reactors. Classical Monte Carlo converges slowly: to make the estimate 10 times more accurate, you must run 100 times more simulations. Quantum Monte Carlo uses quantum interference to deliver a quadratic speedup, cutting a week of classical computation down to minutes!",
+    "detailed_explanation": "Classical Monte Carlo estimates an expectation value E[f(X)] by drawing N independent samples, with statistical error bounded by the Central Limit Theorem: ε = σ / √N. Quantum Monte Carlo encodes probability distribution P(X) into quantum state amplitudes and evaluates function f(x) using quantum arithmetic or Taylor approximations into an ancilla qubit's amplitude. Applying Quantum Amplitude Estimation (QAE) extracts E[f(X)] with error ε = O(1/N_quantum), achieving a quadratic speedup in query complexity.",
+    "mathematical_explanation": "State preparation:\n|\\psi\\rangle = \\sum_x \\sqrt{p(x)} |x\\rangle \\left( \\sqrt{1 - f(x)}|0\\rangle + \\sqrt{f(x)}|1\\rangle \\right).\nThe probability of measuring |1\\rangle on the ancilla is exactly:\nP(1) = \\sum_x p(x) f(x) = \\mathbb{E}[f(X)].\nUsing Quantum Amplitude Estimation, \\mathbb{E}[f(X)] is estimated with error \\epsilon in O(1/\\epsilon) queries.",
+    "formula": "\\epsilon_{\\text{quantum}} = O\\left(\\frac{1}{N}\\right) \\quad \\text{vs} \\quad \\epsilon_{\\text{classical}} = O\\left(\\frac{1}{\\sqrt{N}}\\right)",
+    "example": "Pricing an exotic multi-asset European or barrier option: classical Monte Carlo requires N = 10,000,000 simulation paths for 3-decimal accuracy. Quantum Monte Carlo achieves the same accuracy in ~3,160 quantum circuit evaluations.",
+    "circuit_example": "from qiskit import QuantumCircuit\n# Probability distribution preparation + payoff rotation\nqc = QuantumCircuit(3)\nqc.h([0, 1]) # Distribution p(x)\nqc.cry(0.8, 0, 2) # Controlled payoff encoding into qubit 2\nqc.cry(0.4, 1, 2)",
+    "related_topics": [
+      "Quantum Amplitude Estimation (QAE)",
+      "Amplitude Amplification",
+      "Quantum Algorithms",
+      "Quantum Computing"
+    ],
+    "common_mistakes": [
+      "Confusing quantum algorithms for Monte Carlo estimation with 'classical Quantum Monte Carlo' (QMC is a classical numerical method used in condensed matter physics).",
+      "Assuming quantum Monte Carlo eliminates all variance (it provides quadratic query reduction, but the constant factor depends on standard deviation σ).",
+      "Ignoring the circuit depth required for nonlinear arithmetic payoff functions."
+    ],
+    "aliases": [
+      "quantum monte carlo",
+      "quantum monte carlo estimation",
+      "qmc",
+      "quantum integration",
+      "quantum option pricing"
+    ],
+    "keywords": [
+      "quantum monte carlo",
+      "monte carlo",
+      "qae",
+      "finance",
+      "option pricing",
+      "integration",
+      "risk analysis",
+      "quadratic speedup"
+    ],
+    "tags": [
+      "algorithms",
+      "finance",
+      "numerical-methods",
+      "quadratic-speedup"
+    ],
+    "source_name": "Montanaro (Proc. R. Soc. A 2015)",
+    "source_url": "https://doi.org/10.1098/rspa.2015.0301",
+    "additional_sources": [
+      {
+        "title": "Egger et al. Quantum Computing for Finance (IEEE 2020)",
+        "url": "https://doi.org/10.1109/MC.2020.3014167"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 3,
+      "circuit_type": "monte_carlo",
+      "title": "Quantum Monte Carlo Payoff Evaluator",
+      "description": "Probability distribution superposition with controlled payoff amplitude encoding",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 0
+        },
+        {
+          "type": "CNOT",
+          "target": 2,
+          "control": 0,
+          "step": 1
+        },
+        {
+          "type": "Z",
+          "target": 2,
+          "step": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "quantum-oracle",
+    "topic_name": "Quantum Oracle",
+    "slug": "quantum-oracle",
+    "category": "Techniques",
+    "short_definition": "A unitary black-box subroutine that evaluates a mathematical or Boolean function f(x) on quantum superpositions, encoding answers via phase kickback or register bit-flips.",
+    "beginner_explanation": "In quantum algorithm design, an oracle is a 'black box' function that recognizes solutions. Think of it like a lock: you don't need to know the secret combination inside the lock; the lock itself simply tells you 'click' when you try the right key. A quantum oracle evaluates this check on all possible keys in superposition simultaneously!",
+    "detailed_explanation": "Because quantum mechanics is strictly reversible, classical non-reversible functions must be embedded into reversible unitary operations. Two primary oracle architectures exist: 1) Bit-flip / Standard Oracles: U_f |x⟩|y⟩ = |x⟩|y ⊕ f(x)⟩, which preserves reversibility using an ancilla register |y⟩. 2) Phase Oracles: O_f |x⟩ = (-1)^f(x) |x⟩ (for Boolean f) or e^(i φ(x)) |x⟩, which directly imparts the function's evaluation into the quantum phase of the computational state.",
+    "mathematical_explanation": "Equivalence via Phase Kickback:\nSetting ancilla |y\\rangle = |-\\rangle = \\frac{|0\\rangle - |1\\rangle}{\\sqrt{2}} in a bit-flip oracle:\nU_f |x\\rangle |-\\rangle = \\frac{|x\\rangle |0 \\oplus f(x)\\rangle - |x\\rangle |1 \\oplus f(x)\\rangle}{\\sqrt{2}}\nIf f(x) = 0: |x\\rangle |-\\rangle\nIf f(x) = 1: -|x\\rangle |-\\rangle\nThus: U_f |x\\rangle |-\\rangle = (-1)^{f(x)} |x\\rangle |-\\rangle.\nThe bit-flip oracle automatically functions as a phase oracle without modifying the gate structure!",
+    "formula": "U_f |x\\rangle|y\\rangle = |x\\rangle|y \\oplus f(x)\\rangle \\quad \\iff \\quad O_f |x\\rangle = (-1)^{f(x)}|x\\rangle",
+    "example": "Grover's search oracle for marked state |11⟩: implemented by a Multi-Controlled-Z (CZ) gate that applies a -1 phase factor only to |11⟩ while leaving |00⟩, |01⟩, and |10⟩ untouched.",
+    "circuit_example": "from qiskit import QuantumCircuit\n# Phase Oracle marking state |11>\nqc = QuantumCircuit(2)\nqc.cz(0, 1) # Imparts -1 phase to |11>",
+    "related_topics": [
+      "Phase Kickback",
+      "Grover's Algorithm",
+      "Deutsch-Jozsa Algorithm",
+      "Bernstein-Vazirani Algorithm",
+      "Quantum Circuits"
+    ],
+    "common_mistakes": [
+      "Believing an oracle is a physical hardware chip (it is an algorithmic subroutine representing problem constraints).",
+      "Assuming an oracle magically solves the problem on its own (the oracle merely evaluates candidates; interference is required to amplify the answer).",
+      "Forgetting to initialize the target ancilla to |−⟩ when relying on phase kickback."
+    ],
+    "aliases": [
+      "quantum oracle",
+      "oracle",
+      "black box unitary",
+      "phase oracle",
+      "bit-flip oracle",
+      "query complexity oracle"
+    ],
+    "keywords": [
+      "oracle",
+      "quantum oracle",
+      "black box",
+      "phase kickback",
+      "grover oracle",
+      "deutsch jozsa oracle",
+      "boolean function"
+    ],
+    "tags": [
+      "techniques",
+      "oracle",
+      "query-complexity",
+      "core-concept"
+    ],
+    "source_name": "Nielsen & Chuang & Aaronson",
+    "source_url": "https://www.cambridge.org/core/books/quantum-computation-and-quantum-information/01E10196D0A682A6AEFFEA52D53BE9AE",
+    "additional_sources": [
+      {
+        "title": "Scott Aaronson: Quantum Computing Since Democritus",
+        "url": "https://www.scottaaronson.com/democritus/"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 3,
+      "circuit_type": "oracle_construction",
+      "title": "Quantum Bit-Flip & Phase Oracle",
+      "description": "Reversible function oracle with ancilla bit-flip and kickback phase shift",
+      "gates": [
+        {
+          "type": "X",
+          "target": 2,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 2,
+          "step": 1
+        },
+        {
+          "type": "CNOT",
+          "target": 2,
+          "control": 0,
+          "step": 2
+        },
+        {
+          "type": "CNOT",
+          "target": 2,
+          "control": 1,
+          "step": 3
+        },
+        {
+          "type": "H",
+          "target": 2,
+          "step": 4
+        }
+      ]
+    }
+  },
+  {
     "id": "quantum-phase-estimation",
     "topic_name": "Quantum Phase Estimation",
     "slug": "quantum-phase-estimation",
@@ -1791,6 +3635,9 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "Forgetting that n counting qubits give precision 1/2ⁿ — doubling precision requires one additional qubit."
     ],
     "aliases": [
+      "quantum phase estimation",
+      "quantum phase estimation (qpe)",
+      "quantum phase estimation qpe",
       "qpe",
       "phase estimation",
       "quantum phase estimation algorithm",
@@ -1834,6 +3681,92 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
     "difficulty_level": "advanced",
     "subcategory": "Phase-Based Subroutines",
     "canonical_circuit": null
+  },
+  {
+    "id": "quantum-state",
+    "topic_name": "Quantum State",
+    "slug": "quantum-state",
+    "category": "Foundations",
+    "short_definition": "The complete mathematical description of a quantum physical system, represented as a statevector in Hilbert space for pure states, or as a density matrix for mixed states.",
+    "beginner_explanation": "In classical physics, a state is simple: a car is at position x moving at speed v; a coin is either heads or tails. In quantum physics, a state is described by probability amplitudes. A pure quantum state has zero classical uncertainty—it is a specific vector pointing in Hilbert space. When a quantum system interacts with a noisy environment, it becomes a 'mixed state' (a statistical probability mixture of pure states).",
+    "detailed_explanation": "For an isolated quantum system, a pure state is represented by a normalized ray in a complex Hilbert space: |ψ⟩ ∈ ℋ with ⟨ψ|ψ⟩ = 1. When a system is entangled with an environment or characterized by classical uncertainty, it is described by a density operator ρ on ℋ. A valid density matrix satisfies three postulates: 1) Hermiticity (ρ = ρ†), 2) Positive semi-definiteness (ρ ≥ 0, all eigenvalues λ_i ≥ 0), and 3) Unit trace (Tr(ρ) = ∑ λ_i = 1). The purity of a state is quantified by Tr(ρ²): Tr(ρ²) = 1 for pure states, and Tr(ρ²) < 1 for mixed states (reaching 1/d for maximally mixed states).",
+    "mathematical_explanation": "Pure state:\n|\\psi\\rangle = \\sum_i c_i |i\\rangle, \\quad \\sum_i |c_i|^2 = 1, \\quad \\rho = |\\psi\\rangle\\langle\\psi|.\nMixed state (ensemble of pure states |\\psi_k\\rangle with probabilities p_k):\n\\rho = \\sum_k p_k |\\psi_k\\rangle\\langle\\psi_k|, \\quad p_k \\ge 0, \\quad \\sum_k p_k = 1.\nExpectation value of observable A: \\langle A \\rangle = \\text{Tr}(\\rho A).",
+    "formula": "\\rho = \\sum_k p_k |\\psi_k\\rangle\\langle\\psi_k|, \\quad \\text{Tr}(\\rho) = 1, \\quad \\text{Tr}(\\rho^2) \\le 1",
+    "example": "A qubit in pure state |+⟩ has density matrix ρ = |+⟩⟨+| = 0.5[[1, 1], [1, 1]], where Tr(ρ²) = 1. A completely decohered qubit has maximally mixed density matrix ρ = 0.5[[1, 0], [0, 1]], where Tr(ρ²) = 0.5.",
+    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.h(0) # Prepares pure superposition state |+>",
+    "related_topics": [
+      "Qubit",
+      "Superposition",
+      "Measurement",
+      "Bloch Sphere",
+      "Quantum Decoherence"
+    ],
+    "common_mistakes": [
+      "Confusing a quantum superposition state with a classical mixed state (superpositions have phase coherence and interference; mixed states do not).",
+      "Assuming global phase factors e^(iθ) represent different physical states (states differing only by global phase represent the exact same physical ray).",
+      "Believing you can determine an unknown quantum state from a single measurement (quantum state tomography requires many identically prepared copies)."
+    ],
+    "aliases": [
+      "quantum state",
+      "quantum states",
+      "statevector",
+      "density matrix",
+      "pure state",
+      "mixed state",
+      "density operator"
+    ],
+    "keywords": [
+      "quantum state",
+      "statevector",
+      "density matrix",
+      "pure state",
+      "mixed state",
+      "hilbert space",
+      "purity",
+      "born rule"
+    ],
+    "tags": [
+      "foundations",
+      "statevector",
+      "density-matrix",
+      "core-concept"
+    ],
+    "source_name": "Nielsen & Chuang (Cambridge University Press)",
+    "source_url": "https://www.cambridge.org/core/books/quantum-computation-and-quantum-information/01E10196D0A682A6AEFFEA52D53BE9AE",
+    "additional_sources": [
+      {
+        "title": "Preskill's Quantum Information Notes: Chapter 2",
+        "url": "http://theory.caltech.edu/~preskill/ph219/chap2.pdf"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 1,
+      "circuit_type": "state_preparation",
+      "title": "Quantum State Preparation",
+      "description": "Prepares arbitrary pure single-qubit statevector via unitary rotation",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "Z",
+          "target": 0,
+          "step": 1
+        }
+      ]
+    }
   },
   {
     "id": "quantum-teleportation",
@@ -1944,6 +3877,100 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
     }
   },
   {
+    "id": "quantum-walk-algorithms",
+    "topic_name": "Quantum Walk Algorithms",
+    "slug": "quantum-walk-algorithms",
+    "category": "Algorithms",
+    "short_definition": "The quantum mechanical counterpart of classical Markov chains and random walks, exhibiting quadratic speedups in propagation speed and spatial search on graphs.",
+    "beginner_explanation": "In a classical random walk (like a drop of ink diffusing in water), particles wander randomly, spreading out slowly proportional to the square root of time (√t). In a quantum walk, the walker moves in quantum superposition and interference causes paths to add up coherently, spreading linearly with time (t)—quadratically faster! This powers algorithms that search complex spatial networks and verify graph properties.",
+    "detailed_explanation": "Quantum walks exist in two primary formulations: Discrete-Time Quantum Walks (DTQW) and Continuous-Time Quantum Walks (CTQW). In DTQW, the Hilbert space is partitioned into a coin space (governed by a unitary coin operator like Hadamard or Grover) and a position space (governed by a shift operator S). The standard deviation of the position distribution spreads ballistically: σ_q(t) ∝ t, compared to classical diffusive spreading σ_c(t) ∝ √t. Applications include spatial search (finding marked vertices on graphs in O(√N)), element distinctness, and graph isomorphism testing.",
+    "mathematical_explanation": "Discrete-Time Walk operator:\nU = S (C \\otimes I),\nwhere C is the coin unitary (e.g. Hadamard coin H = \\frac{1}{\\sqrt{2}}\\begin{pmatrix} 1 & 1 \\\\ 1 & -1 \\end{pmatrix}),\nand S is the conditional shift operator S|d\\rangle|x\\rangle = |d\\rangle|x + (-1)^d\\rangle.\nContinuous-Time Walk: |\\psi(t)\\rangle = e^{-i H t} |\\psi(0)\\rangle, where H is the graph Laplacian or adjacency matrix.",
+    "formula": "\\sigma_{\\text{quantum}}(t) \\propto t \\quad \\text{vs} \\quad \\sigma_{\\text{classical}}(t) \\propto \\sqrt{t}",
+    "example": "On a 1D line, a classical walker after 100 steps is typically within ±10 steps of the origin. A quantum walker after 100 steps has traveled approximately ±70 steps away, demonstrating ballistic propagation.",
+    "circuit_example": "from qiskit import QuantumCircuit\n# 1 coin qubit (0) + 2 position qubits (1, 2)\nqc = QuantumCircuit(3)\nqc.h(0) # Coin flip\n# Conditional position increment\nqc.cx(0, 1)\nqc.ccx(0, 1, 2)",
+    "related_topics": [
+      "Grover's Algorithm",
+      "Quantum Algorithms",
+      "Amplitude Amplification",
+      "Quantum Computing"
+    ],
+    "common_mistakes": [
+      "Confusing quantum walks with classical Monte Carlo simulations.",
+      "Assuming a discrete-time quantum walk requires only position qubits (a coin space is required to maintain unitarity on vertices of degree > 2).",
+      "Believing the quantum walker settles into a stationary distribution without measurement or decoherence."
+    ],
+    "aliases": [
+      "quantum walk algorithms",
+      "quantum walk algorithm",
+      "quantum walk search algorithms",
+      "quantum walk search algorithm",
+      "quantum walk",
+      "quantum walks",
+      "discrete time quantum walk",
+      "continuous time quantum walk",
+      "quantum random walk",
+      "spatial search"
+    ],
+    "keywords": [
+      "quantum walk",
+      "random walk",
+      "ballistic",
+      "diffusion",
+      "graph search",
+      "coin operator",
+      "spatial search"
+    ],
+    "tags": [
+      "algorithms",
+      "graph-theory",
+      "spatial-search",
+      "speedup"
+    ],
+    "source_name": "Aharonov et al. (STOC 2001) & Kempe (Contemp. Phys. 2003)",
+    "source_url": "https://doi.org/10.1080/00107151031000110776",
+    "additional_sources": [
+      {
+        "title": "Childs et al. Exponential algorithmic speedup by a quantum walk",
+        "url": "https://doi.org/10.1145/780542.780552"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 3,
+      "circuit_type": "quantum_walk",
+      "title": "Discrete Quantum Walk Step",
+      "description": "Hadamard coin flip and conditional position register increment",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "CNOT",
+          "target": 1,
+          "control": 0,
+          "step": 1
+        },
+        {
+          "type": "CNOT",
+          "target": 2,
+          "control": 1,
+          "step": 2
+        }
+      ]
+    }
+  },
+  {
     "id": "qubit",
     "topic_name": "Qubit",
     "slug": "qubit",
@@ -2018,6 +4045,97 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
     }
   },
   {
+    "id": "rotation-gates",
+    "topic_name": "Rotation Gates",
+    "slug": "rotation-gates",
+    "category": "Quantum Gates",
+    "short_definition": "A parametric family of continuous single-qubit quantum gates that rotate a qubit's state vector by an arbitrary angle θ around the X, Y, or Z axes of the Bloch sphere.",
+    "beginner_explanation": "While basic quantum gates like X and Z apply fixed 180° flips, rotation gates allow you to turn the dial smoothly to ANY angle θ! Rx(θ) rotates around the X-axis, Ry(θ) rotates around the Y-axis, and Rz(θ) rotates around the Z-axis. By combining rotations around these axes, you can steer a qubit to any location on the entire Bloch sphere.",
+    "detailed_explanation": "Rotation gates are generated by exponentiating the Pauli matrices: R_n(θ) = exp(-i θ (n · σ)/2) = cos(θ/2) I - i sin(θ/2) (n · σ). By Euler's rotation theorem, any arbitrary single-qubit unitary gate U can be decomposed into three rotations: U = e^(iα) R_z(β) R_y(γ) R_z(δ). This property forms the basis for quantum gate synthesis (such as Solovay-Kitaev decomposition) and parameterized ansatz circuits in VQE and QAOA.",
+    "mathematical_explanation": "Matrix representations for angle \\theta:\nR_x(\\theta) = e^{-i \\theta X / 2} = \\begin{pmatrix} \\cos(\\theta/2) & -i\\sin(\\theta/2) \\\\ -i\\sin(\\theta/2) & \\cos(\\theta/2) \\end{pmatrix}\nR_y(\\theta) = e^{-i \\theta Y / 2} = \\begin{pmatrix} \\cos(\\theta/2) & -\\sin(\\theta/2) \\\\ \\sin(\\theta/2) & \\cos(\\theta/2) \\end{pmatrix}\nR_z(\\theta) = e^{-i \\theta Z / 2} = \\begin{pmatrix} e^{-i\\theta/2} & 0 \\\\ 0 & e^{i\\theta/2} \\end{pmatrix}.\nNotice that rotating by \\theta = 2\\pi produces -I (a global phase flip characteristic of spin-1/2 particles).",
+    "formula": "R_x(\\theta) = e^{-i \\frac{\\theta}{2} X}, \\quad R_y(\\theta) = e^{-i \\frac{\\theta}{2} Y}, \\quad R_z(\\theta) = e^{-i \\frac{\\theta}{2} Z}",
+    "example": "Applying Ry(π/2) to state |0⟩ produces (|0⟩ + |1⟩)/√2 (state |+⟩). Applying Ry(π) to |0⟩ flips it completely to |1⟩ (acting as a Pauli-X gate up to a global phase).",
+    "circuit_example": "from qiskit import QuantumCircuit\nimport numpy as np\nqc = QuantumCircuit(1)\nqc.rx(np.pi/4, 0)\nqc.ry(np.pi/3, 0)\nqc.rz(np.pi/2, 0)",
+    "related_topics": [
+      "Bloch Sphere",
+      "X Gate",
+      "Y Gate",
+      "Z Gate",
+      "Variational Quantum Eigensolver (VQE)"
+    ],
+    "common_mistakes": [
+      "Thinking a 360° rotation (θ = 2π) returns the exact same vector (it multiplies the statevector by -1; a full 720° rotation θ = 4π is required to return to +I).",
+      "Confusing Ry with Rx (Ry has purely real matrix entries and changes basis probabilities without imaginary phases).",
+      "Assuming rotations about two different axes commute (rotations do not commute: Rx(θ)Ry(ϕ) ≠ Ry(ϕ)Rx(θ))."
+    ],
+    "aliases": [
+      "rotation gates",
+      "bloch sphere rotations",
+      "rx gate",
+      "ry gate",
+      "rz gate",
+      "parametric rotations",
+      "pauli rotations"
+    ],
+    "keywords": [
+      "rotation gates",
+      "rx",
+      "ry",
+      "rz",
+      "bloch sphere",
+      "euler angles",
+      "parameterized gates",
+      "continuous rotation"
+    ],
+    "tags": [
+      "quantum-gates",
+      "continuous-rotation",
+      "bloch-sphere",
+      "parameterized"
+    ],
+    "source_name": "Nielsen & Chuang (Cambridge University Press)",
+    "source_url": "https://www.cambridge.org/core/books/quantum-computation-and-quantum-information/01E10196D0A682A6AEFFEA52D53BE9AE",
+    "additional_sources": [
+      {
+        "title": "Qiskit Circuit Library: Standard Rotations",
+        "url": "https://docs.quantum.ibm.com/api/qiskit/circuit_library"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 1,
+      "circuit_type": "parametric_rotations",
+      "title": "Euler Single-Qubit Rotation Sequence",
+      "description": "Universal single-qubit parameterization Rz-Ry-Rz reaching any point on Bloch sphere",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "Z",
+          "target": 0,
+          "step": 1
+        },
+        {
+          "type": "H",
+          "target": 0,
+          "step": 2
+        }
+      ]
+    }
+  },
+  {
     "id": "shors-algorithm",
     "topic_name": "Shor's Algorithm",
     "slug": "shors-algorithm",
@@ -2042,11 +4160,16 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "Believing current quantum hardware can break RSA-2048 — practical implementation requires millions of error-corrected logical qubits."
     ],
     "aliases": [
-      "shor algorithm",
+      "shor's algorithm",
+      "shors algorithm",
+      "shor's factoring algorithm",
       "shors factoring algorithm",
+      "shor factoring algorithm",
+      "shor algorithm",
       "quantum factoring",
       "integer factorization quantum",
-      "shor's period finding"
+      "shor's period finding",
+      "rsa breaking"
     ],
     "keywords": [
       "shor",
@@ -2091,6 +4214,328 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
     "difficulty_level": "advanced",
     "subcategory": "Cryptography-Breaking Algorithms",
     "canonical_circuit": null
+  },
+  {
+    "id": "shors-discrete-logarithm-algorithm",
+    "topic_name": "Shor's Discrete Logarithm Algorithm",
+    "slug": "shors-discrete-logarithm-algorithm",
+    "category": "Cryptography",
+    "short_definition": "The second major algorithm introduced in Peter Shor's 1994 landmark paper, solving the discrete logarithm problem in polynomial time and breaking Diffie-Hellman and Elliptic Curve Cryptography (ECC).",
+    "beginner_explanation": "While Shor's factoring algorithm is famous for breaking RSA encryption, Shor ALSO published a second quantum algorithm in the same 1994 paper for solving 'discrete logarithms'. This second algorithm is even more devastating to modern internet security because it directly breaks Diffie-Hellman key exchanges and Elliptic Curve Cryptography (ECC), which protects Bitcoin, WhatsApp, and HTTPS web traffic!",
+    "detailed_explanation": "Given a cyclic group G with generator g and element y = g^x, the discrete logarithm problem asks to find exponent x. Classically, the best known algorithms (Number Field Sieve, Pollard's rho) take sub-exponential or exponential time. Shor's algorithm constructs a 2D periodic function f(a, b) = g^a y^(-b) = g^(a - bx). Because f(a + r, b) = f(a, b) and f(a + x, b + 1) = f(a, b), this function is periodic over the 2D lattice ℤ_p × ℤ_p. Applying a 2D Quantum Fourier Transform extracts x efficiently in polynomial time O((log p)³).",
+    "mathematical_explanation": "Function definition: f(a, b) = g^a y^{-b} \\pmod p = g^{a - bx} \\pmod p.\nPeriodicity condition: f(a₁, b₁) = f(a₂, b₂) \\iff a₁ - b₁x \\equiv a₂ - b₂x \\pmod r,\nwhere r is the order of g.\nTwo registers are prepared: |0⟩^⊗m |0⟩^⊗m. After applying QFT on both registers and evaluating f(a, b), a second 2D QFT yields values (u, v) satisfying u x + v \\equiv 0 \\pmod r, yielding x = -v u⁻¹ mod r.",
+    "formula": "g^x \\equiv y \\pmod p \\implies x = -v u^{-1} \\pmod r \\quad \\text{in } O((\\log p)^3) \\text{ time}",
+    "example": "Breaking 256-bit Elliptic Curve Cryptography (secp256k1 used in Bitcoin): classical computers require ~2¹²⁸ operations (billions of years). Shor's discrete logarithm algorithm can solve it with ~2,330 physical logical qubits in a few hours of runtime.",
+    "circuit_example": "from qiskit import QuantumCircuit\n# 2D QFT + Modular Exponentiation\nqc = QuantumCircuit(4, 2)\nqc.h([0, 1])\n# Modular multiplication: g^a * y^(-b)\nqc.h([0, 1])\nqc.measure([0, 1], [0, 1])",
+    "related_topics": [
+      "Shor's Algorithm",
+      "Quantum Fourier Transform",
+      "Quantum Phase Estimation",
+      "Hidden Subgroup Problem",
+      "Quantum Key Distribution"
+    ],
+    "common_mistakes": [
+      "Thinking Shor's algorithm ONLY factors numbers (it factors integers AND computes discrete logarithms).",
+      "Believing Elliptic Curve Cryptography is safer than RSA against quantum attacks (ECC actually requires FEWER qubits to break than RSA for equivalent security levels!).",
+      "Confusing the 1D period finding of factoring with the 2D lattice Fourier sampling of discrete log."
+    ],
+    "aliases": [
+      "shor's discrete logarithm algorithm",
+      "shor discrete log",
+      "discrete logarithm quantum algorithm",
+      "quantum discrete log",
+      "ecc quantum attack"
+    ],
+    "keywords": [
+      "shor",
+      "discrete logarithm",
+      "ecc",
+      "diffie-hellman",
+      "cryptography",
+      "post-quantum",
+      "2d qft",
+      "bitcoin security"
+    ],
+    "tags": [
+      "cryptography",
+      "algorithms",
+      "exponential-speedup",
+      "cybersecurity"
+    ],
+    "source_name": "Peter W. Shor (FOCS 1994 / SIAM J. Comput. 1997)",
+    "source_url": "https://doi.org/10.1137/S0097539795293172",
+    "additional_sources": [
+      {
+        "title": "Roetteler et al. Quantum Resource Estimates for Computing Elliptic Curve Discrete Logarithms",
+        "url": "https://arxiv.org/abs/1706.06752"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 4,
+      "circuit_type": "cryptographic_attack",
+      "title": "2D Discrete Logarithm Sampling Core",
+      "description": "Two register 2D Fourier sampling evaluating lattice modular periodicity",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 0
+        },
+        {
+          "type": "CNOT",
+          "target": 2,
+          "control": 0,
+          "step": 1
+        },
+        {
+          "type": "CNOT",
+          "target": 3,
+          "control": 1,
+          "step": 1
+        },
+        {
+          "type": "H",
+          "target": 0,
+          "step": 2
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "simons-algorithm",
+    "topic_name": "Simon's Algorithm",
+    "slug": "simons-algorithm",
+    "category": "Algorithms",
+    "short_definition": "The first quantum algorithm to demonstrate an exponential speedup over all classical probabilistic algorithms for an oracle problem, finding a hidden XOR period s with O(n) queries.",
+    "beginner_explanation": "Suppose a function repeats its outputs with a secret binary shift: f(x) = f(y) if and only if x and y differ by a secret key s (meaning x ⊕ y = s). Classically, you must query about 2^(n/2) times (the birthday paradox) before finding two inputs with the same output. Simon's algorithm samples linear equations perpendicular to s, finding the secret key in just O(n) queries!",
+    "detailed_explanation": "Simon's algorithm examines f: {0,1}ⁿ → {0,1}ⁿ with the promise f(x) = f(y) ⟺ x ⊕ y ∈ {0ⁿ, s}. In each run, two n-qubit registers are prepared: |0⟩^⊗n |0⟩^⊗n. After applying H^⊗n to the first register and evaluating the oracle U_f, the registers become entangled: (1/√2ⁿ) ∑_x |x⟩ |f(x)⟩. Measuring the second register collapses the first register into an equal superposition of two inputs {|x₀⟩, |x₀ ⊕ s⟩}. Applying H^⊗n produces an interference pattern where only basis states |y⟩ satisfying s · y ≡ 0 (mod 2) have non-zero amplitude.",
+    "mathematical_explanation": "After measurement of the second register, the first register state is (|x₀⟩ + |x₀ ⊕ s⟩)/√2. Applying H^⊗n yields:\n(1/2^{(n+1)/2}) ∑_{y} [ (-1)^{x₀ · y} + (-1)^{(x₀ ⊕ s) · y} ] |y⟩ = (1/2^{(n-1)/2}) ∑_{y: s · y = 0} (-1)^{x₀ · y} |y⟩.\nEach measurement produces a random vector y orthogonal to s (s · y = 0). After O(n) independent vectors are collected, classical Gaussian elimination determines s uniquely.",
+    "formula": "s \\cdot y \\equiv 0 \\pmod 2 \\quad \\implies \\quad T_{quantum} = O(n) \\text{ vs } T_{classical} = \\Omega(2^{n/2})",
+    "example": "For n = 100 bits, classical algorithms require on the order of 2⁵⁰ ≈ 10¹⁵ queries to find a collision. Simon's algorithm solves it with fewer than 200 quantum queries followed by solving a 100x100 classical linear system.",
+    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(6, 3) # 3 input qubits, 3 ancilla qubits\nqc.h([0, 1, 2])\n# [Simon's 2-to-1 Oracle U_f here]\nqc.h([0, 1, 2])\nqc.measure([0, 1, 2], [0, 1, 2])",
+    "related_topics": [
+      "Shor's Algorithm",
+      "Quantum Fourier Transform",
+      "Hidden Subgroup Problem",
+      "Quantum Algorithms",
+      "Phase Kickback"
+    ],
+    "common_mistakes": [
+      "Believing Simon's algorithm directly outputs the secret string s on a single run (it outputs a vector y orthogonal to s; multiple runs are needed).",
+      "Assuming Simon's problem is directly useful for business databases (it is an oracle problem, but its technique formed the direct foundation for Shor's factoring algorithm).",
+      "Forgetting to perform classical Gaussian elimination on the collected measurement vectors."
+    ],
+    "aliases": [
+      "simon's algorithm",
+      "simon algorithm",
+      "simons algorithm",
+      "simon's problem",
+      "hidden period algorithm"
+    ],
+    "keywords": [
+      "simon",
+      "simon's algorithm",
+      "periodicity",
+      "exponential speedup",
+      "oracle",
+      "xor",
+      "collision",
+      "shor inspiration"
+    ],
+    "tags": [
+      "algorithms",
+      "oracle",
+      "exponential-speedup",
+      "foundational"
+    ],
+    "source_name": "Daniel R. Simon (FOCS 1994)",
+    "source_url": "https://doi.org/10.1109/SFCS.1994.365701",
+    "additional_sources": [
+      {
+        "title": "Nielsen & Chuang: Simon's Algorithm",
+        "url": "https://www.cambridge.org/core/books/quantum-computation-and-quantum-information/01E10196D0A682A6AEFFEA52D53BE9AE"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 4,
+      "circuit_type": "oracle_algorithm",
+      "title": "Simon's Algorithm (2-bit period)",
+      "description": "2-qubit input and 2-qubit target oracle extracting orthogonal parity equations",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 0
+        },
+        {
+          "type": "CNOT",
+          "target": 2,
+          "control": 0,
+          "step": 1
+        },
+        {
+          "type": "CNOT",
+          "target": 3,
+          "control": 1,
+          "step": 1
+        },
+        {
+          "type": "CNOT",
+          "target": 3,
+          "control": 0,
+          "step": 2
+        },
+        {
+          "type": "H",
+          "target": 0,
+          "step": 3
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 3
+        }
+      ]
+    }
+  },
+  {
+    "id": "superdense-coding",
+    "topic_name": "Superdense Coding",
+    "slug": "superdense-coding",
+    "category": "Protocols",
+    "short_definition": "A fundamental quantum communication protocol that transmits two classical bits of information from sender to receiver by physically sending only one entangled qubit.",
+    "beginner_explanation": "Classically, transmitting 2 bits of data (00, 01, 10, or 11) requires sending 2 separate physical signals. In superdense coding, Alice and Bob share an entangled Bell pair of qubits beforehand. Alice can manipulate ONLY her single qubit using simple gates, send it to Bob, and Bob can decode all 2 classical bits with 100% accuracy!",
+    "detailed_explanation": "Superdense coding is the dual of quantum teleportation (teleportation sends 1 quantum state using 2 classical bits + 1 Bell pair; superdense coding sends 2 classical bits using 1 qubit + 1 Bell pair). Alice and Bob share |Φ⁺⟩ = (|00⟩+|11⟩)/√2. Alice applies one of four local unitary operations {I, X, Z, XZ} corresponding to her two classical bits {00, 01, 10, 11}, transforming the pair into one of the four orthogonal Bell states. Bob performs a Bell-basis measurement (CNOT followed by H) to read both classical bits.",
+    "mathematical_explanation": "Mapping of classical message to Bell states:\n- 00: (I ⊗ I)|Φ⁺⟩ = (|00⟩ + |11⟩)/√2 = |Φ⁺⟩\n- 01: (X ⊗ I)|Φ⁺⟩ = (|10⟩ + |01⟩)/√2 = |Ψ⁺⟩\n- 10: (Z ⊗ I)|Φ⁺⟩ = (|00⟩ - |11⟩)/√2 = |Φ⁻⟩\n- 11: (XZ ⊗ I)|Φ⁺⟩ = (-|10⟩ + |01⟩)/√2 = -|Ψ⁻⟩\nBob decodes by applying CNOT(Alice, Bob), then H(Alice), and measuring both in computational basis.",
+    "formula": "2 \\text{ classical bits transmitted via } 1 \\text{ physical qubit } + 1 \\text{ shared Bell pair}",
+    "example": "Alice wants to transmit message '10' to Bob: Alice applies the Pauli-Z gate to her half of the Bell pair. She sends her qubit to Bob. Bob runs CNOT then H, measures both qubits, and reads '10'.",
+    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(2, 2)\n# Prepare Bell pair shared between Alice (0) and Bob (1)\nqc.h(0); qc.cx(0, 1)\n# Alice encodes message '01' by applying X to qubit 0\nqc.x(0)\n# Bob decodes via Bell measurement\nqc.cx(0, 1); qc.h(0)\nqc.measure([0, 1], [0, 1])",
+    "related_topics": [
+      "Quantum Teleportation",
+      "Bell State",
+      "Quantum Entanglement",
+      "CNOT Gate",
+      "Measurement"
+    ],
+    "common_mistakes": [
+      "Thinking superdense coding allows sending 2 bits through an unentangled qubit (pre-shared entanglement is strictly required).",
+      "Confusing superdense coding with quantum teleportation.",
+      "Assuming Alice and Bob communicate faster than light (the qubit must physically travel through a quantum channel)."
+    ],
+    "aliases": [
+      "superdense coding",
+      "dense coding",
+      "superdense quantum coding",
+      "bennett wiesner protocol"
+    ],
+    "keywords": [
+      "superdense",
+      "coding",
+      "dense coding",
+      "bell state",
+      "entanglement",
+      "quantum communication",
+      "two bits one qubit"
+    ],
+    "tags": [
+      "protocols",
+      "quantum-communication",
+      "entanglement",
+      "bell-basis"
+    ],
+    "source_name": "Bennett & Wiesner (Phys. Rev. Lett. 1992)",
+    "source_url": "https://doi.org/10.1103/PhysRevLett.69.2881",
+    "additional_sources": [
+      {
+        "title": "Nielsen & Chuang: Superdense Coding",
+        "url": "https://www.cambridge.org/core/books/quantum-computation-and-quantum-information/01E10196D0A682A6AEFFEA52D53BE9AE"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 2,
+      "circuit_type": "communication_protocol",
+      "title": "Superdense Coding Protocol (Message '11')",
+      "description": "Encodes 2 classical bits into 1 qubit using pre-shared Bell state",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "CNOT",
+          "target": 1,
+          "control": 0,
+          "step": 1
+        },
+        {
+          "type": "Z",
+          "target": 0,
+          "step": 2
+        },
+        {
+          "type": "X",
+          "target": 0,
+          "step": 3
+        },
+        {
+          "type": "CNOT",
+          "target": 1,
+          "control": 0,
+          "step": 4
+        },
+        {
+          "type": "H",
+          "target": 0,
+          "step": 5
+        }
+      ]
+    }
   },
   {
     "id": "superposition",
@@ -2162,6 +4607,91 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "type": "H",
           "target": 0,
           "step": 0
+        }
+      ]
+    }
+  },
+  {
+    "id": "t-gate",
+    "topic_name": "T Gate (π/8 Gate)",
+    "slug": "t-gate",
+    "category": "Quantum Gates",
+    "short_definition": "A vital non-Clifford single-qubit quantum gate that applies a π/4 (45°) phase rotation to |1⟩, providing the essential non-stabilizer resource required for universal fault-tolerant quantum computing.",
+    "beginner_explanation": "If you only have Clifford gates (Hadamard, CNOT, and Phase S gates), a classical computer can efficiently simulate your quantum circuit (Gottesman-Knill theorem)—meaning you have no quantum speedup! The T gate is the magic key that breaks this classical barrier. Adding the T gate unlocks universal quantum computation.",
+    "detailed_explanation": "The T gate is mathematically the fourth root of the Pauli-Z gate (T⁴ = Z, T² = S). It applies a phase shift of e^(iπ/4) = (1 + i)/√2 to state |1⟩. Historically it was called the 'π/8 gate' because up to a global phase e^(iπ/8), it can be written as diag(e^(-iπ/8), e^(iπ/8)). In fault-tolerant quantum error correction, Clifford gates can be implemented transversally with zero noise spread, but the Eastin-Knill theorem proves no error-correcting code can implement all universal gates transversally. The T gate must therefore be injected using specialized, resource-heavy 'magic state distillation'.",
+    "mathematical_explanation": "Matrix representation in computational basis:\nT = \\begin{pmatrix} 1 & 0 \\\\ 0 & e^{i\\pi/4} \\end{pmatrix} = \\begin{pmatrix} 1 & 0 \\\\ 0 & \\frac{1 + i}{\\sqrt{2}} \\end{pmatrix}.\nAlgebraic relations:\nT^2 = S, \\quad T^4 = Z, \\quad T^8 = I, \\quad T^\\dagger = T^{-1} = \\begin{pmatrix} 1 & 0 \\\\ 0 & e^{-i\\pi/4} \\end{pmatrix}.\nAction on basis states: T|0\\rangle = |0\\rangle, \\quad T|1\\rangle = e^{i\\pi/4}|1\\rangle.",
+    "formula": "T = \\begin{pmatrix} 1 & 0 \\\\ 0 & e^{i\\pi/4} \\end{pmatrix}, \\quad T^2 = S, \\quad T^4 = Z",
+    "example": "Applying T to |+⟩: T((|0⟩+|1⟩)/√2) = (|0⟩ + e^(iπ/4)|1⟩)/√2. The state vector rotates 45° counter-clockwise around the Z-axis on the Bloch sphere equator.",
+    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.h(0)\nqc.t(0)   # T gate\nqc.tdg(0) # T-dagger gate",
+    "related_topics": [
+      "Phase Gate (S Gate)",
+      "Z Gate",
+      "Quantum Error Correction",
+      "Quantum Gates",
+      "Rotation Gates"
+    ],
+    "common_mistakes": [
+      "Confusing the T gate matrix diag(1, e^(iπ/4)) with angle π/8 (the phase on |1⟩ is π/4; π/8 appears only when factored symmetrically as e^(±iπ/8)).",
+      "Assuming T gates are cheap to execute on fault-tolerant hardware (T gates account for ~95% of quantum error correction overhead due to magic state distillation).",
+      "Thinking Clifford gates alone are universal (Clifford + T is universal; Clifford alone is classically simulable)."
+    ],
+    "aliases": [
+      "t gate",
+      "t-gate",
+      "pi/8 gate",
+      "fourth root of z",
+      "magic gate",
+      "non-clifford t gate"
+    ],
+    "keywords": [
+      "t gate",
+      "t-gate",
+      "pi/8",
+      "clifford+t",
+      "magic state",
+      "fault tolerance",
+      "universal quantum computing",
+      "eastin-knill"
+    ],
+    "tags": [
+      "quantum-gates",
+      "non-clifford",
+      "universal",
+      "fault-tolerance"
+    ],
+    "source_name": "Nielsen & Chuang & Gottesman",
+    "source_url": "https://www.cambridge.org/core/books/quantum-computation-and-quantum-information/01E10196D0A682A6AEFFEA52D53BE9AE",
+    "additional_sources": [
+      {
+        "title": "Bravyi & Kitaev: Universal quantum computation with ideal Clifford gates and noisy ancillas",
+        "url": "https://doi.org/10.1103/PhysRevA.71.022316"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 1,
+      "circuit_type": "single_qubit_gate",
+      "title": "T Gate Operation",
+      "description": "Applies π/4 phase shift, providing universal non-Clifford resource",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "T",
+          "target": 0,
+          "step": 1
         }
       ]
     }
@@ -2256,6 +4786,102 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "control": 0,
           "target": 2,
           "step": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "variational-quantum-algorithms",
+    "topic_name": "Variational Quantum Algorithms (VQAs)",
+    "slug": "variational-quantum-algorithms",
+    "category": "Algorithms",
+    "short_definition": "The dominant meta-heuristic framework for NISQ devices that uses parameterized quantum circuits trained via classical gradient descent or gradient-free optimizers.",
+    "beginner_explanation": "Today's quantum computers are noisy and have limited coherence times, making long mathematical algorithms like Shor's impractical today. Variational Quantum Algorithms (VQAs) are hybrid algorithms: the quantum computer runs short, flexible circuits with adjustable dials (angles), and a classical computer measures the output and tweaks the dials to improve the result. VQAs are the foundation of modern near-term quantum chemistry, optimization, and AI!",
+    "detailed_explanation": "In a VQA, an ansatz circuit U(θ) prepares state |ψ(θ)⟩ = U(θ)|0⟩. A cost function C(θ) is evaluated by measuring expectation values of problem Hamiltonians ⟨H⟩ = ⟨ψ(θ)|H|ψ(θ)⟩. A classical optimizer (e.g. COBYLA, Adam, SPSA, natural gradient) iteratively updates θ ← θ - η ∇C(θ). Major VQA families include VQE (molecular ground states), QAOA (combinatorial optimization), VQLS (variational linear solver), and QNNs (quantum neural networks).",
+    "mathematical_explanation": "Optimization objective:\n\\theta^* = \\arg\\min_\\theta C(\\theta) = \\arg\\min_\\theta \\text{Tr}\\left( O U(\\theta) |0\\rangle\\langle 0| U^\\dagger(\\theta) \\right).\nParameter-Shift Rule for exact analytical gradients:\n\\frac{\\partial C}{\\partial \\theta_i} = \\frac{C\\left(\\theta + \\frac{\\pi}{2} e_i\\right) - C\\left(\\theta - \\frac{\\pi}{2} e_i\\right)}{2}.",
+    "formula": "C(\\vec{\\theta}) = \\langle 0 | U^\\dagger(\\vec{\\theta}) H U(\\vec{\\theta}) | 0 \\rangle, \\quad \\vec{\\theta}_{t+1} = \\vec{\\theta}_t - \\eta \\nabla C(\\vec{\\theta}_t)",
+    "example": "Training a 4-qubit Quantum Neural Network to classify handwritten digits using alternating layers of parameterized single-qubit rotations Ry(θ) and circular CNOT entanglement.",
+    "circuit_example": "from qiskit import QuantumCircuit\nfrom qiskit.circuit import Parameter\ntheta = Parameter('θ')\nqc = QuantumCircuit(2)\nqc.ry(theta, 0)\nqc.cx(0, 1)\nqc.ry(theta, 1)",
+    "related_topics": [
+      "Variational Quantum Eigensolver (VQE)",
+      "Quantum Approximate Optimization Algorithm (QAOA)",
+      "Quantum Machine Learning",
+      "Quantum Circuits"
+    ],
+    "common_mistakes": [
+      "Ignoring Barren Plateaus: random deep ansatz circuits have exponentially vanishing gradients ∇C(θ) ≈ 0.",
+      "Assuming classical optimizers never get stuck in local minima (non-convex optimization landscapes are challenging).",
+      "Confusing parameter-shift gradients with finite differences (parameter-shift gives exact analytical gradients on quantum hardware!)."
+    ],
+    "aliases": [
+      "variational quantum algorithms",
+      "vqa",
+      "vqls",
+      "hybrid quantum classical algorithms",
+      "parameterized quantum circuits",
+      "pqc"
+    ],
+    "keywords": [
+      "vqa",
+      "variational",
+      "pqc",
+      "ansatz",
+      "hybrid",
+      "nisq",
+      "optimization",
+      "parameter shift",
+      "barren plateau"
+    ],
+    "tags": [
+      "algorithms",
+      "hybrid-quantum-classical",
+      "nisq",
+      "meta-heuristic"
+    ],
+    "source_name": "Cerezo et al. (Nature Reviews Physics 2021)",
+    "source_url": "https://doi.org/10.1038/s42254-021-00348-9",
+    "additional_sources": [
+      {
+        "title": "McClean et al. Barren plateaus in quantum neural network training landscapes",
+        "url": "https://doi.org/10.1038/s41467-018-07090-4"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": null,
+    "updated_at": null,
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 2,
+      "circuit_type": "vqa_ansatz",
+      "title": "Variational Quantum Algorithm Parameterized Unitary",
+      "description": "Hardware-efficient ansatz with parameterized rotations and entangling gates",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 0
+        },
+        {
+          "type": "CNOT",
+          "target": 1,
+          "control": 0,
+          "step": 1
+        },
+        {
+          "type": "Z",
+          "target": 0,
+          "step": 2
         }
       ]
     }
