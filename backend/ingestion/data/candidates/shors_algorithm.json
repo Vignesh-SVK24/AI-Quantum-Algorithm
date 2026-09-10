@@ -1,0 +1,56 @@
+{
+  "topic_name": "Shor's Algorithm",
+  "id": "shors-algorithm",
+  "slug": "shors-algorithm",
+  "category": "Algorithms",
+  "subcategory": "Cryptography-Breaking Algorithms",
+  "difficulty_level": "advanced",
+  "source_id": "ibm-quantum-learning",
+  "short_definition": "A quantum algorithm for integer factorization that runs in polynomial time O((log N)³), providing exponential speedup over the best known classical algorithms.",
+  "beginner_explanation": "Shor's algorithm solves the problem of finding the prime factors of a large integer N. Classical computers require time exponential in the number of digits of N to factor large numbers — this is the hardness assumption behind RSA encryption. Shor's algorithm reduces this to polynomial time using quantum phase estimation and the quantum Fourier transform to find the period r of the modular exponentiation function f(x) = a^x mod N. Once r is known, the greatest common divisor yields the factors of N.",
+  "detailed_explanation": "Shor's algorithm proceeds in two conceptually distinct parts. The classical reduction shows that factoring N reduces to finding the period r of f(x) = a^x mod N for a randomly chosen a coprime to N. If r is even and a^(r/2) ≠ −1 (mod N), then gcd(a^(r/2) ± 1, N) yields a non-trivial factor of N with high probability. The quantum subroutine uses a register of n = ⌈log₂ N⌉ qubits to prepare a uniform superposition over x ∈ {0, 1, ..., 2ⁿ−1}, evaluates f(x) into an ancilla register via quantum arithmetic, then applies the Quantum Fourier Transform to extract the period r from the measurement statistics. The QFT maps amplitude peaks that are multiples of 2ⁿ/r into a form readable by classical continued fraction expansion. The algorithm succeeds with probability O(1/log log r) per run and can be repeated O(log log r) times to achieve constant success probability.",
+  "mathematical_explanation": "Input: N = p·q (semiprime). Goal: find p, q.\n\nStep 1 (classical): Choose random a with 1 < a < N and gcd(a, N) = 1.\n\nStep 2 (quantum period finding):\n  - Prepare |0⟩|0⟩ on two registers.\n  - Apply H⊗ⁿ to first register: (1/√2ⁿ) Σₓ |x⟩|0⟩\n  - Apply oracle Uₐ: |x⟩|0⟩ → |x⟩|aˣ mod N⟩\n  - Measure second register → collapse first to period-spaced superposition\n  - Apply QFT†: QFT|ψ⟩ → peaks at multiples of 2ⁿ/r\n  - Measure → obtain k·2ⁿ/r; extract r via continued fractions\n\nStep 3 (classical): Compute gcd(a^(r/2) − 1, N) and gcd(a^(r/2) + 1, N).",
+  "formula": "Time complexity: O((log N)² (log log N)(log log log N)) — polynomial in log N\nClassical best: sub-exponential O(exp(c(log N)^(1/3)(log log N)^(2/3)))",
+  "example": "Factor N = 15 with a = 7:\n  f(x) = 7^x mod 15: f(0)=1, f(1)=7, f(2)=4, f(3)=13, f(4)=1...\n  Period r = 4 (even ✓)\n  a^(r/2) = 7² = 49 ≡ 4 (mod 15); 4 ≠ 14 ≡ −1 (mod 15) ✓\n  gcd(49−1, 15) = gcd(48, 15) = 3  → factor!\n  gcd(49+1, 15) = gcd(50, 15) = 5  → factor!\n  15 = 3 × 5 ✓",
+  "circuit_example": "from qiskit import QuantumCircuit\nfrom qiskit.circuit.library import QFT\n# Minimal period-finding circuit for N=15, a=7 (4-qubit example)\nqc = QuantumCircuit(4, 4)\nqc.h(range(4))          # Superposition on counting register\n# (Oracle for 7^x mod 15 implemented as controlled-unitary sequence)\n# Apply inverse QFT to extract period\nqc.compose(QFT(4, inverse=True), inplace=True)\nqc.measure_all()",
+  "related_topics": [
+    "Quantum Fourier Transform",
+    "Phase Kickback",
+    "Quantum Phase Estimation",
+    "Quantum Entanglement",
+    "CNOT Gate"
+  ],
+  "common_mistakes": [
+    "Assuming Shor's algorithm directly factors numbers — it reduces factoring to period finding, which the quantum subroutine solves.",
+    "Confusing the quantum part (period finding via QFT) with the classical part (GCD extraction).",
+    "Believing current quantum hardware can break RSA-2048 — practical implementation requires millions of error-corrected logical qubits."
+  ],
+  "aliases": [
+    "shor algorithm",
+    "shors factoring algorithm",
+    "quantum factoring",
+    "integer factorization quantum",
+    "shor's period finding"
+  ],
+  "keywords": [
+    "shor", "factoring", "rsa", "period finding", "quantum fourier transform",
+    "polynomial time", "cryptography", "prime factorization", "modular exponentiation",
+    "continued fractions", "gcd"
+  ],
+  "tags": [
+    "algorithms", "cryptography", "advanced", "qft", "number-theory"
+  ],
+  "source_name": "IBM Quantum Learning — Fundamentals of Quantum Algorithms",
+  "source_url": "https://learning.quantum.ibm.com/course/fundamentals-of-quantum-algorithms/quantum-query-algorithms",
+  "additional_sources": [
+    {
+      "title": "Qiskit Textbook — Phase Estimation and Factoring",
+      "url": "https://learn.qiskit.org/course/ch-algorithms/shor-s-algorithm"
+    },
+    {
+      "title": "Shor (1994) — Algorithms for quantum computation: discrete logarithms and factoring",
+      "url": "https://arxiv.org/abs/quant-ph/9508027"
+    }
+  ],
+  "verification_notes": "Content curated from IBM Quantum Learning and Qiskit Textbook. Mathematical steps verified against Shor (1994). Complexity notation confirmed correct."
+}

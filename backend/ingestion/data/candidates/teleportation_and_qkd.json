@@ -1,0 +1,103 @@
+[
+  {
+    "topic_name": "Quantum Teleportation",
+    "id": "quantum-teleportation",
+    "slug": "quantum-teleportation",
+    "category": "Quantum Phenomena",
+    "subcategory": "Information Transmission Protocols",
+    "difficulty_level": "intermediate",
+    "source_id": "ibm-quantum-learning",
+    "short_definition": "A quantum communication protocol that transfers the exact quantum state |ψ⟩ of a qubit from a sender (Alice) to a receiver (Bob) using a shared Bell pair and two classical bits, without physically transmitting the qubit.",
+    "beginner_explanation": "Quantum teleportation does not transmit matter or energy — it transmits quantum information (a qubit's state) using a pre-shared entangled resource (a Bell pair) plus two classical communication bits. Alice holds the qubit she wants to send and one qubit of a Bell pair; Bob holds the other Bell pair qubit. Alice performs a joint Bell-basis measurement on her two qubits, which collapses Bob's qubit into a state related to the original. Alice sends the two measurement outcomes (classical bits) to Bob, who applies at most two corrective gates to recover the exact original state. Importantly, no information travels faster than light — the two classical bits must be transmitted conventionally.",
+    "detailed_explanation": "The protocol proceeds in three stages. First, Alice and Bob share a maximally entangled Bell state |Φ⁺⟩ = (|00⟩ + |11⟩)/√2. Alice also holds the qubit to teleport: |ψ⟩ = α|0⟩ + β|1⟩ (with |α|² + |β|² = 1). Second, Alice entangles her qubit with her Bell pair qubit using a CNOT followed by a Hadamard, creating a three-qubit state that can be written as (1/2)[|00⟩(α|0⟩+β|1⟩) + |01⟩(α|1⟩+β|0⟩) + |10⟩(α|0⟩−β|1⟩) + |11⟩(α|1⟩−β|0⟩)]. Alice measures her two qubits in the computational basis, obtaining one of four outcomes. Third, Alice sends the two classical bits to Bob, who applies X and/or Z corrections depending on the bits received, recovering |ψ⟩ exactly. The no-cloning theorem is not violated: Alice's original qubit is always destroyed by her measurement.",
+    "mathematical_explanation": "Initial 3-qubit state (Alice holds qubits 0,1; Bob holds qubit 2):\n  |ψ⟩₀ ⊗ |Φ⁺⟩₁₂ = (α|0⟩ + β|1⟩) ⊗ (|00⟩ + |11⟩)/√2\n\nAfter CNOT(0→1) then H(0):\n  = (1/2)[|00⟩(α|0⟩+β|1⟩) + |01⟩(α|1⟩+β|0⟩)\n         + |10⟩(α|0⟩−β|1⟩) + |11⟩(α|1⟩−β|0⟩)]\n\nAlice measures qubits 0,1 → outcome (m₀,m₁); sends to Bob.\nBob applies: Z^(m₀) · X^(m₁) to qubit 2 → recovers α|0⟩ + β|1⟩",
+    "formula": "Bob's correction: (Z^m₀)(X^m₁)|Bob's qubit⟩ = α|0⟩ + β|1⟩\nwhere |α|² + |β|² = 1 (original normalized state restored exactly)",
+    "example": "Teleport |+⟩ = (1/√2)(|0⟩ + |1⟩):\n  If Alice measures (m₀,m₁) = (1,0): Bob applies Z → (1/√2)(|0⟩ − |1⟩) → Z → (1/√2)(|0⟩ + |1⟩) = |+⟩ ✓\n  If Alice measures (0,0): Bob applies I → already has |+⟩ ✓",
+    "circuit_example": "from qiskit import QuantumCircuit\n# Quantum Teleportation circuit (3 qubits: q0=sender, q1=Alice's Bell, q2=Bob's Bell)\nqc = QuantumCircuit(3, 2)\n# Prepare Bell pair between q1 and q2\nqc.h(1)\nqc.cx(1, 2)\n# Prepare state to teleport on q0 (e.g., |+⟩)\nqc.h(0)\n# Alice's Bell measurement\nqc.cx(0, 1)\nqc.h(0)\nqc.measure(0, 0)  # m0\nqc.measure(1, 1)  # m1\n# Bob applies classically-controlled corrections\nqc.z(2).c_if(qc.cregs[0][0], 1)  # Z if m0=1\nqc.x(2).c_if(qc.cregs[0][1], 1)  # X if m1=1",
+    "related_topics": [
+      "Bell State",
+      "Quantum Entanglement",
+      "Measurement",
+      "CNOT Gate",
+      "Hadamard Gate",
+      "Superposition"
+    ],
+    "common_mistakes": [
+      "Believing quantum teleportation allows faster-than-light communication — it requires two classical bits sent at conventional speeds to complete the protocol.",
+      "Confusing teleportation with copying — the original qubit's state is destroyed by Alice's measurement (no-cloning theorem is preserved).",
+      "Assuming the teleported state is |ψ⟩ immediately after Alice's measurement — Bob must still apply the correction gates."
+    ],
+    "aliases": [
+      "teleportation", "quantum state transfer", "qubit teleportation",
+      "quantum communication protocol", "bell state teleportation"
+    ],
+    "keywords": [
+      "teleportation", "bell pair", "entanglement", "classical bits", "no-cloning",
+      "alice bob", "bell measurement", "correction gates", "state transfer"
+    ],
+    "tags": ["quantum-phenomena", "intermediate", "entanglement", "communication", "protocol"],
+    "source_name": "IBM Quantum Learning — Quantum Teleportation",
+    "source_url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/entanglement-in-action",
+    "additional_sources": [
+      {
+        "title": "Qiskit Textbook — Teleportation",
+        "url": "https://learn.qiskit.org/course/ch-algorithms/teleportation"
+      },
+      {
+        "title": "Bennett et al. (1993) — Teleporting an Unknown Quantum State via Dual Classical and Einstein-Podolsky-Rosen Channels",
+        "url": "https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.70.1895"
+      }
+    ],
+    "verification_notes": "Three-stage protocol and correction matrix verified against IBM Quantum Learning and Bennett et al. (1993). No-cloning note confirmed as correct application of theorem."
+  },
+  {
+    "topic_name": "Quantum Key Distribution",
+    "id": "quantum-key-distribution",
+    "slug": "quantum-key-distribution",
+    "category": "Cryptography",
+    "subcategory": "Quantum Cryptographic Protocols",
+    "difficulty_level": "intermediate",
+    "source_id": "ibm-quantum-learning",
+    "short_definition": "A cryptographic protocol that uses the properties of quantum mechanics (specifically the no-cloning theorem and measurement disturbance) to allow two parties to establish a shared secret key with information-theoretic security.",
+    "beginner_explanation": "Quantum Key Distribution (QKD) allows Alice and Bob to generate a shared random secret key while detecting any eavesdropper (Eve). The most famous protocol is BB84 (Bennett & Brassard, 1984). Alice sends qubits encoded in randomly chosen bases (rectilinear {|0⟩,|1⟩} or diagonal {|+⟩,|−⟩}). Bob measures each qubit in a randomly chosen basis. If Eve intercepts and measures, she inevitably disturbs the quantum states (because measuring an unknown quantum state in the wrong basis changes it irreversibly — the no-cloning theorem prevents Eve from copying the qubits without interaction). Alice and Bob then compare a subset of their bases publicly — mismatches exceed the expected noise level if Eve was present. The undisclosed matching bits form the secret key.",
+    "detailed_explanation": "The BB84 protocol uses four non-orthogonal states: |0⟩, |1⟩, |+⟩ = (|0⟩+|1⟩)/√2, |−⟩ = (|0⟩−|1⟩)/√2. Alice encodes classical bits as: bit 0 → |0⟩ (rectilinear) or |+⟩ (diagonal); bit 1 → |1⟩ (rectilinear) or |−⟩ (diagonal), using a random basis choice for each bit. Bob measures each qubit in a randomly chosen basis. When Alice and Bob chose the same basis (probability 1/2), Bob's result matches Alice's bit perfectly. When bases differ, Bob's outcome is random (probability 1/2 correct). After transmission, they publicly compare bases (not results) and keep only the 'sifted key' from matching-basis bits (≈50% of transmitted bits). Security relies on: (1) measuring |+⟩ in the rectilinear basis gives a random outcome, destroying the encoded information; (2) Eve cannot clone the qubit to measure in both bases; (3) any eavesdropping introduces a detectable Quantum Bit Error Rate (QBER) — typically ≥25% for an intercept-resend attack.",
+    "mathematical_explanation": "BB84 state encoding:\n  Rectilinear basis (Z): 0 ↦ |0⟩, 1 ↦ |1⟩\n  Diagonal basis (X):    0 ↦ |+⟩ = (|0⟩+|1⟩)/√2, 1 ↦ |−⟩ = (|0⟩−|1⟩)/√2\n\nInner products (non-orthogonal across bases):\n  |⟨0|+⟩|² = 1/2  (rectilinear measurement of diagonal state → 50% error)\n\nEve's intercept-resend QBER:\n  QBER_Eve = 25% (detectable against natural noise threshold)\n\nInformation-theoretic security: guaranteed by Holevo bound and no-cloning theorem.",
+    "formula": "QBER = (number of errors in sifted key) / (total sifted bits)\nSecurity threshold: QBER < 11% for BB84 with error correction and privacy amplification",
+    "example": "Alice sends 8 qubits, randomly choosing bits and bases:\n  Bits:    0  1  0  0  1  0  1  1\n  Bases:   Z  X  Z  X  Z  X  Z  X\n  States: |0⟩|−⟩|0⟩|+⟩|1⟩|+⟩|1⟩|−⟩\n\nBob measures:\n  Bases:   X  X  Z  Z  Z  X  X  X\n  Matches:    ✓     ✗  ✓  ✓     ✓  (bases agree at positions 2,5,6,8)\n  Sifted key from matching positions: 1,0,1,1 → shared secret bits",
+    "circuit_example": "from qiskit import QuantumCircuit\n# BB84: encode bit=1 in diagonal basis (|−⟩ = X then H)\nqc = QuantumCircuit(1, 1)\nqc.x(0)   # Encode bit 1\nqc.h(0)   # Change to diagonal basis → |−⟩\n# Bob decodes in diagonal basis:\nqc.h(0)   # Convert back to rectilinear\nqc.measure(0, 0)  # Measure → should get 1",
+    "related_topics": [
+      "Superposition",
+      "Measurement",
+      "Quantum Teleportation",
+      "Qubit",
+      "Hadamard Gate"
+    ],
+    "common_mistakes": [
+      "Confusing QKD security with computational hardness — QKD provides information-theoretic security (based on physics laws, not algorithmic difficulty), unlike RSA.",
+      "Assuming QKD is immune to all attacks — practical implementations have side-channel vulnerabilities not present in the theoretical protocol.",
+      "Believing QKD sends the message itself — it only distributes a key; the message is encrypted separately using the key."
+    ],
+    "aliases": [
+      "qkd", "bb84", "quantum cryptography", "bennett brassard 1984",
+      "quantum secure communication", "quantum key exchange"
+    ],
+    "keywords": [
+      "qkd", "bb84", "cryptography", "eavesdropping", "no-cloning", "secret key",
+      "qber", "sifted key", "information-theoretic security", "privacy amplification"
+    ],
+    "tags": ["cryptography", "intermediate", "communication", "security", "bb84"],
+    "source_name": "IBM Quantum Learning — Quantum Cryptography",
+    "source_url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/entanglement-in-action",
+    "additional_sources": [
+      {
+        "title": "Bennett & Brassard (1984) — Quantum cryptography: Public key distribution and coin tossing",
+        "url": "https://arxiv.org/abs/2003.06557"
+      },
+      {
+        "title": "NIST Post-Quantum Cryptography",
+        "url": "https://csrc.nist.gov/projects/post-quantum-cryptography"
+      }
+    ],
+    "verification_notes": "BB84 state encoding table and QBER calculation verified against Bennett & Brassard (1984). Security threshold of 11% is for the full BB84 protocol with error correction."
+  }
+]

@@ -1,0 +1,54 @@
+{
+  "topic_name": "Quantum Error Correction",
+  "id": "quantum-error-correction",
+  "slug": "quantum-error-correction",
+  "category": "Error Correction",
+  "subcategory": "Fault-Tolerant Quantum Computing",
+  "difficulty_level": "advanced",
+  "source_id": "ibm-quantum-learning",
+  "short_definition": "A set of techniques that protect quantum information from decoherence and gate errors by encoding a logical qubit into multiple physical qubits, enabling detection and correction of errors without measuring (and thereby collapsing) the encoded state.",
+  "beginner_explanation": "Physical quantum hardware is noisy — qubits interact with their environment and accumulate errors over time (decoherence). Quantum error correction (QEC) addresses this by spreading the information of one logical qubit across multiple physical qubits. Crucially, QEC codes allow the detection of which error occurred (through syndrome measurements) without ever learning — or disturbing — the encoded logical quantum state. This is fundamentally different from classical error correction because measuring a quantum state destroys its superposition, so QEC must use ancilla qubits and indirect measurements called syndrome extraction.",
+  "detailed_explanation": "Quantum errors can be decomposed into two canonical types on any single qubit: X (bit-flip) errors that map |0⟩↔|1⟩, and Z (phase-flip) errors that introduce a relative phase |+⟩↔|−⟩. Because the Pauli operators {I, X, Y, Z} form a basis for all single-qubit operations, correcting X and Z errors is sufficient to correct any error on a single qubit. The three-qubit bit-flip code encodes |ψ⟩ = α|0⟩ + β|1⟩ as α|000⟩ + β|111⟩. A syndrome measurement (CNOT-based parity check without touching the data qubits directly) identifies which of the three qubits suffered a bit-flip, and a corrective X gate restores the code word. The Shor code (9 physical qubits) extends this to correct arbitrary single-qubit errors. Modern topological codes such as the surface code achieve fault-tolerant thresholds of ~1% physical error rate per gate.",
+  "mathematical_explanation": "Three-qubit bit-flip code:\n  Encoding: |0⟩_L = |000⟩, |1⟩_L = |111⟩\n  Logical state: |ψ⟩_L = α|000⟩ + β|111⟩  where |α|² + |β|² = 1\n\nSyndrome operators (stabilizers):\n  S₁ = Z⊗Z⊗I,  S₂ = I⊗Z⊗Z\n  No error: S₁|ψ⟩ = +|ψ⟩, S₂|ψ⟩ = +|ψ⟩\n  Qubit 1 X-error: S₁ → −1, S₂ → +1 → correct qubit 1\n  Qubit 2 X-error: S₁ → −1, S₂ → −1 → correct qubit 2\n  Qubit 3 X-error: S₁ → +1, S₂ → −1 → correct qubit 3\n\nDistance-d surface code: encodes 1 logical qubit in d² physical qubits;\ncorrects ⌊(d−1)/2⌋ arbitrary single-qubit errors.",
+  "formula": "Fault-tolerance threshold theorem: if ε_phys < ε_th ≈ 10⁻²,\nthen logical error rate ε_L ∝ (ε_phys / ε_th)^(d+1)/2 → 0 as d → ∞",
+  "example": "Shor code (9 qubits, corrects any 1-qubit error):\n  |0⟩_L = (|000⟩ + |111⟩)⊗(|000⟩ + |111⟩)⊗(|000⟩ + |111⟩) / 2√2\n  |1⟩_L = (|000⟩ − |111⟩)⊗(|000⟩ − |111⟩)⊗(|000⟩ − |111⟩) / 2√2\n  This construction corrects any combination of X and Z errors on a single physical qubit.",
+  "circuit_example": "from qiskit import QuantumCircuit\n# 3-qubit bit-flip code encoder\nqc = QuantumCircuit(3, 3)\n# Prepare logical |+⟩ state on qubit 0, then spread to code word\nqc.h(0)\nqc.cx(0, 1)  # Encode qubit 0 into qubits 0,1,2\nqc.cx(0, 2)\n# Syndrome measurement uses 2 ancilla qubits (not shown here)\n# Correct and decode:\nqc.cx(0, 1)\nqc.cx(0, 2)\nqc.ccx(1, 2, 0)  # Majority vote correction",
+  "related_topics": [
+    "Qubit",
+    "Quantum Entanglement",
+    "Measurement",
+    "Superposition",
+    "CNOT Gate"
+  ],
+  "common_mistakes": [
+    "Assuming quantum error correction works the same as classical redundancy — QEC uses entanglement and indirect (syndrome) measurements, not direct copying, because cloning an unknown quantum state is forbidden (no-cloning theorem).",
+    "Believing QEC eliminates errors entirely — it suppresses the logical error rate below the physical rate, but requires the physical error rate to be below the fault-tolerance threshold.",
+    "Confusing decoherence time (T₁, T₂) with the error correction timescale — syndrome extraction must be faster than T₂."
+  ],
+  "aliases": [
+    "qec", "quantum error correcting codes", "quantum error correcting",
+    "error correction quantum computing", "fault tolerant quantum computing",
+    "surface code", "stabilizer codes", "shor code"
+  ],
+  "keywords": [
+    "error correction", "qec", "decoherence", "surface code", "stabilizer",
+    "syndrome", "logical qubit", "fault tolerance", "threshold theorem",
+    "no-cloning", "bit flip", "phase flip", "shor code"
+  ],
+  "tags": [
+    "error-correction", "advanced", "fault-tolerance", "hardware", "stabilizer"
+  ],
+  "source_name": "IBM Quantum Learning — Error Correction",
+  "source_url": "https://learning.quantum.ibm.com/course/foundations-of-quantum-error-correction",
+  "additional_sources": [
+    {
+      "title": "Qiskit Textbook — Introduction to Quantum Error Correction",
+      "url": "https://learn.qiskit.org/course/ch-quantum-hardware/introduction-to-quantum-error-correction-via-the-three-qubit-bit-flip-code"
+    },
+    {
+      "title": "Shor (1995) — Scheme for reducing decoherence in quantum computer memory",
+      "url": "https://arxiv.org/abs/quant-ph/9605005"
+    }
+  ],
+  "verification_notes": "Content curated from IBM Quantum Learning and Qiskit Textbook. Threshold theorem statement and Shor code encoding verified against published literature."
+}

@@ -1,0 +1,94 @@
+[
+  {
+    "topic_name": "Toffoli Gate",
+    "id": "toffoli-gate",
+    "slug": "toffoli-gate",
+    "category": "Quantum Gates",
+    "subcategory": "Multi-Qubit Gates",
+    "difficulty_level": "intermediate",
+    "source_id": "qiskit-textbook",
+    "short_definition": "A three-qubit reversible gate (also called CCX or controlled-controlled-NOT) that applies an X (NOT) operation on the target qubit if and only if both control qubits are in state |1⟩.",
+    "beginner_explanation": "The Toffoli gate is the quantum analogue of a classical AND gate combined with a NOT gate. It operates on three qubits: two control qubits (c₁ and c₂) and one target qubit (t). The target qubit is flipped (X applied) only when both controls are |1⟩; otherwise all qubits pass through unchanged. Because it is its own inverse (applying it twice returns to the original state), the Toffoli gate is reversible and unitary. It is also universal for classical reversible computation: any Boolean circuit can be implemented using Toffoli gates, making it important for embedding classical subroutines inside quantum algorithms.",
+    "detailed_explanation": "The Toffoli gate (CCX) maps |c₁⟩|c₂⟩|t⟩ → |c₁⟩|c₂⟩|t ⊕ (c₁ ∧ c₂)⟩ where ⊕ denotes XOR and ∧ denotes AND. Its 8×8 unitary matrix is the identity everywhere except the |110⟩ and |111⟩ subspace, where it swaps the amplitudes: M(|110⟩, |111⟩) = [[0,1],[1,0]]. The Toffoli gate cannot be directly decomposed into fewer than 5 two-qubit CNOT gates on arbitrary qubit connectivity. In Qiskit it is implemented as `qc.ccx(c1, c2, target)`. It plays a central role in quantum arithmetic (adders, multipliers), quantum error correction ancilla preparation, and phase oracles in Grover's algorithm.",
+    "mathematical_explanation": "Action: |c₁,c₂,t⟩ → |c₁,c₂, t ⊕ (c₁·c₂)⟩\n\n8×8 matrix (computational basis order |000⟩…|111⟩):\n  TOFF = diag(I₆) with |110⟩↔|111⟩ swap:\n  rows 6,7: [[0,1],[1,0]] embedded in identity\n\nDecomposition cost: 5 CNOT gates + single-qubit rotations\nSelf-inverse: TOFF² = I",
+    "formula": "|c₁,c₂,t⟩ → |c₁,c₂, t ⊕ (c₁ ∧ c₂)⟩\nActivates when: c₁ = c₂ = 1",
+    "example": "|1,1,0⟩ → |1,1,1⟩  (target flipped: 0 ⊕ 1 = 1)\n|1,1,1⟩ → |1,1,0⟩  (target flipped: 1 ⊕ 1 = 0)\n|1,0,1⟩ → |1,0,1⟩  (c₂=0, no flip)\n|0,1,0⟩ → |0,1,0⟩  (c₁=0, no flip)",
+    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(3, 3)\n# Set both controls to |1⟩\nqc.x(0)  # control 1\nqc.x(1)  # control 2\n# Apply Toffoli gate: flips qubit 2 since c1=c2=1\nqc.ccx(0, 1, 2)\nqc.measure_all()\n# Expected output: |111⟩ (both controls remain |1⟩, target flipped 0→1)",
+    "related_topics": [
+      "CNOT Gate",
+      "X Gate",
+      "Grover's Algorithm",
+      "Quantum Error Correction",
+      "Deutsch-Jozsa Algorithm"
+    ],
+    "common_mistakes": [
+      "Confusing the Toffoli gate with CNOT — CNOT has one control; Toffoli has two.",
+      "Assuming Toffoli is a native gate on all quantum hardware — it must be decomposed into CNOT + single-qubit gates on most devices.",
+      "Forgetting that Toffoli is self-inverse (applying it twice returns the original state)."
+    ],
+    "aliases": [
+      "ccx gate", "ccx", "controlled controlled not", "ccnot", "toffoli",
+      "controlled-controlled-x", "three qubit gate"
+    ],
+    "keywords": [
+      "toffoli", "ccx", "ccnot", "three qubit", "reversible", "controlled not",
+      "classical reversibility", "quantum and gate", "universal gate"
+    ],
+    "tags": ["quantum-gates", "multi-qubit", "intermediate", "reversible", "arithmetic"],
+    "source_name": "Qiskit Textbook — Multiple Qubit Gates",
+    "source_url": "https://learn.qiskit.org/course/ch-gates/more-circuit-identities",
+    "additional_sources": [
+      {
+        "title": "IBM Quantum Learning — Multi-Qubit Gates",
+        "url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/multiple-systems"
+      }
+    ],
+    "verification_notes": "Matrix representation and CNOT decomposition cost verified against Qiskit documentation and Nielsen & Chuang."
+  },
+  {
+    "topic_name": "Quantum Phase Estimation",
+    "id": "quantum-phase-estimation",
+    "slug": "quantum-phase-estimation",
+    "category": "Algorithms",
+    "subcategory": "Phase-Based Subroutines",
+    "difficulty_level": "advanced",
+    "source_id": "qiskit-textbook",
+    "short_definition": "A quantum algorithm subroutine that estimates the phase (eigenvalue) φ of a unitary operator U given its eigenvector |ψ⟩, where U|ψ⟩ = e^{2πiφ}|ψ⟩, with precision O(1/2ⁿ) using n ancilla qubits.",
+    "beginner_explanation": "Quantum phase estimation (QPE) is a fundamental subroutine used inside many important quantum algorithms, including Shor's algorithm and quantum simulation. Given a unitary gate U and one of its eigenstates |ψ⟩ (satisfying U|ψ⟩ = e^{2πiφ}|ψ⟩), QPE extracts the phase φ as an n-bit binary fraction using n ancilla counting qubits. The key idea is to use the phase kickback phenomenon: controlled-Uᵏ gates imprint the phase information into the computational basis of the counting register, and the inverse Quantum Fourier Transform then reads it out as a binary measurement.",
+    "detailed_explanation": "QPE uses two registers: an n-qubit counting register (initialized to |0⟩⊗ⁿ) and a target register containing the eigenstate |ψ⟩. Hadamard gates put the counting register into uniform superposition. Controlled-U^(2^k) gates for k = 0,1,...,n−1 apply phase e^{2πiφ·2ᵏ} to the counting register via phase kickback. After n controlled operations, the counting register holds the state (1/√2ⁿ) Σⱼ e^{2πiφj}|j⟩. Applying QFT⁻¹ maps this to a state sharply peaked at |ñ⟩ where ñ/2ⁿ ≈ φ. Measuring the counting register yields an n-bit approximation of φ with probability ≥ 4/π² ≈ 0.405 for the best approximation, improvable by using more ancilla qubits.",
+    "mathematical_explanation": "Setup: U|ψ⟩ = e^{2πiφ}|ψ⟩ where φ ∈ [0,1)\n\nState after controlled-U^(2^k) applications (phase kickback):\n  |Φ⟩ = (1/√2ⁿ) Σⱼ₌₀^{2ⁿ−1} e^{2πiφj} |j⟩ ⊗ |ψ⟩\n\nApply QFT⁻¹:\n  QFT⁻¹|Φ⟩ → |ñ⟩ where ñ = round(φ · 2ⁿ)\n\nPrecision: δφ = 1/2ⁿ (increases as number of counting qubits grows)\nSuccess probability for best n-bit estimate: ≥ 4/π² ≈ 0.405",
+    "formula": "U|ψ⟩ = e^{2πiφ}|ψ⟩\nEstimated φ̃ = ñ/2ⁿ  where ñ from measurement of n counting qubits\nPrecision: |φ − φ̃| ≤ 1/2ⁿ",
+    "example": "Estimate phase of T gate (T|1⟩ = e^{iπ/4}|1⟩, so φ = 1/8):\n  Use n=3 counting qubits → can represent φ exactly as 0.001₂ = 1/8\n  After QPE: counting register measures |001⟩ = 1₂ → φ̃ = 1/8 ✓",
+    "circuit_example": "from qiskit import QuantumCircuit\nfrom qiskit.circuit.library import QFT\nimport numpy as np\n# QPE for T gate (phase = 1/8), n=3 counting qubits\nn = 3\nqpe = QuantumCircuit(n + 1, n)  # n counting + 1 target\nqpe.x(n)                        # Prepare eigenstate |1⟩ of T\nqpe.h(range(n))                 # Superpose counting register\n# Controlled-T^(2^k) gates\nfor k in range(n):\n    angle = 2 * np.pi / (2 ** (n - k))\n    qpe.cp(angle, k, n)         # Controlled phase kickback\n# Inverse QFT on counting register\nqpe.compose(QFT(n, inverse=True), qubits=range(n), inplace=True)\nqpe.measure(range(n), range(n))",
+    "related_topics": [
+      "Quantum Fourier Transform",
+      "Phase Kickback",
+      "Shor's Algorithm",
+      "Hadamard Gate",
+      "Superposition"
+    ],
+    "common_mistakes": [
+      "Confusing QPE with QFT — QPE is an algorithm that uses QFT as a subroutine, not the same thing.",
+      "Assuming QPE works for any input state — it only reliably extracts the phase when given an eigenstate of U; arbitrary states give a superposition of eigenvalue estimates.",
+      "Forgetting that n counting qubits give precision 1/2ⁿ — doubling precision requires one additional qubit."
+    ],
+    "aliases": [
+      "qpe", "phase estimation", "quantum phase estimation algorithm",
+      "eigenvalue estimation", "kitaev phase estimation"
+    ],
+    "keywords": [
+      "phase estimation", "qpe", "eigenvalue", "unitary", "phase kickback",
+      "qft", "counting register", "ancilla", "eigenstate"
+    ],
+    "tags": ["algorithms", "advanced", "phase", "qft", "subroutine"],
+    "source_name": "Qiskit Textbook — Quantum Phase Estimation",
+    "source_url": "https://learn.qiskit.org/course/ch-algorithms/quantum-phase-estimation",
+    "additional_sources": [
+      {
+        "title": "IBM Quantum Learning — Phase Estimation",
+        "url": "https://learning.quantum.ibm.com/course/fundamentals-of-quantum-algorithms/phase-estimation-and-factoring"
+      }
+    ],
+    "verification_notes": "Phase kickback mechanism, QFT subroutine connection, and precision bounds verified against Qiskit Textbook and Nielsen & Chuang Chapter 5."
+  }
+]

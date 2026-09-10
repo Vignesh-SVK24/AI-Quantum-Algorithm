@@ -1,0 +1,68 @@
+[
+  {
+    "id": "ibm-quantum-learning",
+    "name": "IBM Quantum Learning",
+    "base_url": "https://learning.quantum.ibm.com",
+    "trust_level": 1,
+    "topics_covered": [
+      "qubit", "superposition", "measurement", "quantum-entanglement",
+      "bell-state", "quantum-interference", "bloch-sphere",
+      "shors-algorithm", "quantum-error-correction", "toffoli-gate",
+      "quantum-phase-estimation", "quantum-teleportation"
+    ],
+    "fetch_delay_ms": 1500,
+    "notes": "Primary authoritative source for foundational quantum concepts. IBM Quantum Learning course material is peer-reviewed by IBM Research staff."
+  },
+  {
+    "id": "qiskit-textbook",
+    "name": "Qiskit Textbook (learn.qiskit.org)",
+    "base_url": "https://learn.qiskit.org",
+    "trust_level": 1,
+    "topics_covered": [
+      "hadamard-gate", "cnot-gate", "x-gate", "y-gate", "z-gate",
+      "grovers-algorithm", "quantum-fourier-transform", "phase-kickback",
+      "deutsch-jozsa-algorithm", "toffoli-gate", "quantum-phase-estimation",
+      "shors-algorithm", "quantum-error-correction"
+    ],
+    "fetch_delay_ms": 1500,
+    "notes": "Official Qiskit textbook with circuit examples and Qiskit code. Trust level 1 — maintained by IBM Quantum team."
+  },
+  {
+    "id": "nist-quantum-glossary",
+    "name": "NIST Quantum Information Glossary",
+    "base_url": "https://csrc.nist.gov/glossary",
+    "trust_level": 1,
+    "topics_covered": [
+      "qubit", "quantum-entanglement", "superposition", "quantum-key-distribution"
+    ],
+    "fetch_delay_ms": 2000,
+    "notes": "US federal standards body. Highest authoritative weight for definitions. Suitable for short_definition and mathematical_explanation fields."
+  },
+  {
+    "id": "quantum-computing-stackexchange",
+    "name": "Quantum Computing Stack Exchange",
+    "base_url": "https://quantumcomputing.stackexchange.com",
+    "trust_level": 2,
+    "topics_covered": [],
+    "fetch_delay_ms": 2000,
+    "notes": "Community-verified Q&A. Trust level 2 — all records from this source require human review regardless of quality score."
+  },
+  {
+    "id": "arxiv-quantum-physics",
+    "name": "arXiv Quantum Physics (quant-ph)",
+    "base_url": "https://arxiv.org/list/quant-ph",
+    "trust_level": 2,
+    "topics_covered": [],
+    "fetch_delay_ms": 3000,
+    "notes": "Preprint server. Use only for algorithm-level content (e.g., Shor's, Grover's). Requires expert human review before publishing."
+  },
+  {
+    "id": "manual-curation",
+    "name": "Manual Admin Curation",
+    "base_url": "local://manual",
+    "trust_level": 1,
+    "topics_covered": [],
+    "fetch_delay_ms": 0,
+    "notes": "Hand-authored candidate records by project admins. Source ID used when a JSON candidate file was written manually, not fetched from the web."
+  }
+]
