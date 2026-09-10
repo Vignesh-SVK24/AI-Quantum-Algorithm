@@ -1,5 +1,248 @@
 [
   {
+    "id": "bell-state",
+    "topic_name": "Bell State",
+    "slug": "bell-state",
+    "category": "Quantum Phenomena",
+    "short_definition": "Four specific maximally entangled two-qubit states that form an orthonormal basis for two-qubit Hilbert space.",
+    "beginner_explanation": "Bell states (or EPR pairs) are four specific two-qubit states that represent the purest, maximum possible quantum entanglement. They are created in quantum circuits by applying a Hadamard gate to one qubit followed by a CNOT gate connecting both qubits.",
+    "detailed_explanation": "The four Bell states {|Φ⁺⟩, |Φ⁻⟩, |Ψ⁺⟩, |Ψ⁻⟩} form a complete orthonormal basis for the 4-dimensional Hilbert space ℂ⁴. They maximally violate the Bell and CHSH inequalities (reaching the Tsirelson bound of 2√2 ≈ 2.828, exceeding the classical limit of 2).",
+    "mathematical_explanation": "The four states are:\n|Φ⁺⟩ = (|00⟩ + |11⟩)/√2\n|Φ⁻⟩ = (|00⟩ - |11⟩)/√2\n|Ψ⁺⟩ = (|01⟩ + |10⟩)/√2\n|Ψ⁻⟩ = (|01⟩ - |10⟩)/√2 (the singlet state)",
+    "formula": "|Φ⁺⟩ = (|00⟩ + |11⟩)/√2,  |Ψ⁺⟩ = (|01⟩ + |10⟩)/√2",
+    "example": "To generate |Φ⁺⟩: Start with |00⟩ → apply H on q0 to get (|00⟩ + |10⟩)/√2 → apply CNOT(0, 1) to get (|00⟩ + |11⟩)/√2.",
+    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(2)\nqc.h(0)\nqc.cx(0, 1)  # Produces |Φ⁺⟩ Bell state",
+    "related_topics": [
+      "Quantum Entanglement",
+      "CNOT Gate",
+      "Hadamard Gate"
+    ],
+    "common_mistakes": [
+      "Thinking there is only one Bell state (there are four distinct orthogonal Bell states).",
+      "Assuming Bell states can be generated without any multi-qubit entangling gates."
+    ],
+    "aliases": [
+      "bell states",
+      "epr pair",
+      "epr pairs",
+      "bell pair",
+      "bell basis",
+      "maximally entangled state"
+    ],
+    "keywords": [
+      "bell state",
+      "bell pair",
+      "epr pair",
+      "phi plus",
+      "psi minus",
+      "maximal entanglement",
+      "chsh"
+    ],
+    "tags": [
+      "phenomena",
+      "bell-state",
+      "entanglement",
+      "two-qubit"
+    ],
+    "source_name": "IBM Quantum Learning",
+    "source_url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/multiple-systems#bell-states",
+    "additional_sources": [
+      {
+        "title": "Qiskit Textbook: Bell States and Entanglement",
+        "url": "https://learn.qiskit.org/"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": "2026-09-10T06:56:17.431669+00:00",
+    "updated_at": "2026-09-10T06:59:29.920777+00:00",
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 2,
+      "circuit_type": "bell_state",
+      "title": "Maximally Entangled Bell State |Φ⁺⟩",
+      "description": "Standard Bell state circuit: H on qubit 0 followed by CNOT(0 → 1)",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "CNOT",
+          "control": 0,
+          "target": 1,
+          "step": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "bloch-sphere",
+    "topic_name": "Bloch Sphere",
+    "slug": "bloch-sphere",
+    "category": "Visualization",
+    "short_definition": "A unit-sphere geometric representation of all pure states of a single two-level quantum system (qubit).",
+    "beginner_explanation": "The Bloch sphere is a 3D globe used to visualize the state of a single qubit. The North Pole corresponds to state |0⟩, the South Pole to state |1⟩, and the equator represents equal superpositions with differing relative phases (like |+⟩, |-⟩, |i⟩, and |-i⟩). Single-qubit quantum gates correspond to rotations of this sphere.",
+    "detailed_explanation": "Any pure single-qubit state can be written as |ψ⟩ = cos(θ/2)|0⟩ + e^{iφ}sin(θ/2)|1⟩, where 0 ≤ θ ≤ π is the polar angle and 0 ≤ φ < 2π is the azimuthal phase angle. This defines a point (x, y, z) = (sin θ cos φ, sin θ sin φ, cos θ) on the surface of the unit sphere. Mixed states reside inside the sphere with radius r < 1.",
+    "mathematical_explanation": "Spherical coordinates representation: |ψ⟩ = cos(θ/2)|0⟩ + e^{iφ}sin(θ/2)|1⟩. Bloch vector components: r_x = ⟨ψ|σ_x|ψ⟩, r_y = ⟨ψ|σ_y|ψ⟩, r_z = ⟨ψ|σ_z|ψ⟩. Pure states satisfy |r| = 1.",
+    "formula": "|ψ⟩ = cos(θ/2)|0⟩ + e^{iφ}sin(θ/2)|1⟩",
+    "example": "For θ = π/2 and φ = 0: |ψ⟩ = cos(π/4)|0⟩ + sin(π/4)|1⟩ = (1/√2)(|0⟩ + |1⟩) = |+⟩, located on the equator along the positive X-axis.",
+    "circuit_example": "from qiskit.visualization import plot_bloch_multivector\nfrom qiskit.quantum_info import Statevector\nsv = Statevector.from_label('+')\nplot_bloch_multivector(sv)",
+    "related_topics": [
+      "Qubit",
+      "Superposition",
+      "Hadamard Gate",
+      "X Gate",
+      "Z Gate"
+    ],
+    "common_mistakes": [
+      "Trying to visualize multi-qubit entangled states on a single Bloch sphere (entanglement cannot be represented on independent spheres).",
+      "Confusing state angles (θ) with physical physical rotation angles (a π/2 rotation rotates state by θ=π)."
+    ],
+    "aliases": [
+      "bloch",
+      "bloch sphere",
+      "bloch representation",
+      "bloch vector",
+      "bloch coordinates",
+      "bloch sphere visualization"
+    ],
+    "keywords": [
+      "bloch",
+      "bloch sphere",
+      "bloch vector",
+      "polar angle",
+      "azimuthal angle",
+      "theta",
+      "phi",
+      "qubit visualization",
+      "sphere"
+    ],
+    "tags": [
+      "visualization",
+      "bloch-sphere",
+      "geometry",
+      "qubit"
+    ],
+    "source_name": "IBM Quantum Learning",
+    "source_url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/single-systems#the-bloch-sphere",
+    "additional_sources": [
+      {
+        "title": "Qiskit Visualization Guide: Bloch Sphere",
+        "url": "https://docs.quantum.ibm.com/"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": "2026-09-10T06:56:17.431669+00:00",
+    "updated_at": "2026-09-10T06:59:29.920777+00:00",
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 1,
+      "circuit_type": "single_qubit",
+      "title": "Bloch Sphere State Rotation",
+      "description": "Hadamard gate rotating state vector from North Pole (+Z) to the Equator (+X)",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        }
+      ]
+    }
+  },
+  {
+    "id": "cnot-gate",
+    "topic_name": "CNOT Gate",
+    "slug": "cnot-gate",
+    "category": "Quantum Gates",
+    "short_definition": "A two-qubit entangling gate that flips the target qubit if and only if the control qubit is in state |1⟩.",
+    "beginner_explanation": "The CNOT (Controlled-NOT) gate operates on two qubits: a control qubit and a target qubit. If the control qubit is 0, the target is left unchanged. If the control qubit is 1, the target qubit is flipped. When combined with a Hadamard gate on the control, CNOT generates quantum entanglement.",
+    "detailed_explanation": "In the standard computational basis {|00⟩, |01⟩, |10⟩, |11⟩}, CNOT maps |c⟩|t⟩ to |c⟩|t ⊕ c⟩, where ⊕ denotes addition modulo 2. The 4x4 unitary matrix is [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0]]. It is an essential component of universal quantum gate sets.",
+    "mathematical_explanation": "Matrix: CNOT = [ [1,0,0,0], [0,1,0,0], [0,0,0,1], [0,0,1,0] ]. Action: CNOT|00⟩ = |00⟩, CNOT|01⟩ = |01⟩, CNOT|10⟩ = |11⟩, CNOT|11⟩ = |10⟩.",
+    "formula": "CNOT|c, t⟩ = |c, c ⊕ t⟩",
+    "example": "Starting with state (|0⟩ + |1⟩)/√2 on qubit 0 and |0⟩ on qubit 1: state is (|00⟩ + |10⟩)/√2. Applying CNOT with control 0 and target 1 yields (|00⟩ + |11⟩)/√2, which is the entangled Bell state |Φ⁺⟩.",
+    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(2)\nqc.h(0)\nqc.cx(0, 1)  # CNOT with control=0, target=1 (creates Bell state)",
+    "related_topics": [
+      "Quantum Entanglement",
+      "Bell State",
+      "Hadamard Gate",
+      "Phase Kickback"
+    ],
+    "common_mistakes": [
+      "Thinking CNOT copies the state of the control to the target (violating the No-Cloning Theorem).",
+      "Assuming control can never be affected (due to phase kickback, operations on target can alter the control qubit phase)."
+    ],
+    "aliases": [
+      "controlled-not",
+      "cx gate",
+      "cnot",
+      "controlled x",
+      "cx operator"
+    ],
+    "keywords": [
+      "cnot",
+      "cx gate",
+      "controlled not",
+      "two qubit gate",
+      "entangling gate",
+      "control target"
+    ],
+    "tags": [
+      "gates",
+      "two-qubit",
+      "entanglement",
+      "control"
+    ],
+    "source_name": "IBM Quantum Learning",
+    "source_url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/multiple-systems#cnot-gate",
+    "additional_sources": [
+      {
+        "title": "Qiskit API Reference: CXGate",
+        "url": "https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.CXGate"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": "2026-09-10T06:56:17.431669+00:00",
+    "updated_at": "2026-09-10T06:59:29.920777+00:00",
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 2,
+      "circuit_type": "two_qubit",
+      "title": "Controlled-NOT (CNOT) Gate",
+      "description": "Applies H to control qubit 0, then CNOT(0 → 1) to entangle both qubits into (|00⟩ + |11⟩)/√2",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "CNOT",
+          "control": 0,
+          "target": 1,
+          "step": 1
+        }
+      ]
+    }
+  },
+  {
     "id": "deutsch-jozsa-algorithm",
     "topic_name": "Deutsch-Jozsa Algorithm",
     "slug": "deutsch-jozsa-algorithm",
@@ -58,7 +301,41 @@
     "verification_notes": null,
     "ingestion_source_id": "manual-curation",
     "difficulty_level": null,
-    "subcategory": null
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 2,
+      "circuit_type": "deutsch_jozsa",
+      "title": "Deutsch-Jozsa Algorithm (Balanced Oracle)",
+      "description": "Determines function is balanced in 1 query via quantum phase kickback and interference",
+      "gates": [
+        {
+          "type": "X",
+          "target": 1,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 0,
+          "step": 1
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 1
+        },
+        {
+          "type": "CNOT",
+          "control": 0,
+          "target": 1,
+          "step": 2
+        },
+        {
+          "type": "H",
+          "target": 0,
+          "step": 3
+        }
+      ]
+    }
   },
   {
     "id": "grovers-algorithm",
@@ -125,57 +402,149 @@
     "verification_notes": null,
     "ingestion_source_id": "manual-curation",
     "difficulty_level": null,
-    "subcategory": null
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 2,
+      "circuit_type": "grover",
+      "title": "Grover's Algorithm (2 Qubits)",
+      "description": "Superposition -> Oracle -> Diffusion operator, amplifying target state |11⟩ amplitude",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 1
+        },
+        {
+          "type": "CNOT",
+          "control": 0,
+          "target": 1,
+          "step": 2
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 3
+        },
+        {
+          "type": "H",
+          "target": 0,
+          "step": 4
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 4
+        },
+        {
+          "type": "X",
+          "target": 0,
+          "step": 5
+        },
+        {
+          "type": "X",
+          "target": 1,
+          "step": 5
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 6
+        },
+        {
+          "type": "CNOT",
+          "control": 0,
+          "target": 1,
+          "step": 7
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 8
+        },
+        {
+          "type": "X",
+          "target": 0,
+          "step": 9
+        },
+        {
+          "type": "X",
+          "target": 1,
+          "step": 9
+        },
+        {
+          "type": "H",
+          "target": 0,
+          "step": 10
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 10
+        }
+      ]
+    }
   },
   {
-    "id": "quantum-fourier-transform",
-    "topic_name": "Quantum Fourier Transform",
-    "slug": "quantum-fourier-transform",
-    "category": "Algorithms",
-    "short_definition": "The quantum analogue of the discrete Fourier transform, transforming computational basis states into phase-encoded frequency states.",
-    "beginner_explanation": "The Quantum Fourier Transform (QFT) is the quantum version of the classical Discrete Fourier Transform. It translates information stored in the basis states of qubits into the phases of those qubits. It is a key building block in many advanced quantum algorithms, including Shor's factoring algorithm and Quantum Phase Estimation.",
-    "detailed_explanation": "QFT maps state |j⟩ to (1/√N) ∑_{k=0}^{N-1} e^{2πi j k / N} |k⟩, where N = 2^n. While classical FFT takes O(n 2^n) operations, QFT performs this transformation on amplitudes using only O(n²) quantum gates (composed of Hadamard gates and controlled phase-rotation gates R_k). Although amplitudes cannot be directly read out, interference enables phase estimation.",
-    "mathematical_explanation": "Transformation: QFT|j⟩ = (1/√2^n) ⨂_{l=1}^n [ |0⟩ + e^{2πi j 2^{-l}} |1⟩ ]. Circuit complexity: n Hadamard gates and n(n-1)/2 controlled phase gates R_k = [[1, 0], [0, e^{2πi/2^k}]], totaling O(n²) gates.",
-    "formula": "QFT|j⟩ = (1/√2^n) ∑_{k=0}^{2^n-1} e^{2πi jk / 2^n} |k⟩",
-    "example": "On 1 qubit, QFT is identical to the Hadamard gate: QFT|0⟩ = (|0⟩ + |1⟩)/√2 and QFT|1⟩ = (|0⟩ - |1⟩)/√2.",
-    "circuit_example": "from qiskit.circuit.library import QFT\nqc = QFT(num_qubits=3)  # 3-qubit QFT circuit",
+    "id": "hadamard-gate",
+    "topic_name": "Hadamard Gate",
+    "slug": "hadamard-gate",
+    "category": "Quantum Gates",
+    "short_definition": "A fundamental single-qubit gate that maps computational basis states into equal superpositions and vice versa.",
+    "beginner_explanation": "The Hadamard gate (H gate) is the essential gate used to create quantum superpositions. Starting from |0⟩, applying H produces an equal superposition where measuring 0 or 1 is equally likely (50% each). Applying H a second time reverses the operation and returns the qubit back to |0⟩.",
+    "detailed_explanation": "The Hadamard transformation corresponds to a 180-degree rotation around the diagonal (X+Z)/√2 axis on the Bloch sphere. It maps the Z-basis {|0⟩, |1⟩} to the X-basis {|+⟩, |-⟩}, where |+⟩ = (|0⟩ + |1⟩)/√2 and |-⟩ = (|0⟩ - |1⟩)/√2. Because H is unitary and Hermitian, H² = I.",
+    "mathematical_explanation": "Matrix: H = (1/√2) [ [1, 1], [1, -1] ]. Transformation rules: H|0⟩ = |+⟩ = (|0⟩ + |1⟩)/√2, H|1⟩ = |-⟩ = (|0⟩ - |1⟩)/√2. H|+⟩ = |0⟩, H|-⟩ = |1⟩.",
+    "formula": "H = (1/√2) [[1, 1], [1, -1]]",
+    "example": "Applying H to state |0⟩: H[1, 0]ᵀ = [1/√2, 1/√2]ᵀ. Applying H again: H(H|0⟩) = H²|0⟩ = I|0⟩ = |0⟩ (demonstrating constructive and destructive quantum interference).",
+    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.h(0)  # Puts qubit 0 into equal superposition",
     "related_topics": [
-      "Hadamard Gate",
+      "Superposition",
       "Quantum Interference",
-      "Phase Kickback",
-      "Grover's Algorithm"
+      "Qubit",
+      "Bloch Sphere",
+      "X Gate"
     ],
     "common_mistakes": [
-      "Assuming QFT can be used to speed up classical Fourier transforms directly (amplitudes cannot be measured directly due to quantum measurement limits).",
-      "Forgetting that qubit endianness and bit-reversal SWAP gates are required at the end of the circuit."
+      "Assuming H creates a random classical coin toss rather than a coherent reversible superposition.",
+      "Thinking H applied to |1⟩ yields the same state as H applied to |0⟩ (H|1⟩ has a minus sign: |-⟩)."
     ],
     "aliases": [
-      "qft",
-      "quantum fourier",
-      "fourier transform",
-      "quantum dft"
+      "h gate",
+      "hadamard",
+      "h operator",
+      "hadamard transform",
+      "gate for equal superposition"
     ],
     "keywords": [
-      "quantum fourier transform",
-      "qft",
-      "fourier",
-      "shor's algorithm",
-      "phase estimation",
-      "frequency domain",
-      "phase gates"
+      "hadamard",
+      "h gate",
+      "superposition gate",
+      "gate for equal superposition",
+      "hadamard transform",
+      "plus state",
+      "basis change"
     ],
     "tags": [
-      "algorithms",
-      "qft",
-      "transforms",
-      "phase-estimation"
+      "gates",
+      "single-qubit",
+      "superposition",
+      "interference"
     ],
     "source_name": "IBM Quantum Learning",
-    "source_url": "https://learning.quantum.ibm.com/course/fundamentals-of-quantum-algorithms/quantum-fourier-transform",
+    "source_url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/quantum-circuits#hadamard-gate",
     "additional_sources": [
       {
-        "title": "Qiskit Circuit Library: QFT",
-        "url": "https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.QFT"
+        "title": "Qiskit API Reference: HGate",
+        "url": "https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.HGate"
       }
     ],
     "verification_status": "verified",
@@ -187,223 +556,255 @@
     "verification_notes": null,
     "ingestion_source_id": "manual-curation",
     "difficulty_level": null,
-    "subcategory": null
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 1,
+      "circuit_type": "single_qubit",
+      "title": "Hadamard Superposition",
+      "description": "Applies H to |0⟩, preparing (|0⟩ + |1⟩)/√2 with 50/50 measurement probability",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        }
+      ]
+    }
   },
   {
-    "id": "quantum-phase-estimation",
-    "topic_name": "Quantum Phase Estimation",
-    "slug": "quantum-phase-estimation",
-    "category": "Algorithms",
-    "short_definition": "A quantum algorithm subroutine that estimates the phase (eigenvalue) φ of a unitary operator U given its eigenvector |ψ⟩, where U|ψ⟩ = e^{2πiφ}|ψ⟩, with precision O(1/2ⁿ) using n ancilla qubits.",
-    "beginner_explanation": "Quantum phase estimation (QPE) is a fundamental subroutine used inside many important quantum algorithms, including Shor's algorithm and quantum simulation. Given a unitary gate U and one of its eigenstates |ψ⟩ (satisfying U|ψ⟩ = e^{2πiφ}|ψ⟩), QPE extracts the phase φ as an n-bit binary fraction using n ancilla counting qubits. The key idea is to use the phase kickback phenomenon: controlled-Uᵏ gates imprint the phase information into the computational basis of the counting register, and the inverse Quantum Fourier Transform then reads it out as a binary measurement.",
-    "detailed_explanation": "QPE uses two registers: an n-qubit counting register (initialized to |0⟩⊗ⁿ) and a target register containing the eigenstate |ψ⟩. Hadamard gates put the counting register into uniform superposition. Controlled-U^(2^k) gates for k = 0,1,...,n−1 apply phase e^{2πiφ·2ᵏ} to the counting register via phase kickback. After n controlled operations, the counting register holds the state (1/√2ⁿ) Σⱼ e^{2πiφj}|j⟩. Applying QFT⁻¹ maps this to a state sharply peaked at |ñ⟩ where ñ/2ⁿ ≈ φ. Measuring the counting register yields an n-bit approximation of φ with probability ≥ 4/π² ≈ 0.405 for the best approximation, improvable by using more ancilla qubits.",
-    "mathematical_explanation": "Setup: U|ψ⟩ = e^{2πiφ}|ψ⟩ where φ ∈ [0,1)\n\nState after controlled-U^(2^k) applications (phase kickback):\n  |Φ⟩ = (1/√2ⁿ) Σⱼ₌₀^{2ⁿ−1} e^{2πiφj} |j⟩ ⊗ |ψ⟩\n\nApply QFT⁻¹:\n  QFT⁻¹|Φ⟩ → |ñ⟩ where ñ = round(φ · 2ⁿ)\n\nPrecision: δφ = 1/2ⁿ (increases as number of counting qubits grows)\nSuccess probability for best n-bit estimate: ≥ 4/π² ≈ 0.405",
-    "formula": "U|ψ⟩ = e^{2πiφ}|ψ⟩\nEstimated φ̃ = ñ/2ⁿ  where ñ from measurement of n counting qubits\nPrecision: |φ − φ̃| ≤ 1/2ⁿ",
-    "example": "Estimate phase of T gate (T|1⟩ = e^{iπ/4}|1⟩, so φ = 1/8):\n  Use n=3 counting qubits → can represent φ exactly as 0.001₂ = 1/8\n  After QPE: counting register measures |001⟩ = 1₂ → φ̃ = 1/8 ✓",
-    "circuit_example": "from qiskit import QuantumCircuit\nfrom qiskit.circuit.library import QFT\nimport numpy as np\n# QPE for T gate (phase = 1/8), n=3 counting qubits\nn = 3\nqpe = QuantumCircuit(n + 1, n)  # n counting + 1 target\nqpe.x(n)                        # Prepare eigenstate |1⟩ of T\nqpe.h(range(n))                 # Superpose counting register\n# Controlled-T^(2^k) gates\nfor k in range(n):\n    angle = 2 * np.pi / (2 ** (n - k))\n    qpe.cp(angle, k, n)         # Controlled phase kickback\n# Inverse QFT on counting register\nqpe.compose(QFT(n, inverse=True), qubits=range(n), inplace=True)\nqpe.measure(range(n), range(n))",
+    "id": "measurement",
+    "topic_name": "Measurement",
+    "slug": "measurement",
+    "category": "Foundations",
+    "short_definition": "The projective operation that extracts classical data from a quantum state according to the Born rule, collapsing the state vector.",
+    "beginner_explanation": "Measurement is the bridge connecting the quantum world with our macroscopic classical instruments. When we measure a qubit in superposition, nature picks an outcome with a probability given by the squared amplitude of that outcome. This act irreversibly collapses the superposition, leaving the qubit permanently in the measured basis state.",
+    "detailed_explanation": "In standard projective (von Neumann) measurement in the computational Z-basis, the measurement operators are P₀ = |0⟩⟨0| and P₁ = |1⟩⟨1|. The probability of obtaining outcome m ∈ {0, 1} is p(m) = ⟨ψ|P_m|ψ⟩. Post-measurement, the state collapses to P_m|ψ⟩ / √p(m). Quantum measurements are fundamentally non-deterministic and irreversible.",
+    "mathematical_explanation": "Born's Rule: For state |ψ⟩ = α|0⟩ + β|1⟩, probability of measuring classical 0 is P(0) = |α|² and outcome 1 is P(1) = |β|². Post-measurement state: |ψ'⟩ = |0⟩ (if measured 0) or |ψ'⟩ = |1⟩ (if measured 1).",
+    "formula": "P(m) = |⟨m|ψ⟩|²,  |ψ'⟩ = |m⟩",
+    "example": "If |ψ⟩ = √(3/4)|0⟩ + √(1/4)|1⟩, measuring gives 0 with 75% probability and 1 with 25% probability. After getting outcome 0, immediate re-measurement yields 0 with 100% certainty.",
+    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1, 1)\nqc.h(0)\nqc.measure(0, 0)  # Collapses qubit 0 to classical bit 0",
     "related_topics": [
-      "Quantum Fourier Transform",
-      "Phase Kickback",
-      "Shor's Algorithm",
-      "Hadamard Gate",
+      "Qubit",
+      "Superposition",
+      "Bloch Sphere"
+    ],
+    "common_mistakes": [
+      "Assuming measurement only 'reveals' a pre-existing hidden classical value (violation of Bell inequalities).",
+      "Thinking you can measure without destroying the quantum superposition."
+    ],
+    "aliases": [
+      "quantum measurement",
+      "wavefunction collapse",
+      "state collapse",
+      "projective measurement",
+      "born rule",
+      "measuring a qubit",
+      "probability of measuring a qubit"
+    ],
+    "keywords": [
+      "measurement",
+      "born rule",
+      "collapse",
+      "projective measurement",
+      "probability of measuring a qubit",
+      "detector",
+      "classical register"
+    ],
+    "tags": [
+      "foundations",
+      "measurement",
+      "born-rule",
+      "collapse"
+    ],
+    "source_name": "IBM Quantum Learning",
+    "source_url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/single-systems#measurement",
+    "additional_sources": [
+      {
+        "title": "Qiskit Guide: Measuring Quantum States",
+        "url": "https://docs.quantum.ibm.com/"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": "2026-09-10T06:56:17.431669+00:00",
+    "updated_at": "2026-09-10T06:59:29.920777+00:00",
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": null
+  },
+  {
+    "id": "phase-kickback",
+    "topic_name": "Phase Kickback",
+    "slug": "phase-kickback",
+    "category": "Techniques",
+    "short_definition": "A technique where the eigenvalue phase imparted by a controlled operation on a target qubit is transferred back to the control qubit.",
+    "beginner_explanation": "Phase kickback is an ingenious quantum mechanism where an operation applied to a target qubit affects the control qubit instead! When the target is prepared in an eigenstate with eigenvalue -1 (such as the state |-⟩), applying a controlled gate kicks the minus sign back into the control qubit's relative phase.",
+    "detailed_explanation": "Suppose a unitary U has eigenstate |u⟩ such that U|u⟩ = e^{iφ}|u⟩. When a controlled-U gate acts on |+⟩|u⟩ = (1/√2)(|0⟩|u⟩ + |1⟩|u⟩), the controlled operation maps |1⟩|u⟩ to e^{iφ}|1⟩|u⟩. The state becomes (1/√2)(|0⟩ + e^{iφ}|1⟩)|u⟩. The phase has been kicked back into the control qubit while the target remains unchanged.",
+    "mathematical_explanation": "Controlled-U on control (|0⟩ + |1⟩)/√2 and target |u⟩: C-U [ (|0⟩ + |1⟩)/√2 ⊗ |u⟩ ] = (|0⟩|u⟩ + |1⟩ U|u⟩)/√2 = [ (|0⟩ + e^{iφ}|1⟩)/√2 ] ⊗ |u⟩.",
+    "formula": "U_{ctrl} [ (1/√2)(|0⟩ + |1⟩)|u⟩ ] = [ (1/√2)(|0⟩ + e^{iφ}|1⟩) ] |u⟩",
+    "example": "With control qubit in |+⟩ and target qubit in |-⟩, applying CNOT yields: CNOT(|+⟩|-⟩) = |-⟩|-⟩. The target |-⟩ is untouched, but the control state flipped from |+⟩ to |-⟩.",
+    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(2)\nqc.h(0)  # Control in |+⟩\nqc.x(1); qc.h(1)  # Target in |-⟩\nqc.cx(0, 1)  # Kicks -1 phase back to qubit 0",
+    "related_topics": [
+      "Deutsch-Jozsa Algorithm",
+      "CNOT Gate",
+      "Quantum Interference",
+      "Grover's Algorithm"
+    ],
+    "common_mistakes": [
+      "Thinking control qubits can never have their state altered by controlled gates.",
+      "Forgetting that target must be in an eigenstate of the conditional unitary for pure phase kickback to occur."
+    ],
+    "aliases": [
+      "kickback",
+      "phase kickback effect",
+      "eigenvalue kickback"
+    ],
+    "keywords": [
+      "phase kickback",
+      "eigenvalue",
+      "control qubit",
+      "target qubit",
+      "deutsch-jozsa",
+      "oracle"
+    ],
+    "tags": [
+      "techniques",
+      "phase-kickback",
+      "circuits",
+      "algorithms"
+    ],
+    "source_name": "IBM Quantum Learning",
+    "source_url": "https://learning.quantum.ibm.com/course/fundamentals-of-quantum-algorithms/phase-kickback",
+    "additional_sources": [
+      {
+        "title": "Qiskit Textbook: Phase Kickback",
+        "url": "https://learn.qiskit.org/"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": "2026-09-10T06:56:17.431669+00:00",
+    "updated_at": "2026-09-10T06:59:29.920777+00:00",
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 2,
+      "circuit_type": "two_qubit",
+      "title": "Phase Kickback Demonstration",
+      "description": "Target in state |−⟩ kicks phase back to control qubit during CNOT",
+      "gates": [
+        {
+          "type": "X",
+          "target": 1,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 0,
+          "step": 1
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 1
+        },
+        {
+          "type": "CNOT",
+          "control": 0,
+          "target": 1,
+          "step": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "quantum-entanglement",
+    "topic_name": "Quantum Entanglement",
+    "slug": "quantum-entanglement",
+    "category": "Quantum Phenomena",
+    "short_definition": "A quantum phenomenon where composite particles cannot be described independently of one another regardless of distance.",
+    "beginner_explanation": "Quantum entanglement occurs when two or more qubits become deeply linked such that the state of one qubit cannot be described without referencing the other. Even if separated by light-years, measuring one qubit instantly reveals correlated measurement results for the other, exhibiting correlations stronger than any classical physics allows.",
+    "detailed_explanation": "Mathematically, a state |ψ⟩ ∈ ℋ_A ⊗ ℋ_B is entangled if it is non-separable, meaning it cannot be factored as a tensor product |ψ_A⟩ ⊗ |ψ_B⟩. Entanglement is a fundamental resource for quantum teleportation, superdense coding, quantum key distribution (QKD), and quantum error correction.",
+    "mathematical_explanation": "Non-separability condition: |ψ⟩ ≠ |ψ_A⟩ ⊗ |ψ_B⟩. For a Bell state |Φ⁺⟩ = (|00⟩ + |11⟩)/√2, tracing out subsystem B yields a maximally mixed reduced density matrix ρ_A = Tr_B(|Φ⁺⟩⟨Φ⁺|) = (1/2)I, indicating maximal entanglement.",
+    "formula": "|ψ_{AB}⟩ ≠ |ψ_A⟩ ⊗ |ψ_B⟩",
+    "example": "Two qubits prepared in |Φ⁺⟩ = (|00⟩ + |11⟩)/√2. If Alice measures qubit A and gets 0, Bob will measure qubit B and get 0 with 100% certainty. If Alice gets 1, Bob gets 1. Yet prior to measurement, neither qubit had a predetermined value.",
+    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(2)\nqc.h(0)\nqc.cx(0, 1)  # Entangles qubit 0 and qubit 1",
+    "related_topics": [
+      "Bell State",
+      "CNOT Gate",
+      "Measurement",
       "Superposition"
     ],
     "common_mistakes": [
-      "Confusing QPE with QFT — QPE is an algorithm that uses QFT as a subroutine, not the same thing.",
-      "Assuming QPE works for any input state — it only reliably extracts the phase when given an eigenstate of U; arbitrary states give a superposition of eigenvalue estimates.",
-      "Forgetting that n counting qubits give precision 1/2ⁿ — doubling precision requires one additional qubit."
+      "Believing entanglement enables faster-than-light communication (No-Communication Theorem proves classical communication is always required to decode shared correlations).",
+      "Assuming entanglement means physical particles are physically touching or wired together."
     ],
     "aliases": [
-      "qpe",
-      "phase estimation",
-      "quantum phase estimation algorithm",
-      "eigenvalue estimation",
-      "kitaev phase estimation"
+      "entanglement",
+      "quantum correlations",
+      "spooky action at a distance",
+      "quantum non-locality"
     ],
     "keywords": [
-      "phase estimation",
-      "qpe",
-      "eigenvalue",
-      "unitary",
-      "phase kickback",
-      "qft",
-      "counting register",
-      "ancilla",
-      "eigenstate"
+      "quantum entanglement",
+      "entanglement",
+      "non-separable",
+      "bell pair",
+      "epr",
+      "teleportation",
+      "correlations"
     ],
     "tags": [
-      "algorithms",
-      "advanced",
-      "phase",
-      "qft",
-      "subroutine"
+      "phenomena",
+      "entanglement",
+      "multi-qubit",
+      "correlations"
     ],
-    "source_name": "Qiskit Textbook — Quantum Phase Estimation",
-    "source_url": "https://learn.qiskit.org/course/ch-algorithms/quantum-phase-estimation",
+    "source_name": "IBM Quantum Learning",
+    "source_url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/multiple-systems#entanglement",
     "additional_sources": [
       {
-        "title": "IBM Quantum Learning — Phase Estimation",
-        "url": "https://learning.quantum.ibm.com/course/fundamentals-of-quantum-algorithms/phase-estimation-and-factoring"
+        "title": "Stanford Encyclopedia of Philosophy: Quantum Entanglement",
+        "url": "https://plato.stanford.edu/entries/qt-entangle/"
       }
     ],
     "verification_status": "verified",
-    "created_at": "2026-09-10T08:07:08.516009+00:00",
-    "updated_at": "2026-09-10T08:07:08.516009+00:00",
+    "created_at": "2026-09-10T06:56:17.431669+00:00",
+    "updated_at": "2026-09-10T06:59:29.920777+00:00",
     "status": "approved",
     "knowledge_version": 1,
-    "last_verified_at": "2026-09-10T08:07:08.516009+00:00",
-    "verification_notes": "Phase kickback mechanism, QFT subroutine connection, and precision bounds verified against Qiskit Textbook and Nielsen & Chuang Chapter 5.",
-    "ingestion_source_id": "qiskit-textbook",
-    "difficulty_level": "advanced",
-    "subcategory": "Phase-Based Subroutines"
-  },
-  {
-    "id": "shors-algorithm",
-    "topic_name": "Shor's Algorithm",
-    "slug": "shors-algorithm",
-    "category": "Algorithms",
-    "short_definition": "A quantum algorithm for integer factorization that runs in polynomial time O((log N)³), providing exponential speedup over the best known classical algorithms.",
-    "beginner_explanation": "Shor's algorithm solves the problem of finding the prime factors of a large integer N. Classical computers require time exponential in the number of digits of N to factor large numbers — this is the hardness assumption behind RSA encryption. Shor's algorithm reduces this to polynomial time using quantum phase estimation and the quantum Fourier transform to find the period r of the modular exponentiation function f(x) = a^x mod N. Once r is known, the greatest common divisor yields the factors of N.",
-    "detailed_explanation": "Shor's algorithm proceeds in two conceptually distinct parts. The classical reduction shows that factoring N reduces to finding the period r of f(x) = a^x mod N for a randomly chosen a coprime to N. If r is even and a^(r/2) ≠ −1 (mod N), then gcd(a^(r/2) ± 1, N) yields a non-trivial factor of N with high probability. The quantum subroutine uses a register of n = ⌈log₂ N⌉ qubits to prepare a uniform superposition over x ∈ {0, 1, ..., 2ⁿ−1}, evaluates f(x) into an ancilla register via quantum arithmetic, then applies the Quantum Fourier Transform to extract the period r from the measurement statistics. The QFT maps amplitude peaks that are multiples of 2ⁿ/r into a form readable by classical continued fraction expansion. The algorithm succeeds with probability O(1/log log r) per run and can be repeated O(log log r) times to achieve constant success probability.",
-    "mathematical_explanation": "Input: N = p·q (semiprime). Goal: find p, q.\n\nStep 1 (classical): Choose random a with 1 < a < N and gcd(a, N) = 1.\n\nStep 2 (quantum period finding):\n  - Prepare |0⟩|0⟩ on two registers.\n  - Apply H⊗ⁿ to first register: (1/√2ⁿ) Σₓ |x⟩|0⟩\n  - Apply oracle Uₐ: |x⟩|0⟩ → |x⟩|aˣ mod N⟩\n  - Measure second register → collapse first to period-spaced superposition\n  - Apply QFT†: QFT|ψ⟩ → peaks at multiples of 2ⁿ/r\n  - Measure → obtain k·2ⁿ/r; extract r via continued fractions\n\nStep 3 (classical): Compute gcd(a^(r/2) − 1, N) and gcd(a^(r/2) + 1, N).",
-    "formula": "Time complexity: O((log N)² (log log N)(log log log N)) — polynomial in log N\nClassical best: sub-exponential O(exp(c(log N)^(1/3)(log log N)^(2/3)))",
-    "example": "Factor N = 15 with a = 7:\n  f(x) = 7^x mod 15: f(0)=1, f(1)=7, f(2)=4, f(3)=13, f(4)=1...\n  Period r = 4 (even ✓)\n  a^(r/2) = 7² = 49 ≡ 4 (mod 15); 4 ≠ 14 ≡ −1 (mod 15) ✓\n  gcd(49−1, 15) = gcd(48, 15) = 3  → factor!\n  gcd(49+1, 15) = gcd(50, 15) = 5  → factor!\n  15 = 3 × 5 ✓",
-    "circuit_example": "from qiskit import QuantumCircuit\nfrom qiskit.circuit.library import QFT\n# Minimal period-finding circuit for N=15, a=7 (4-qubit example)\nqc = QuantumCircuit(4, 4)\nqc.h(range(4))          # Superposition on counting register\n# (Oracle for 7^x mod 15 implemented as controlled-unitary sequence)\n# Apply inverse QFT to extract period\nqc.compose(QFT(4, inverse=True), inplace=True)\nqc.measure_all()",
-    "related_topics": [
-      "Quantum Fourier Transform",
-      "Phase Kickback",
-      "Quantum Phase Estimation",
-      "Quantum Entanglement",
-      "CNOT Gate"
-    ],
-    "common_mistakes": [
-      "Assuming Shor's algorithm directly factors numbers — it reduces factoring to period finding, which the quantum subroutine solves.",
-      "Confusing the quantum part (period finding via QFT) with the classical part (GCD extraction).",
-      "Believing current quantum hardware can break RSA-2048 — practical implementation requires millions of error-corrected logical qubits."
-    ],
-    "aliases": [
-      "shor algorithm",
-      "shors factoring algorithm",
-      "quantum factoring",
-      "integer factorization quantum",
-      "shor's period finding"
-    ],
-    "keywords": [
-      "shor",
-      "factoring",
-      "rsa",
-      "period finding",
-      "quantum fourier transform",
-      "polynomial time",
-      "cryptography",
-      "prime factorization",
-      "modular exponentiation",
-      "continued fractions",
-      "gcd"
-    ],
-    "tags": [
-      "algorithms",
-      "cryptography",
-      "advanced",
-      "qft",
-      "number-theory"
-    ],
-    "source_name": "IBM Quantum Learning — Fundamentals of Quantum Algorithms",
-    "source_url": "https://learning.quantum.ibm.com/course/fundamentals-of-quantum-algorithms/quantum-query-algorithms",
-    "additional_sources": [
-      {
-        "title": "Qiskit Textbook — Phase Estimation and Factoring",
-        "url": "https://learn.qiskit.org/course/ch-algorithms/shor-s-algorithm"
-      },
-      {
-        "title": "Shor (1994) — Algorithms for quantum computation: discrete logarithms and factoring",
-        "url": "https://arxiv.org/abs/quant-ph/9508027"
-      }
-    ],
-    "verification_status": "verified",
-    "created_at": "2026-09-10T08:07:08.069292+00:00",
-    "updated_at": "2026-09-10T08:07:08.069292+00:00",
-    "status": "approved",
-    "knowledge_version": 1,
-    "last_verified_at": "2026-09-10T08:07:08.069292+00:00",
-    "verification_notes": "Content curated from IBM Quantum Learning and Qiskit Textbook. Mathematical steps verified against Shor (1994). Complexity notation confirmed correct.",
-    "ingestion_source_id": "ibm-quantum-learning",
-    "difficulty_level": "advanced",
-    "subcategory": "Cryptography-Breaking Algorithms"
-  },
-  {
-    "id": "quantum-key-distribution",
-    "topic_name": "Quantum Key Distribution",
-    "slug": "quantum-key-distribution",
-    "category": "Cryptography",
-    "short_definition": "A cryptographic protocol that uses the properties of quantum mechanics (specifically the no-cloning theorem and measurement disturbance) to allow two parties to establish a shared secret key with information-theoretic security.",
-    "beginner_explanation": "Quantum Key Distribution (QKD) allows Alice and Bob to generate a shared random secret key while detecting any eavesdropper (Eve). The most famous protocol is BB84 (Bennett & Brassard, 1984). Alice sends qubits encoded in randomly chosen bases (rectilinear {|0⟩,|1⟩} or diagonal {|+⟩,|−⟩}). Bob measures each qubit in a randomly chosen basis. If Eve intercepts and measures, she inevitably disturbs the quantum states (because measuring an unknown quantum state in the wrong basis changes it irreversibly — the no-cloning theorem prevents Eve from copying the qubits without interaction). Alice and Bob then compare a subset of their bases publicly — mismatches exceed the expected noise level if Eve was present. The undisclosed matching bits form the secret key.",
-    "detailed_explanation": "The BB84 protocol uses four non-orthogonal states: |0⟩, |1⟩, |+⟩ = (|0⟩+|1⟩)/√2, |−⟩ = (|0⟩−|1⟩)/√2. Alice encodes classical bits as: bit 0 → |0⟩ (rectilinear) or |+⟩ (diagonal); bit 1 → |1⟩ (rectilinear) or |−⟩ (diagonal), using a random basis choice for each bit. Bob measures each qubit in a randomly chosen basis. When Alice and Bob chose the same basis (probability 1/2), Bob's result matches Alice's bit perfectly. When bases differ, Bob's outcome is random (probability 1/2 correct). After transmission, they publicly compare bases (not results) and keep only the 'sifted key' from matching-basis bits (≈50% of transmitted bits). Security relies on: (1) measuring |+⟩ in the rectilinear basis gives a random outcome, destroying the encoded information; (2) Eve cannot clone the qubit to measure in both bases; (3) any eavesdropping introduces a detectable Quantum Bit Error Rate (QBER) — typically ≥25% for an intercept-resend attack.",
-    "mathematical_explanation": "BB84 state encoding:\n  Rectilinear basis (Z): 0 ↦ |0⟩, 1 ↦ |1⟩\n  Diagonal basis (X):    0 ↦ |+⟩ = (|0⟩+|1⟩)/√2, 1 ↦ |−⟩ = (|0⟩−|1⟩)/√2\n\nInner products (non-orthogonal across bases):\n  |⟨0|+⟩|² = 1/2  (rectilinear measurement of diagonal state → 50% error)\n\nEve's intercept-resend QBER:\n  QBER_Eve = 25% (detectable against natural noise threshold)\n\nInformation-theoretic security: guaranteed by Holevo bound and no-cloning theorem.",
-    "formula": "QBER = (number of errors in sifted key) / (total sifted bits)\nSecurity threshold: QBER < 11% for BB84 with error correction and privacy amplification",
-    "example": "Alice sends 8 qubits, randomly choosing bits and bases:\n  Bits:    0  1  0  0  1  0  1  1\n  Bases:   Z  X  Z  X  Z  X  Z  X\n  States: |0⟩|−⟩|0⟩|+⟩|1⟩|+⟩|1⟩|−⟩\n\nBob measures:\n  Bases:   X  X  Z  Z  Z  X  X  X\n  Matches:    ✓     ✗  ✓  ✓     ✓  (bases agree at positions 2,5,6,8)\n  Sifted key from matching positions: 1,0,1,1 → shared secret bits",
-    "circuit_example": "from qiskit import QuantumCircuit\n# BB84: encode bit=1 in diagonal basis (|−⟩ = X then H)\nqc = QuantumCircuit(1, 1)\nqc.x(0)   # Encode bit 1\nqc.h(0)   # Change to diagonal basis → |−⟩\n# Bob decodes in diagonal basis:\nqc.h(0)   # Convert back to rectilinear\nqc.measure(0, 0)  # Measure → should get 1",
-    "related_topics": [
-      "Superposition",
-      "Measurement",
-      "Quantum Teleportation",
-      "Qubit",
-      "Hadamard Gate"
-    ],
-    "common_mistakes": [
-      "Confusing QKD security with computational hardness — QKD provides information-theoretic security (based on physics laws, not algorithmic difficulty), unlike RSA.",
-      "Assuming QKD is immune to all attacks — practical implementations have side-channel vulnerabilities not present in the theoretical protocol.",
-      "Believing QKD sends the message itself — it only distributes a key; the message is encrypted separately using the key."
-    ],
-    "aliases": [
-      "qkd",
-      "bb84",
-      "quantum cryptography",
-      "bennett brassard 1984",
-      "quantum secure communication",
-      "quantum key exchange"
-    ],
-    "keywords": [
-      "qkd",
-      "bb84",
-      "cryptography",
-      "eavesdropping",
-      "no-cloning",
-      "secret key",
-      "qber",
-      "sifted key",
-      "information-theoretic security",
-      "privacy amplification"
-    ],
-    "tags": [
-      "cryptography",
-      "intermediate",
-      "communication",
-      "security",
-      "bb84"
-    ],
-    "source_name": "IBM Quantum Learning — Quantum Cryptography",
-    "source_url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/entanglement-in-action",
-    "additional_sources": [
-      {
-        "title": "Bennett & Brassard (1984) — Quantum cryptography: Public key distribution and coin tossing",
-        "url": "https://arxiv.org/abs/2003.06557"
-      },
-      {
-        "title": "NIST Post-Quantum Cryptography",
-        "url": "https://csrc.nist.gov/projects/post-quantum-cryptography"
-      }
-    ],
-    "verification_status": "verified",
-    "created_at": "2026-09-10T08:07:08.289291+00:00",
-    "updated_at": "2026-09-10T08:07:08.289291+00:00",
-    "status": "approved",
-    "knowledge_version": 1,
-    "last_verified_at": "2026-09-10T08:07:08.289291+00:00",
-    "verification_notes": "BB84 state encoding table and QBER calculation verified against Bennett & Brassard (1984). Security threshold of 11% is for the full BB84 protocol with error correction.",
-    "ingestion_source_id": "ibm-quantum-learning",
-    "difficulty_level": "intermediate",
-    "subcategory": "Quantum Cryptographic Protocols"
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 2,
+      "circuit_type": "entanglement",
+      "title": "Two-Qubit Entanglement",
+      "description": "Creates correlated quantum state where measuring qubit 0 determines qubit 1",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "CNOT",
+          "control": 0,
+          "target": 1,
+          "step": 1
+        }
+      ]
+    }
   },
   {
     "id": "quantum-error-correction",
@@ -482,59 +883,58 @@
     "verification_notes": "Content curated from IBM Quantum Learning and Qiskit Textbook. Threshold theorem statement and Shor code encoding verified against published literature.",
     "ingestion_source_id": "ibm-quantum-learning",
     "difficulty_level": "advanced",
-    "subcategory": "Fault-Tolerant Quantum Computing"
+    "subcategory": "Fault-Tolerant Quantum Computing",
+    "canonical_circuit": null
   },
   {
-    "id": "measurement",
-    "topic_name": "Measurement",
-    "slug": "measurement",
-    "category": "Foundations",
-    "short_definition": "The projective operation that extracts classical data from a quantum state according to the Born rule, collapsing the state vector.",
-    "beginner_explanation": "Measurement is the bridge connecting the quantum world with our macroscopic classical instruments. When we measure a qubit in superposition, nature picks an outcome with a probability given by the squared amplitude of that outcome. This act irreversibly collapses the superposition, leaving the qubit permanently in the measured basis state.",
-    "detailed_explanation": "In standard projective (von Neumann) measurement in the computational Z-basis, the measurement operators are P₀ = |0⟩⟨0| and P₁ = |1⟩⟨1|. The probability of obtaining outcome m ∈ {0, 1} is p(m) = ⟨ψ|P_m|ψ⟩. Post-measurement, the state collapses to P_m|ψ⟩ / √p(m). Quantum measurements are fundamentally non-deterministic and irreversible.",
-    "mathematical_explanation": "Born's Rule: For state |ψ⟩ = α|0⟩ + β|1⟩, probability of measuring classical 0 is P(0) = |α|² and outcome 1 is P(1) = |β|². Post-measurement state: |ψ'⟩ = |0⟩ (if measured 0) or |ψ'⟩ = |1⟩ (if measured 1).",
-    "formula": "P(m) = |⟨m|ψ⟩|²,  |ψ'⟩ = |m⟩",
-    "example": "If |ψ⟩ = √(3/4)|0⟩ + √(1/4)|1⟩, measuring gives 0 with 75% probability and 1 with 25% probability. After getting outcome 0, immediate re-measurement yields 0 with 100% certainty.",
-    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1, 1)\nqc.h(0)\nqc.measure(0, 0)  # Collapses qubit 0 to classical bit 0",
+    "id": "quantum-fourier-transform",
+    "topic_name": "Quantum Fourier Transform",
+    "slug": "quantum-fourier-transform",
+    "category": "Algorithms",
+    "short_definition": "The quantum analogue of the discrete Fourier transform, transforming computational basis states into phase-encoded frequency states.",
+    "beginner_explanation": "The Quantum Fourier Transform (QFT) is the quantum version of the classical Discrete Fourier Transform. It translates information stored in the basis states of qubits into the phases of those qubits. It is a key building block in many advanced quantum algorithms, including Shor's factoring algorithm and Quantum Phase Estimation.",
+    "detailed_explanation": "QFT maps state |j⟩ to (1/√N) ∑_{k=0}^{N-1} e^{2πi j k / N} |k⟩, where N = 2^n. While classical FFT takes O(n 2^n) operations, QFT performs this transformation on amplitudes using only O(n²) quantum gates (composed of Hadamard gates and controlled phase-rotation gates R_k). Although amplitudes cannot be directly read out, interference enables phase estimation.",
+    "mathematical_explanation": "Transformation: QFT|j⟩ = (1/√2^n) ⨂_{l=1}^n [ |0⟩ + e^{2πi j 2^{-l}} |1⟩ ]. Circuit complexity: n Hadamard gates and n(n-1)/2 controlled phase gates R_k = [[1, 0], [0, e^{2πi/2^k}]], totaling O(n²) gates.",
+    "formula": "QFT|j⟩ = (1/√2^n) ∑_{k=0}^{2^n-1} e^{2πi jk / 2^n} |k⟩",
+    "example": "On 1 qubit, QFT is identical to the Hadamard gate: QFT|0⟩ = (|0⟩ + |1⟩)/√2 and QFT|1⟩ = (|0⟩ - |1⟩)/√2.",
+    "circuit_example": "from qiskit.circuit.library import QFT\nqc = QFT(num_qubits=3)  # 3-qubit QFT circuit",
     "related_topics": [
-      "Qubit",
-      "Superposition",
-      "Bloch Sphere"
+      "Hadamard Gate",
+      "Quantum Interference",
+      "Phase Kickback",
+      "Grover's Algorithm"
     ],
     "common_mistakes": [
-      "Assuming measurement only 'reveals' a pre-existing hidden classical value (violation of Bell inequalities).",
-      "Thinking you can measure without destroying the quantum superposition."
+      "Assuming QFT can be used to speed up classical Fourier transforms directly (amplitudes cannot be measured directly due to quantum measurement limits).",
+      "Forgetting that qubit endianness and bit-reversal SWAP gates are required at the end of the circuit."
     ],
     "aliases": [
-      "quantum measurement",
-      "wavefunction collapse",
-      "state collapse",
-      "projective measurement",
-      "born rule",
-      "measuring a qubit",
-      "probability of measuring a qubit"
+      "qft",
+      "quantum fourier",
+      "fourier transform",
+      "quantum dft"
     ],
     "keywords": [
-      "measurement",
-      "born rule",
-      "collapse",
-      "projective measurement",
-      "probability of measuring a qubit",
-      "detector",
-      "classical register"
+      "quantum fourier transform",
+      "qft",
+      "fourier",
+      "shor's algorithm",
+      "phase estimation",
+      "frequency domain",
+      "phase gates"
     ],
     "tags": [
-      "foundations",
-      "measurement",
-      "born-rule",
-      "collapse"
+      "algorithms",
+      "qft",
+      "transforms",
+      "phase-estimation"
     ],
     "source_name": "IBM Quantum Learning",
-    "source_url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/single-systems#measurement",
+    "source_url": "https://learning.quantum.ibm.com/course/fundamentals-of-quantum-algorithms/quantum-fourier-transform",
     "additional_sources": [
       {
-        "title": "Qiskit Guide: Measuring Quantum States",
-        "url": "https://docs.quantum.ibm.com/"
+        "title": "Qiskit Circuit Library: QFT",
+        "url": "https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.QFT"
       }
     ],
     "verification_status": "verified",
@@ -546,7 +946,8 @@
     "verification_notes": null,
     "ingestion_source_id": "manual-curation",
     "difficulty_level": null,
-    "subcategory": null
+    "subcategory": null,
+    "canonical_circuit": null
   },
   {
     "id": "quantum-interference",
@@ -608,641 +1009,169 @@
     "verification_notes": null,
     "ingestion_source_id": "manual-curation",
     "difficulty_level": null,
-    "subcategory": null
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 1,
+      "circuit_type": "single_qubit",
+      "title": "Constructive Quantum Interference",
+      "description": "Two consecutive Hadamard gates interfere constructively back to original state |0⟩",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 0,
+          "step": 1
+        }
+      ]
+    }
   },
   {
-    "id": "qubit",
-    "topic_name": "Qubit",
-    "slug": "qubit",
-    "category": "Foundations",
-    "short_definition": "The fundamental unit of quantum information, represented as a two-level quantum system with continuous state amplitudes.",
-    "beginner_explanation": "In classical computing, a bit is like an electric switch that is either strictly OFF (0) or ON (1). A qubit (quantum bit) is described by a quantum state vector whose mathematical weights determine the probability of finding it as 0 or 1 upon measurement. It is not '0 and 1 at the same time'—rather, it has a precise, definite quantum state with complex probability amplitudes.",
-    "detailed_explanation": "A physical qubit can be implemented using electron spin, photon polarization, or superconducting transmon circuits. The state is represented in a two-dimensional complex Hilbert space spanned by the orthonormal computational basis vectors |0⟩ and |1⟩. The coefficients α and β are probability amplitudes whose squared magnitudes satisfy the normalization condition |α|² + |β|² = 1.",
-    "mathematical_explanation": "State vector in Dirac notation: |ψ⟩ = α|0⟩ + β|1⟩, where α, β ∈ ℂ. In matrix form, |0⟩ = [1, 0]ᵀ and |1⟩ = [0, 1]ᵀ, yielding |ψ⟩ = [α, β]ᵀ. The probability of measuring outcome 0 is P(0) = |⟨0|ψ⟩|² = |α|², and for outcome 1 is P(1) = |⟨1|ψ⟩|² = |β|².",
-    "formula": "|ψ⟩ = α|0⟩ + β|1⟩  where  |α|² + |β|² = 1",
-    "example": "Consider a state with α = 1/√2 and β = 1/√2: |ψ⟩ = (1/√2)|0⟩ + (1/√2)|1⟩. Measuring this qubit gives outcome 0 with probability |1/√2|² = 1/2 (50%) and outcome 1 with probability |1/√2|² = 1/2 (50%).",
-    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1, 1)\nqc.h(0)  # Put qubit 0 into equal superposition\nqc.measure(0, 0)",
+    "id": "quantum-key-distribution",
+    "topic_name": "Quantum Key Distribution",
+    "slug": "quantum-key-distribution",
+    "category": "Cryptography",
+    "short_definition": "A cryptographic protocol that uses the properties of quantum mechanics (specifically the no-cloning theorem and measurement disturbance) to allow two parties to establish a shared secret key with information-theoretic security.",
+    "beginner_explanation": "Quantum Key Distribution (QKD) allows Alice and Bob to generate a shared random secret key while detecting any eavesdropper (Eve). The most famous protocol is BB84 (Bennett & Brassard, 1984). Alice sends qubits encoded in randomly chosen bases (rectilinear {|0⟩,|1⟩} or diagonal {|+⟩,|−⟩}). Bob measures each qubit in a randomly chosen basis. If Eve intercepts and measures, she inevitably disturbs the quantum states (because measuring an unknown quantum state in the wrong basis changes it irreversibly — the no-cloning theorem prevents Eve from copying the qubits without interaction). Alice and Bob then compare a subset of their bases publicly — mismatches exceed the expected noise level if Eve was present. The undisclosed matching bits form the secret key.",
+    "detailed_explanation": "The BB84 protocol uses four non-orthogonal states: |0⟩, |1⟩, |+⟩ = (|0⟩+|1⟩)/√2, |−⟩ = (|0⟩−|1⟩)/√2. Alice encodes classical bits as: bit 0 → |0⟩ (rectilinear) or |+⟩ (diagonal); bit 1 → |1⟩ (rectilinear) or |−⟩ (diagonal), using a random basis choice for each bit. Bob measures each qubit in a randomly chosen basis. When Alice and Bob chose the same basis (probability 1/2), Bob's result matches Alice's bit perfectly. When bases differ, Bob's outcome is random (probability 1/2 correct). After transmission, they publicly compare bases (not results) and keep only the 'sifted key' from matching-basis bits (≈50% of transmitted bits). Security relies on: (1) measuring |+⟩ in the rectilinear basis gives a random outcome, destroying the encoded information; (2) Eve cannot clone the qubit to measure in both bases; (3) any eavesdropping introduces a detectable Quantum Bit Error Rate (QBER) — typically ≥25% for an intercept-resend attack.",
+    "mathematical_explanation": "BB84 state encoding:\n  Rectilinear basis (Z): 0 ↦ |0⟩, 1 ↦ |1⟩\n  Diagonal basis (X):    0 ↦ |+⟩ = (|0⟩+|1⟩)/√2, 1 ↦ |−⟩ = (|0⟩−|1⟩)/√2\n\nInner products (non-orthogonal across bases):\n  |⟨0|+⟩|² = 1/2  (rectilinear measurement of diagonal state → 50% error)\n\nEve's intercept-resend QBER:\n  QBER_Eve = 25% (detectable against natural noise threshold)\n\nInformation-theoretic security: guaranteed by Holevo bound and no-cloning theorem.",
+    "formula": "QBER = (number of errors in sifted key) / (total sifted bits)\nSecurity threshold: QBER < 11% for BB84 with error correction and privacy amplification",
+    "example": "Alice sends 8 qubits, randomly choosing bits and bases:\n  Bits:    0  1  0  0  1  0  1  1\n  Bases:   Z  X  Z  X  Z  X  Z  X\n  States: |0⟩|−⟩|0⟩|+⟩|1⟩|+⟩|1⟩|−⟩\n\nBob measures:\n  Bases:   X  X  Z  Z  Z  X  X  X\n  Matches:    ✓     ✗  ✓  ✓     ✓  (bases agree at positions 2,5,6,8)\n  Sifted key from matching positions: 1,0,1,1 → shared secret bits",
+    "circuit_example": "from qiskit import QuantumCircuit\n# BB84: encode bit=1 in diagonal basis (|−⟩ = X then H)\nqc = QuantumCircuit(1, 1)\nqc.x(0)   # Encode bit 1\nqc.h(0)   # Change to diagonal basis → |−⟩\n# Bob decodes in diagonal basis:\nqc.h(0)   # Convert back to rectilinear\nqc.measure(0, 0)  # Measure → should get 1",
     "related_topics": [
       "Superposition",
       "Measurement",
-      "Bloch Sphere",
+      "Quantum Teleportation",
+      "Qubit",
       "Hadamard Gate"
     ],
     "common_mistakes": [
-      "Believing a qubit is '0 and 1 simultaneously' rather than possessing a definite state with probabilistic measurement outcomes.",
-      "Assuming reading or measuring a qubit preserves its superposition state."
+      "Confusing QKD security with computational hardness — QKD provides information-theoretic security (based on physics laws, not algorithmic difficulty), unlike RSA.",
+      "Assuming QKD is immune to all attacks — practical implementations have side-channel vulnerabilities not present in the theoretical protocol.",
+      "Believing QKD sends the message itself — it only distributes a key; the message is encrypted separately using the key."
     ],
     "aliases": [
-      "quantum bit",
-      "qubits",
-      "what is a qubit",
-      "single qubit"
+      "qkd",
+      "bb84",
+      "quantum cryptography",
+      "bennett brassard 1984",
+      "quantum secure communication",
+      "quantum key exchange"
     ],
     "keywords": [
-      "qubit",
-      "quantum bit",
-      "quantum information",
-      "state vector",
-      "amplitudes",
-      "ket 0",
-      "ket 1",
-      "hilbert space"
+      "qkd",
+      "bb84",
+      "cryptography",
+      "eavesdropping",
+      "no-cloning",
+      "secret key",
+      "qber",
+      "sifted key",
+      "information-theoretic security",
+      "privacy amplification"
     ],
     "tags": [
-      "foundations",
-      "qubit",
-      "core-concept",
-      "basis-states"
+      "cryptography",
+      "intermediate",
+      "communication",
+      "security",
+      "bb84"
     ],
-    "source_name": "IBM Quantum Learning",
-    "source_url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/single-systems",
+    "source_name": "IBM Quantum Learning — Quantum Cryptography",
+    "source_url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/entanglement-in-action",
     "additional_sources": [
       {
-        "title": "Qiskit Documentation: Fundamentals",
-        "url": "https://docs.quantum.ibm.com/guides"
+        "title": "Bennett & Brassard (1984) — Quantum cryptography: Public key distribution and coin tossing",
+        "url": "https://arxiv.org/abs/2003.06557"
       },
       {
-        "title": "Nielsen & Chuang: Quantum Computation and Quantum Information",
-        "url": "https://www.cambridge.org/core/books/quantum-computation-and-quantum-information/01E10196D0A682A6AEFFEA52D53BE9AE"
+        "title": "NIST Post-Quantum Cryptography",
+        "url": "https://csrc.nist.gov/projects/post-quantum-cryptography"
       }
     ],
     "verification_status": "verified",
-    "created_at": "2026-09-10T06:56:17.431669+00:00",
-    "updated_at": "2026-09-10T06:59:29.920777+00:00",
+    "created_at": "2026-09-10T08:07:08.289291+00:00",
+    "updated_at": "2026-09-10T08:07:08.289291+00:00",
     "status": "approved",
     "knowledge_version": 1,
-    "last_verified_at": null,
-    "verification_notes": null,
-    "ingestion_source_id": "manual-curation",
-    "difficulty_level": null,
-    "subcategory": null
-  },
-  {
-    "id": "superposition",
-    "topic_name": "Superposition",
-    "slug": "superposition",
-    "category": "Foundations",
-    "short_definition": "The linear combination of quantum basis states weighted by complex probability amplitudes before measurement.",
-    "beginner_explanation": "Superposition describes how a quantum state is a linear sum of computational basis states. Before measurement, the qubit is in a single, well-defined quantum state governed by complex numbers called probability amplitudes. When measured, this state collapses into one of the definite classical outcomes according to the Born rule.",
-    "detailed_explanation": "The principle of superposition arises directly from the linearity of the underlying Schrödinger wave mechanics. Any linear combination of valid state vectors is itself a valid state vector. Unlike classical probability distributions which only add positive real fractions, quantum probability amplitudes can interfere constructively or destructively because they carry both magnitude and phase.",
-    "mathematical_explanation": "Given basis states {|i⟩}, an arbitrary n-qubit superposition is expressed as |ψ⟩ = ∑_{i=0}^{2^n-1} c_i |i⟩ with ∑ |c_i|² = 1. The relative phase between terms (e.g. |+⟩ vs |-⟩) fundamentally alters interference patterns under subsequent unitary transformations.",
-    "formula": "|ψ⟩ = c₀|0⟩ + c₁|1⟩  with  |c₀|² + |c₁|² = 1",
-    "example": "Applying the Hadamard gate to |0⟩ produces the state |+⟩ = (|0⟩ + |1⟩)/√2. Applying it to |1⟩ yields |-⟩ = (|0⟩ - |1⟩)/√2. Both have 50/50 measurement chances, but their opposite relative phases create opposite interference results when another H gate is applied.",
-    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.h(0)  # Creates superposition: (|0⟩ + |1⟩)/√2",
-    "related_topics": [
-      "Qubit",
-      "Hadamard Gate",
-      "Quantum Interference",
-      "Measurement"
-    ],
-    "common_mistakes": [
-      "Confusing quantum superposition with classical parallel computing or uncertainty.",
-      "Ignoring the relative phase: |+⟩ and |-⟩ have identical measurement probabilities but distinct quantum properties."
-    ],
-    "aliases": [
-      "quantum superposition",
-      "linear superposition",
-      "superposition principle",
-      "state superposition"
-    ],
-    "keywords": [
-      "superposition",
-      "probability amplitudes",
-      "linear combination",
-      "plus state",
-      "minus state",
-      "relative phase"
-    ],
-    "tags": [
-      "foundations",
-      "superposition",
-      "amplitudes",
-      "interference"
-    ],
-    "source_name": "IBM Quantum Learning",
-    "source_url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/single-systems#superposition",
-    "additional_sources": [
-      {
-        "title": "Qiskit Textbook: The Atoms of Computation",
-        "url": "https://learn.qiskit.org/"
-      }
-    ],
-    "verification_status": "verified",
-    "created_at": "2026-09-10T06:56:17.431669+00:00",
-    "updated_at": "2026-09-10T06:59:29.920777+00:00",
-    "status": "approved",
-    "knowledge_version": 1,
-    "last_verified_at": null,
-    "verification_notes": null,
-    "ingestion_source_id": "manual-curation",
-    "difficulty_level": null,
-    "subcategory": null
-  },
-  {
-    "id": "cnot-gate",
-    "topic_name": "CNOT Gate",
-    "slug": "cnot-gate",
-    "category": "Quantum Gates",
-    "short_definition": "A two-qubit entangling gate that flips the target qubit if and only if the control qubit is in state |1⟩.",
-    "beginner_explanation": "The CNOT (Controlled-NOT) gate operates on two qubits: a control qubit and a target qubit. If the control qubit is 0, the target is left unchanged. If the control qubit is 1, the target qubit is flipped. When combined with a Hadamard gate on the control, CNOT generates quantum entanglement.",
-    "detailed_explanation": "In the standard computational basis {|00⟩, |01⟩, |10⟩, |11⟩}, CNOT maps |c⟩|t⟩ to |c⟩|t ⊕ c⟩, where ⊕ denotes addition modulo 2. The 4x4 unitary matrix is [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0]]. It is an essential component of universal quantum gate sets.",
-    "mathematical_explanation": "Matrix: CNOT = [ [1,0,0,0], [0,1,0,0], [0,0,0,1], [0,0,1,0] ]. Action: CNOT|00⟩ = |00⟩, CNOT|01⟩ = |01⟩, CNOT|10⟩ = |11⟩, CNOT|11⟩ = |10⟩.",
-    "formula": "CNOT|c, t⟩ = |c, c ⊕ t⟩",
-    "example": "Starting with state (|0⟩ + |1⟩)/√2 on qubit 0 and |0⟩ on qubit 1: state is (|00⟩ + |10⟩)/√2. Applying CNOT with control 0 and target 1 yields (|00⟩ + |11⟩)/√2, which is the entangled Bell state |Φ⁺⟩.",
-    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(2)\nqc.h(0)\nqc.cx(0, 1)  # CNOT with control=0, target=1 (creates Bell state)",
-    "related_topics": [
-      "Quantum Entanglement",
-      "Bell State",
-      "Hadamard Gate",
-      "Phase Kickback"
-    ],
-    "common_mistakes": [
-      "Thinking CNOT copies the state of the control to the target (violating the No-Cloning Theorem).",
-      "Assuming control can never be affected (due to phase kickback, operations on target can alter the control qubit phase)."
-    ],
-    "aliases": [
-      "controlled-not",
-      "cx gate",
-      "cnot",
-      "controlled x",
-      "cx operator"
-    ],
-    "keywords": [
-      "cnot",
-      "cx gate",
-      "controlled not",
-      "two qubit gate",
-      "entangling gate",
-      "control target"
-    ],
-    "tags": [
-      "gates",
-      "two-qubit",
-      "entanglement",
-      "control"
-    ],
-    "source_name": "IBM Quantum Learning",
-    "source_url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/multiple-systems#cnot-gate",
-    "additional_sources": [
-      {
-        "title": "Qiskit API Reference: CXGate",
-        "url": "https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.CXGate"
-      }
-    ],
-    "verification_status": "verified",
-    "created_at": "2026-09-10T06:56:17.431669+00:00",
-    "updated_at": "2026-09-10T06:59:29.920777+00:00",
-    "status": "approved",
-    "knowledge_version": 1,
-    "last_verified_at": null,
-    "verification_notes": null,
-    "ingestion_source_id": "manual-curation",
-    "difficulty_level": null,
-    "subcategory": null
-  },
-  {
-    "id": "hadamard-gate",
-    "topic_name": "Hadamard Gate",
-    "slug": "hadamard-gate",
-    "category": "Quantum Gates",
-    "short_definition": "A fundamental single-qubit gate that maps computational basis states into equal superpositions and vice versa.",
-    "beginner_explanation": "The Hadamard gate (H gate) is the essential gate used to create quantum superpositions. Starting from |0⟩, applying H produces an equal superposition where measuring 0 or 1 is equally likely (50% each). Applying H a second time reverses the operation and returns the qubit back to |0⟩.",
-    "detailed_explanation": "The Hadamard transformation corresponds to a 180-degree rotation around the diagonal (X+Z)/√2 axis on the Bloch sphere. It maps the Z-basis {|0⟩, |1⟩} to the X-basis {|+⟩, |-⟩}, where |+⟩ = (|0⟩ + |1⟩)/√2 and |-⟩ = (|0⟩ - |1⟩)/√2. Because H is unitary and Hermitian, H² = I.",
-    "mathematical_explanation": "Matrix: H = (1/√2) [ [1, 1], [1, -1] ]. Transformation rules: H|0⟩ = |+⟩ = (|0⟩ + |1⟩)/√2, H|1⟩ = |-⟩ = (|0⟩ - |1⟩)/√2. H|+⟩ = |0⟩, H|-⟩ = |1⟩.",
-    "formula": "H = (1/√2) [[1, 1], [1, -1]]",
-    "example": "Applying H to state |0⟩: H[1, 0]ᵀ = [1/√2, 1/√2]ᵀ. Applying H again: H(H|0⟩) = H²|0⟩ = I|0⟩ = |0⟩ (demonstrating constructive and destructive quantum interference).",
-    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.h(0)  # Puts qubit 0 into equal superposition",
-    "related_topics": [
-      "Superposition",
-      "Quantum Interference",
-      "Qubit",
-      "Bloch Sphere",
-      "X Gate"
-    ],
-    "common_mistakes": [
-      "Assuming H creates a random classical coin toss rather than a coherent reversible superposition.",
-      "Thinking H applied to |1⟩ yields the same state as H applied to |0⟩ (H|1⟩ has a minus sign: |-⟩)."
-    ],
-    "aliases": [
-      "h gate",
-      "hadamard",
-      "h operator",
-      "hadamard transform",
-      "gate for equal superposition"
-    ],
-    "keywords": [
-      "hadamard",
-      "h gate",
-      "superposition gate",
-      "gate for equal superposition",
-      "hadamard transform",
-      "plus state",
-      "basis change"
-    ],
-    "tags": [
-      "gates",
-      "single-qubit",
-      "superposition",
-      "interference"
-    ],
-    "source_name": "IBM Quantum Learning",
-    "source_url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/quantum-circuits#hadamard-gate",
-    "additional_sources": [
-      {
-        "title": "Qiskit API Reference: HGate",
-        "url": "https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.HGate"
-      }
-    ],
-    "verification_status": "verified",
-    "created_at": "2026-09-10T06:56:17.431669+00:00",
-    "updated_at": "2026-09-10T06:59:29.920777+00:00",
-    "status": "approved",
-    "knowledge_version": 1,
-    "last_verified_at": null,
-    "verification_notes": null,
-    "ingestion_source_id": "manual-curation",
-    "difficulty_level": null,
-    "subcategory": null
-  },
-  {
-    "id": "toffoli-gate",
-    "topic_name": "Toffoli Gate",
-    "slug": "toffoli-gate",
-    "category": "Quantum Gates",
-    "short_definition": "A three-qubit reversible gate (also called CCX or controlled-controlled-NOT) that applies an X (NOT) operation on the target qubit if and only if both control qubits are in state |1⟩.",
-    "beginner_explanation": "The Toffoli gate is the quantum analogue of a classical AND gate combined with a NOT gate. It operates on three qubits: two control qubits (c₁ and c₂) and one target qubit (t). The target qubit is flipped (X applied) only when both controls are |1⟩; otherwise all qubits pass through unchanged. Because it is its own inverse (applying it twice returns to the original state), the Toffoli gate is reversible and unitary. It is also universal for classical reversible computation: any Boolean circuit can be implemented using Toffoli gates, making it important for embedding classical subroutines inside quantum algorithms.",
-    "detailed_explanation": "The Toffoli gate (CCX) maps |c₁⟩|c₂⟩|t⟩ → |c₁⟩|c₂⟩|t ⊕ (c₁ ∧ c₂)⟩ where ⊕ denotes XOR and ∧ denotes AND. Its 8×8 unitary matrix is the identity everywhere except the |110⟩ and |111⟩ subspace, where it swaps the amplitudes: M(|110⟩, |111⟩) = [[0,1],[1,0]]. The Toffoli gate cannot be directly decomposed into fewer than 5 two-qubit CNOT gates on arbitrary qubit connectivity. In Qiskit it is implemented as `qc.ccx(c1, c2, target)`. It plays a central role in quantum arithmetic (adders, multipliers), quantum error correction ancilla preparation, and phase oracles in Grover's algorithm.",
-    "mathematical_explanation": "Action: |c₁,c₂,t⟩ → |c₁,c₂, t ⊕ (c₁·c₂)⟩\n\n8×8 matrix (computational basis order |000⟩…|111⟩):\n  TOFF = diag(I₆) with |110⟩↔|111⟩ swap:\n  rows 6,7: [[0,1],[1,0]] embedded in identity\n\nDecomposition cost: 5 CNOT gates + single-qubit rotations\nSelf-inverse: TOFF² = I",
-    "formula": "|c₁,c₂,t⟩ → |c₁,c₂, t ⊕ (c₁ ∧ c₂)⟩\nActivates when: c₁ = c₂ = 1",
-    "example": "|1,1,0⟩ → |1,1,1⟩  (target flipped: 0 ⊕ 1 = 1)\n|1,1,1⟩ → |1,1,0⟩  (target flipped: 1 ⊕ 1 = 0)\n|1,0,1⟩ → |1,0,1⟩  (c₂=0, no flip)\n|0,1,0⟩ → |0,1,0⟩  (c₁=0, no flip)",
-    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(3, 3)\n# Set both controls to |1⟩\nqc.x(0)  # control 1\nqc.x(1)  # control 2\n# Apply Toffoli gate: flips qubit 2 since c1=c2=1\nqc.ccx(0, 1, 2)\nqc.measure_all()\n# Expected output: |111⟩ (both controls remain |1⟩, target flipped 0→1)",
-    "related_topics": [
-      "CNOT Gate",
-      "X Gate",
-      "Grover's Algorithm",
-      "Quantum Error Correction",
-      "Deutsch-Jozsa Algorithm"
-    ],
-    "common_mistakes": [
-      "Confusing the Toffoli gate with CNOT — CNOT has one control; Toffoli has two.",
-      "Assuming Toffoli is a native gate on all quantum hardware — it must be decomposed into CNOT + single-qubit gates on most devices.",
-      "Forgetting that Toffoli is self-inverse (applying it twice returns the original state)."
-    ],
-    "aliases": [
-      "ccx gate",
-      "ccx",
-      "controlled controlled not",
-      "ccnot",
-      "toffoli",
-      "controlled-controlled-x",
-      "three qubit gate"
-    ],
-    "keywords": [
-      "toffoli",
-      "ccx",
-      "ccnot",
-      "three qubit",
-      "reversible",
-      "controlled not",
-      "classical reversibility",
-      "quantum and gate",
-      "universal gate"
-    ],
-    "tags": [
-      "quantum-gates",
-      "multi-qubit",
-      "intermediate",
-      "reversible",
-      "arithmetic"
-    ],
-    "source_name": "Qiskit Textbook — Multiple Qubit Gates",
-    "source_url": "https://learn.qiskit.org/course/ch-gates/more-circuit-identities",
-    "additional_sources": [
-      {
-        "title": "IBM Quantum Learning — Multi-Qubit Gates",
-        "url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/multiple-systems"
-      }
-    ],
-    "verification_status": "verified",
-    "created_at": "2026-09-10T08:07:08.369099+00:00",
-    "updated_at": "2026-09-10T08:07:08.369099+00:00",
-    "status": "approved",
-    "knowledge_version": 1,
-    "last_verified_at": "2026-09-10T08:07:08.369099+00:00",
-    "verification_notes": "Matrix representation and CNOT decomposition cost verified against Qiskit documentation and Nielsen & Chuang.",
-    "ingestion_source_id": "qiskit-textbook",
+    "last_verified_at": "2026-09-10T08:07:08.289291+00:00",
+    "verification_notes": "BB84 state encoding table and QBER calculation verified against Bennett & Brassard (1984). Security threshold of 11% is for the full BB84 protocol with error correction.",
+    "ingestion_source_id": "ibm-quantum-learning",
     "difficulty_level": "intermediate",
-    "subcategory": "Multi-Qubit Gates"
+    "subcategory": "Quantum Cryptographic Protocols",
+    "canonical_circuit": null
   },
   {
-    "id": "x-gate",
-    "topic_name": "X Gate",
-    "slug": "x-gate",
-    "category": "Quantum Gates",
-    "short_definition": "The Pauli-X operator that performs a bit-flip operation, rotating the state vector by π radians around the X-axis of the Bloch sphere.",
-    "beginner_explanation": "The X gate is the quantum counterpart of the classical NOT gate. It flips |0⟩ into |1⟩, and |1⟩ into |0⟩. On the Bloch sphere, it acts as a 180-degree rotation around the X-axis.",
-    "detailed_explanation": "The Pauli-X gate is represented by the 2x2 matrix [[0, 1], [1, 0]]. Because it is both unitary and Hermitian (X = X† and X² = I), applying it twice returns the qubit to its original state. When applied to superpositions, it swaps the coefficients: X(α|0⟩ + β|1⟩) = β|0⟩ + α|1⟩.",
-    "mathematical_explanation": "Matrix representation: X = [ [0, 1], [1, 0] ]. Action: X|0⟩ = |1⟩, X|1⟩ = |0⟩. Eigenvectors: |+⟩ with eigenvalue +1, and |-⟩ with eigenvalue -1.",
-    "formula": "X = [[0, 1], [1, 0]],  X|0⟩ = |1⟩,  X|1⟩ = |0⟩",
-    "example": "If |ψ⟩ = 0.8|0⟩ + 0.6|1⟩, applying the X gate yields X|ψ⟩ = 0.6|0⟩ + 0.8|1⟩.",
-    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.x(0)  # Flips |0⟩ to |1⟩",
+    "id": "quantum-phase-estimation",
+    "topic_name": "Quantum Phase Estimation",
+    "slug": "quantum-phase-estimation",
+    "category": "Algorithms",
+    "short_definition": "A quantum algorithm subroutine that estimates the phase (eigenvalue) φ of a unitary operator U given its eigenvector |ψ⟩, where U|ψ⟩ = e^{2πiφ}|ψ⟩, with precision O(1/2ⁿ) using n ancilla qubits.",
+    "beginner_explanation": "Quantum phase estimation (QPE) is a fundamental subroutine used inside many important quantum algorithms, including Shor's algorithm and quantum simulation. Given a unitary gate U and one of its eigenstates |ψ⟩ (satisfying U|ψ⟩ = e^{2πiφ}|ψ⟩), QPE extracts the phase φ as an n-bit binary fraction using n ancilla counting qubits. The key idea is to use the phase kickback phenomenon: controlled-Uᵏ gates imprint the phase information into the computational basis of the counting register, and the inverse Quantum Fourier Transform then reads it out as a binary measurement.",
+    "detailed_explanation": "QPE uses two registers: an n-qubit counting register (initialized to |0⟩⊗ⁿ) and a target register containing the eigenstate |ψ⟩. Hadamard gates put the counting register into uniform superposition. Controlled-U^(2^k) gates for k = 0,1,...,n−1 apply phase e^{2πiφ·2ᵏ} to the counting register via phase kickback. After n controlled operations, the counting register holds the state (1/√2ⁿ) Σⱼ e^{2πiφj}|j⟩. Applying QFT⁻¹ maps this to a state sharply peaked at |ñ⟩ where ñ/2ⁿ ≈ φ. Measuring the counting register yields an n-bit approximation of φ with probability ≥ 4/π² ≈ 0.405 for the best approximation, improvable by using more ancilla qubits.",
+    "mathematical_explanation": "Setup: U|ψ⟩ = e^{2πiφ}|ψ⟩ where φ ∈ [0,1)\n\nState after controlled-U^(2^k) applications (phase kickback):\n  |Φ⟩ = (1/√2ⁿ) Σⱼ₌₀^{2ⁿ−1} e^{2πiφj} |j⟩ ⊗ |ψ⟩\n\nApply QFT⁻¹:\n  QFT⁻¹|Φ⟩ → |ñ⟩ where ñ = round(φ · 2ⁿ)\n\nPrecision: δφ = 1/2ⁿ (increases as number of counting qubits grows)\nSuccess probability for best n-bit estimate: ≥ 4/π² ≈ 0.405",
+    "formula": "U|ψ⟩ = e^{2πiφ}|ψ⟩\nEstimated φ̃ = ñ/2ⁿ  where ñ from measurement of n counting qubits\nPrecision: |φ − φ̃| ≤ 1/2ⁿ",
+    "example": "Estimate phase of T gate (T|1⟩ = e^{iπ/4}|1⟩, so φ = 1/8):\n  Use n=3 counting qubits → can represent φ exactly as 0.001₂ = 1/8\n  After QPE: counting register measures |001⟩ = 1₂ → φ̃ = 1/8 ✓",
+    "circuit_example": "from qiskit import QuantumCircuit\nfrom qiskit.circuit.library import QFT\nimport numpy as np\n# QPE for T gate (phase = 1/8), n=3 counting qubits\nn = 3\nqpe = QuantumCircuit(n + 1, n)  # n counting + 1 target\nqpe.x(n)                        # Prepare eigenstate |1⟩ of T\nqpe.h(range(n))                 # Superpose counting register\n# Controlled-T^(2^k) gates\nfor k in range(n):\n    angle = 2 * np.pi / (2 ** (n - k))\n    qpe.cp(angle, k, n)         # Controlled phase kickback\n# Inverse QFT on counting register\nqpe.compose(QFT(n, inverse=True), qubits=range(n), inplace=True)\nqpe.measure(range(n), range(n))",
     "related_topics": [
-      "Y Gate",
-      "Z Gate",
+      "Quantum Fourier Transform",
+      "Phase Kickback",
+      "Shor's Algorithm",
       "Hadamard Gate",
-      "Qubit"
-    ],
-    "common_mistakes": [
-      "Assuming X flips the phase (phase-flip is done by Z).",
-      "Thinking X has no effect on |+⟩ (it leaves |+⟩ unchanged because |+⟩ is an eigenstate with eigenvalue +1)."
-    ],
-    "aliases": [
-      "pauli-x",
-      "pauli x gate",
-      "not gate",
-      "quantum not",
-      "bit flip gate",
-      "gate that flips a qubit",
-      "x operator"
-    ],
-    "keywords": [
-      "x gate",
-      "pauli-x",
-      "not gate",
-      "bit flip",
-      "gate that flips a qubit",
-      "qubit flip",
-      "inversion"
-    ],
-    "tags": [
-      "gates",
-      "single-qubit",
-      "pauli",
-      "bit-flip"
-    ],
-    "source_name": "IBM Quantum Learning",
-    "source_url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/quantum-circuits#single-qubit-gates",
-    "additional_sources": [
-      {
-        "title": "Qiskit Circuit Library: XGate",
-        "url": "https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.XGate"
-      }
-    ],
-    "verification_status": "verified",
-    "created_at": "2026-09-10T06:56:17.431669+00:00",
-    "updated_at": "2026-09-10T06:59:29.920777+00:00",
-    "status": "approved",
-    "knowledge_version": 1,
-    "last_verified_at": null,
-    "verification_notes": null,
-    "ingestion_source_id": "manual-curation",
-    "difficulty_level": null,
-    "subcategory": null
-  },
-  {
-    "id": "y-gate",
-    "topic_name": "Y Gate",
-    "slug": "y-gate",
-    "category": "Quantum Gates",
-    "short_definition": "The Pauli-Y operator that performs both a bit flip and a phase flip (multiplication by complex unit i), rotating by π around the Y-axis.",
-    "beginner_explanation": "The Y gate is a fundamental quantum gate that combines a bit-flip and a phase-flip. It flips |0⟩ to i|1⟩ and |1⟩ to -i|0⟩, introducing an imaginary phase factor.",
-    "detailed_explanation": "Pauli-Y is defined by the matrix [[0, -i], [i, 0]]. Like all Pauli matrices, Y is unitary and Hermitian (Y = Y† and Y² = I). Geometrically, it rotates the qubit state by π radians around the Y-axis of the Bloch sphere.",
-    "mathematical_explanation": "Matrix: Y = [ [0, -i], [i, 0] ]. Action: Y|0⟩ = i|1⟩, Y|1⟩ = -i|0⟩. Eigenvectors: |i⟩ = (|0⟩ + i|1⟩)/√2 (eigenvalue +1) and |-i⟩ = (|0⟩ - i|1⟩)/√2 (eigenvalue -1).",
-    "formula": "Y = [[0, -i], [i, 0]],  Y|0⟩ = i|1⟩,  Y|1⟩ = -i|0⟩",
-    "example": "Applying Y to |0⟩ produces state i|1⟩. In terms of measurement probabilities, |i|² = 1, so the qubit will be measured as 1 with 100% certainty, but carries an imaginary global phase.",
-    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.y(0)  # Applies Pauli-Y gate",
-    "related_topics": [
-      "X Gate",
-      "Z Gate",
-      "Bloch Sphere"
-    ],
-    "common_mistakes": [
-      "Forgetting the factor of i when calculating transformed state vectors.",
-      "Confusing the action of Y with the composite gate XZ (XZ = -iY)."
-    ],
-    "aliases": [
-      "pauli-y",
-      "pauli y gate",
-      "y operator",
-      "bit and phase flip gate"
-    ],
-    "keywords": [
-      "y gate",
-      "pauli-y",
-      "imaginary phase",
-      "bloch rotation",
-      "bit phase flip"
-    ],
-    "tags": [
-      "gates",
-      "single-qubit",
-      "pauli"
-    ],
-    "source_name": "IBM Quantum Learning",
-    "source_url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/quantum-circuits",
-    "additional_sources": [
-      {
-        "title": "Qiskit API Reference: YGate",
-        "url": "https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.YGate"
-      }
-    ],
-    "verification_status": "verified",
-    "created_at": "2026-09-10T06:56:17.431669+00:00",
-    "updated_at": "2026-09-10T06:59:29.920777+00:00",
-    "status": "approved",
-    "knowledge_version": 1,
-    "last_verified_at": null,
-    "verification_notes": null,
-    "ingestion_source_id": "manual-curation",
-    "difficulty_level": null,
-    "subcategory": null
-  },
-  {
-    "id": "z-gate",
-    "topic_name": "Z Gate",
-    "slug": "z-gate",
-    "category": "Quantum Gates",
-    "short_definition": "The Pauli-Z operator that applies a phase flip (multiplying |1⟩ by -1 while leaving |0⟩ unchanged).",
-    "beginner_explanation": "The Z gate is a phase-flip gate. It leaves the |0⟩ basis state completely unaffected, but flips the algebraic sign of the |1⟩ state. On the Bloch sphere, it rotates the state by 180 degrees around the vertical Z-axis.",
-    "detailed_explanation": "The matrix representation of Z is [[1, 0], [0, -1]]. Since Z leaves the computational basis states |0⟩ and |1⟩ as eigenstates (with eigenvalues +1 and -1 respectively), measuring a qubit immediately before or after a Z gate gives identical probabilities. However, it changes the relative phase of superpositions, swapping |+⟩ into |-⟩.",
-    "mathematical_explanation": "Matrix: Z = [ [1, 0], [0, -1] ]. Action: Z|0⟩ = |0⟩, Z|1⟩ = -|1⟩. Action on superposition: Z(α|0⟩ + β|1⟩) = α|0⟩ - β|1⟩.",
-    "formula": "Z = [[1, 0], [0, -1]],  Z|0⟩ = |0⟩,  Z|1⟩ = -|1⟩",
-    "example": "Applying Z to the equal superposition |+⟩ = (|0⟩ + |1⟩)/√2 transforms it into |-⟩ = (|0⟩ - |1⟩)/√2.",
-    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.z(0)  # Flips the phase of state |1⟩",
-    "related_topics": [
-      "X Gate",
-      "Y Gate",
-      "Hadamard Gate",
-      "Phase Kickback"
-    ],
-    "common_mistakes": [
-      "Expecting Z to change measurement probabilities in the standard computational basis (it only modifies the relative phase).",
-      "Failing to recognize that Z converts |+⟩ into |-⟩."
-    ],
-    "aliases": [
-      "pauli-z",
-      "pauli z gate",
-      "phase flip gate",
-      "phase flip",
-      "z operator"
-    ],
-    "keywords": [
-      "z gate",
-      "pauli-z",
-      "phase flip",
-      "relative phase",
-      "sign flip",
-      "bloch sphere"
-    ],
-    "tags": [
-      "gates",
-      "single-qubit",
-      "pauli",
-      "phase-flip"
-    ],
-    "source_name": "IBM Quantum Learning",
-    "source_url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/quantum-circuits",
-    "additional_sources": [
-      {
-        "title": "Qiskit API Reference: ZGate",
-        "url": "https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.ZGate"
-      }
-    ],
-    "verification_status": "verified",
-    "created_at": "2026-09-10T06:56:17.431669+00:00",
-    "updated_at": "2026-09-10T06:59:29.920777+00:00",
-    "status": "approved",
-    "knowledge_version": 1,
-    "last_verified_at": null,
-    "verification_notes": null,
-    "ingestion_source_id": "manual-curation",
-    "difficulty_level": null,
-    "subcategory": null
-  },
-  {
-    "id": "bell-state",
-    "topic_name": "Bell State",
-    "slug": "bell-state",
-    "category": "Quantum Phenomena",
-    "short_definition": "Four specific maximally entangled two-qubit states that form an orthonormal basis for two-qubit Hilbert space.",
-    "beginner_explanation": "Bell states (or EPR pairs) are four specific two-qubit states that represent the purest, maximum possible quantum entanglement. They are created in quantum circuits by applying a Hadamard gate to one qubit followed by a CNOT gate connecting both qubits.",
-    "detailed_explanation": "The four Bell states {|Φ⁺⟩, |Φ⁻⟩, |Ψ⁺⟩, |Ψ⁻⟩} form a complete orthonormal basis for the 4-dimensional Hilbert space ℂ⁴. They maximally violate the Bell and CHSH inequalities (reaching the Tsirelson bound of 2√2 ≈ 2.828, exceeding the classical limit of 2).",
-    "mathematical_explanation": "The four states are:\n|Φ⁺⟩ = (|00⟩ + |11⟩)/√2\n|Φ⁻⟩ = (|00⟩ - |11⟩)/√2\n|Ψ⁺⟩ = (|01⟩ + |10⟩)/√2\n|Ψ⁻⟩ = (|01⟩ - |10⟩)/√2 (the singlet state)",
-    "formula": "|Φ⁺⟩ = (|00⟩ + |11⟩)/√2,  |Ψ⁺⟩ = (|01⟩ + |10⟩)/√2",
-    "example": "To generate |Φ⁺⟩: Start with |00⟩ → apply H on q0 to get (|00⟩ + |10⟩)/√2 → apply CNOT(0, 1) to get (|00⟩ + |11⟩)/√2.",
-    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(2)\nqc.h(0)\nqc.cx(0, 1)  # Produces |Φ⁺⟩ Bell state",
-    "related_topics": [
-      "Quantum Entanglement",
-      "CNOT Gate",
-      "Hadamard Gate"
-    ],
-    "common_mistakes": [
-      "Thinking there is only one Bell state (there are four distinct orthogonal Bell states).",
-      "Assuming Bell states can be generated without any multi-qubit entangling gates."
-    ],
-    "aliases": [
-      "bell states",
-      "epr pair",
-      "epr pairs",
-      "bell pair",
-      "bell basis",
-      "maximally entangled state"
-    ],
-    "keywords": [
-      "bell state",
-      "bell pair",
-      "epr pair",
-      "phi plus",
-      "psi minus",
-      "maximal entanglement",
-      "chsh"
-    ],
-    "tags": [
-      "phenomena",
-      "bell-state",
-      "entanglement",
-      "two-qubit"
-    ],
-    "source_name": "IBM Quantum Learning",
-    "source_url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/multiple-systems#bell-states",
-    "additional_sources": [
-      {
-        "title": "Qiskit Textbook: Bell States and Entanglement",
-        "url": "https://learn.qiskit.org/"
-      }
-    ],
-    "verification_status": "verified",
-    "created_at": "2026-09-10T06:56:17.431669+00:00",
-    "updated_at": "2026-09-10T06:59:29.920777+00:00",
-    "status": "approved",
-    "knowledge_version": 1,
-    "last_verified_at": null,
-    "verification_notes": null,
-    "ingestion_source_id": "manual-curation",
-    "difficulty_level": null,
-    "subcategory": null
-  },
-  {
-    "id": "quantum-entanglement",
-    "topic_name": "Quantum Entanglement",
-    "slug": "quantum-entanglement",
-    "category": "Quantum Phenomena",
-    "short_definition": "A quantum phenomenon where composite particles cannot be described independently of one another regardless of distance.",
-    "beginner_explanation": "Quantum entanglement occurs when two or more qubits become deeply linked such that the state of one qubit cannot be described without referencing the other. Even if separated by light-years, measuring one qubit instantly reveals correlated measurement results for the other, exhibiting correlations stronger than any classical physics allows.",
-    "detailed_explanation": "Mathematically, a state |ψ⟩ ∈ ℋ_A ⊗ ℋ_B is entangled if it is non-separable, meaning it cannot be factored as a tensor product |ψ_A⟩ ⊗ |ψ_B⟩. Entanglement is a fundamental resource for quantum teleportation, superdense coding, quantum key distribution (QKD), and quantum error correction.",
-    "mathematical_explanation": "Non-separability condition: |ψ⟩ ≠ |ψ_A⟩ ⊗ |ψ_B⟩. For a Bell state |Φ⁺⟩ = (|00⟩ + |11⟩)/√2, tracing out subsystem B yields a maximally mixed reduced density matrix ρ_A = Tr_B(|Φ⁺⟩⟨Φ⁺|) = (1/2)I, indicating maximal entanglement.",
-    "formula": "|ψ_{AB}⟩ ≠ |ψ_A⟩ ⊗ |ψ_B⟩",
-    "example": "Two qubits prepared in |Φ⁺⟩ = (|00⟩ + |11⟩)/√2. If Alice measures qubit A and gets 0, Bob will measure qubit B and get 0 with 100% certainty. If Alice gets 1, Bob gets 1. Yet prior to measurement, neither qubit had a predetermined value.",
-    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(2)\nqc.h(0)\nqc.cx(0, 1)  # Entangles qubit 0 and qubit 1",
-    "related_topics": [
-      "Bell State",
-      "CNOT Gate",
-      "Measurement",
       "Superposition"
     ],
     "common_mistakes": [
-      "Believing entanglement enables faster-than-light communication (No-Communication Theorem proves classical communication is always required to decode shared correlations).",
-      "Assuming entanglement means physical particles are physically touching or wired together."
+      "Confusing QPE with QFT — QPE is an algorithm that uses QFT as a subroutine, not the same thing.",
+      "Assuming QPE works for any input state — it only reliably extracts the phase when given an eigenstate of U; arbitrary states give a superposition of eigenvalue estimates.",
+      "Forgetting that n counting qubits give precision 1/2ⁿ — doubling precision requires one additional qubit."
     ],
     "aliases": [
-      "entanglement",
-      "quantum correlations",
-      "spooky action at a distance",
-      "quantum non-locality"
+      "qpe",
+      "phase estimation",
+      "quantum phase estimation algorithm",
+      "eigenvalue estimation",
+      "kitaev phase estimation"
     ],
     "keywords": [
-      "quantum entanglement",
-      "entanglement",
-      "non-separable",
-      "bell pair",
-      "epr",
-      "teleportation",
-      "correlations"
+      "phase estimation",
+      "qpe",
+      "eigenvalue",
+      "unitary",
+      "phase kickback",
+      "qft",
+      "counting register",
+      "ancilla",
+      "eigenstate"
     ],
     "tags": [
-      "phenomena",
-      "entanglement",
-      "multi-qubit",
-      "correlations"
+      "algorithms",
+      "advanced",
+      "phase",
+      "qft",
+      "subroutine"
     ],
-    "source_name": "IBM Quantum Learning",
-    "source_url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/multiple-systems#entanglement",
+    "source_name": "Qiskit Textbook — Quantum Phase Estimation",
+    "source_url": "https://learn.qiskit.org/course/ch-algorithms/quantum-phase-estimation",
     "additional_sources": [
       {
-        "title": "Stanford Encyclopedia of Philosophy: Quantum Entanglement",
-        "url": "https://plato.stanford.edu/entries/qt-entangle/"
+        "title": "IBM Quantum Learning — Phase Estimation",
+        "url": "https://learning.quantum.ibm.com/course/fundamentals-of-quantum-algorithms/phase-estimation-and-factoring"
       }
     ],
     "verification_status": "verified",
-    "created_at": "2026-09-10T06:56:17.431669+00:00",
-    "updated_at": "2026-09-10T06:59:29.920777+00:00",
+    "created_at": "2026-09-10T08:07:08.516009+00:00",
+    "updated_at": "2026-09-10T08:07:08.516009+00:00",
     "status": "approved",
     "knowledge_version": 1,
-    "last_verified_at": null,
-    "verification_notes": null,
-    "ingestion_source_id": "manual-curation",
-    "difficulty_level": null,
-    "subcategory": null
+    "last_verified_at": "2026-09-10T08:07:08.516009+00:00",
+    "verification_notes": "Phase kickback mechanism, QFT subroutine connection, and precision bounds verified against Qiskit Textbook and Nielsen & Chuang Chapter 5.",
+    "ingestion_source_id": "qiskit-textbook",
+    "difficulty_level": "advanced",
+    "subcategory": "Phase-Based Subroutines",
+    "canonical_circuit": null
   },
   {
     "id": "quantum-teleportation",
@@ -1315,54 +1244,239 @@
     "verification_notes": "Three-stage protocol and correction matrix verified against IBM Quantum Learning and Bennett et al. (1993). No-cloning note confirmed as correct application of theorem.",
     "ingestion_source_id": "ibm-quantum-learning",
     "difficulty_level": "intermediate",
-    "subcategory": "Information Transmission Protocols"
+    "subcategory": "Information Transmission Protocols",
+    "canonical_circuit": {
+      "num_qubits": 3,
+      "circuit_type": "teleportation",
+      "title": "Quantum Teleportation",
+      "description": "Prepares state on q0, entangles Bell pair (q1, q2), performs Bell measurement",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "H",
+          "target": 1,
+          "step": 0
+        },
+        {
+          "type": "CNOT",
+          "control": 1,
+          "target": 2,
+          "step": 1
+        },
+        {
+          "type": "CNOT",
+          "control": 0,
+          "target": 1,
+          "step": 2
+        },
+        {
+          "type": "H",
+          "target": 0,
+          "step": 3
+        }
+      ]
+    }
   },
   {
-    "id": "phase-kickback",
-    "topic_name": "Phase Kickback",
-    "slug": "phase-kickback",
-    "category": "Techniques",
-    "short_definition": "A technique where the eigenvalue phase imparted by a controlled operation on a target qubit is transferred back to the control qubit.",
-    "beginner_explanation": "Phase kickback is an ingenious quantum mechanism where an operation applied to a target qubit affects the control qubit instead! When the target is prepared in an eigenstate with eigenvalue -1 (such as the state |-⟩), applying a controlled gate kicks the minus sign back into the control qubit's relative phase.",
-    "detailed_explanation": "Suppose a unitary U has eigenstate |u⟩ such that U|u⟩ = e^{iφ}|u⟩. When a controlled-U gate acts on |+⟩|u⟩ = (1/√2)(|0⟩|u⟩ + |1⟩|u⟩), the controlled operation maps |1⟩|u⟩ to e^{iφ}|1⟩|u⟩. The state becomes (1/√2)(|0⟩ + e^{iφ}|1⟩)|u⟩. The phase has been kicked back into the control qubit while the target remains unchanged.",
-    "mathematical_explanation": "Controlled-U on control (|0⟩ + |1⟩)/√2 and target |u⟩: C-U [ (|0⟩ + |1⟩)/√2 ⊗ |u⟩ ] = (|0⟩|u⟩ + |1⟩ U|u⟩)/√2 = [ (|0⟩ + e^{iφ}|1⟩)/√2 ] ⊗ |u⟩.",
-    "formula": "U_{ctrl} [ (1/√2)(|0⟩ + |1⟩)|u⟩ ] = [ (1/√2)(|0⟩ + e^{iφ}|1⟩) ] |u⟩",
-    "example": "With control qubit in |+⟩ and target qubit in |-⟩, applying CNOT yields: CNOT(|+⟩|-⟩) = |-⟩|-⟩. The target |-⟩ is untouched, but the control state flipped from |+⟩ to |-⟩.",
-    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(2)\nqc.h(0)  # Control in |+⟩\nqc.x(1); qc.h(1)  # Target in |-⟩\nqc.cx(0, 1)  # Kicks -1 phase back to qubit 0",
+    "id": "qubit",
+    "topic_name": "Qubit",
+    "slug": "qubit",
+    "category": "Foundations",
+    "short_definition": "The fundamental unit of quantum information, represented as a two-level quantum system with continuous state amplitudes.",
+    "beginner_explanation": "In classical computing, a bit is like an electric switch that is either strictly OFF (0) or ON (1). A qubit (quantum bit) is described by a quantum state vector whose mathematical weights determine the probability of finding it as 0 or 1 upon measurement. It is not '0 and 1 at the same time'—rather, it has a precise, definite quantum state with complex probability amplitudes.",
+    "detailed_explanation": "A physical qubit can be implemented using electron spin, photon polarization, or superconducting transmon circuits. The state is represented in a two-dimensional complex Hilbert space spanned by the orthonormal computational basis vectors |0⟩ and |1⟩. The coefficients α and β are probability amplitudes whose squared magnitudes satisfy the normalization condition |α|² + |β|² = 1.",
+    "mathematical_explanation": "State vector in Dirac notation: |ψ⟩ = α|0⟩ + β|1⟩, where α, β ∈ ℂ. In matrix form, |0⟩ = [1, 0]ᵀ and |1⟩ = [0, 1]ᵀ, yielding |ψ⟩ = [α, β]ᵀ. The probability of measuring outcome 0 is P(0) = |⟨0|ψ⟩|² = |α|², and for outcome 1 is P(1) = |⟨1|ψ⟩|² = |β|².",
+    "formula": "|ψ⟩ = α|0⟩ + β|1⟩  where  |α|² + |β|² = 1",
+    "example": "Consider a state with α = 1/√2 and β = 1/√2: |ψ⟩ = (1/√2)|0⟩ + (1/√2)|1⟩. Measuring this qubit gives outcome 0 with probability |1/√2|² = 1/2 (50%) and outcome 1 with probability |1/√2|² = 1/2 (50%).",
+    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1, 1)\nqc.h(0)  # Put qubit 0 into equal superposition\nqc.measure(0, 0)",
     "related_topics": [
-      "Deutsch-Jozsa Algorithm",
-      "CNOT Gate",
-      "Quantum Interference",
-      "Grover's Algorithm"
+      "Superposition",
+      "Measurement",
+      "Bloch Sphere",
+      "Hadamard Gate"
     ],
     "common_mistakes": [
-      "Thinking control qubits can never have their state altered by controlled gates.",
-      "Forgetting that target must be in an eigenstate of the conditional unitary for pure phase kickback to occur."
+      "Believing a qubit is '0 and 1 simultaneously' rather than possessing a definite state with probabilistic measurement outcomes.",
+      "Assuming reading or measuring a qubit preserves its superposition state."
     ],
     "aliases": [
-      "kickback",
-      "phase kickback effect",
-      "eigenvalue kickback"
+      "quantum bit",
+      "qubits",
+      "what is a qubit",
+      "single qubit"
     ],
     "keywords": [
-      "phase kickback",
-      "eigenvalue",
-      "control qubit",
-      "target qubit",
-      "deutsch-jozsa",
-      "oracle"
+      "qubit",
+      "quantum bit",
+      "quantum information",
+      "state vector",
+      "amplitudes",
+      "ket 0",
+      "ket 1",
+      "hilbert space"
     ],
     "tags": [
-      "techniques",
-      "phase-kickback",
-      "circuits",
-      "algorithms"
+      "foundations",
+      "qubit",
+      "core-concept",
+      "basis-states"
     ],
     "source_name": "IBM Quantum Learning",
-    "source_url": "https://learning.quantum.ibm.com/course/fundamentals-of-quantum-algorithms/phase-kickback",
+    "source_url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/single-systems",
     "additional_sources": [
       {
-        "title": "Qiskit Textbook: Phase Kickback",
+        "title": "Qiskit Documentation: Fundamentals",
+        "url": "https://docs.quantum.ibm.com/guides"
+      },
+      {
+        "title": "Nielsen & Chuang: Quantum Computation and Quantum Information",
+        "url": "https://www.cambridge.org/core/books/quantum-computation-and-quantum-information/01E10196D0A682A6AEFFEA52D53BE9AE"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": "2026-09-10T06:56:17.431669+00:00",
+    "updated_at": "2026-09-10T06:59:29.920777+00:00",
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 1,
+      "circuit_type": "single_qubit",
+      "title": "Single Qubit Ground State",
+      "description": "Qubit in standard computational basis ground state |0⟩",
+      "gates": []
+    }
+  },
+  {
+    "id": "shors-algorithm",
+    "topic_name": "Shor's Algorithm",
+    "slug": "shors-algorithm",
+    "category": "Algorithms",
+    "short_definition": "A quantum algorithm for integer factorization that runs in polynomial time O((log N)³), providing exponential speedup over the best known classical algorithms.",
+    "beginner_explanation": "Shor's algorithm solves the problem of finding the prime factors of a large integer N. Classical computers require time exponential in the number of digits of N to factor large numbers — this is the hardness assumption behind RSA encryption. Shor's algorithm reduces this to polynomial time using quantum phase estimation and the quantum Fourier transform to find the period r of the modular exponentiation function f(x) = a^x mod N. Once r is known, the greatest common divisor yields the factors of N.",
+    "detailed_explanation": "Shor's algorithm proceeds in two conceptually distinct parts. The classical reduction shows that factoring N reduces to finding the period r of f(x) = a^x mod N for a randomly chosen a coprime to N. If r is even and a^(r/2) ≠ −1 (mod N), then gcd(a^(r/2) ± 1, N) yields a non-trivial factor of N with high probability. The quantum subroutine uses a register of n = ⌈log₂ N⌉ qubits to prepare a uniform superposition over x ∈ {0, 1, ..., 2ⁿ−1}, evaluates f(x) into an ancilla register via quantum arithmetic, then applies the Quantum Fourier Transform to extract the period r from the measurement statistics. The QFT maps amplitude peaks that are multiples of 2ⁿ/r into a form readable by classical continued fraction expansion. The algorithm succeeds with probability O(1/log log r) per run and can be repeated O(log log r) times to achieve constant success probability.",
+    "mathematical_explanation": "Input: N = p·q (semiprime). Goal: find p, q.\n\nStep 1 (classical): Choose random a with 1 < a < N and gcd(a, N) = 1.\n\nStep 2 (quantum period finding):\n  - Prepare |0⟩|0⟩ on two registers.\n  - Apply H⊗ⁿ to first register: (1/√2ⁿ) Σₓ |x⟩|0⟩\n  - Apply oracle Uₐ: |x⟩|0⟩ → |x⟩|aˣ mod N⟩\n  - Measure second register → collapse first to period-spaced superposition\n  - Apply QFT†: QFT|ψ⟩ → peaks at multiples of 2ⁿ/r\n  - Measure → obtain k·2ⁿ/r; extract r via continued fractions\n\nStep 3 (classical): Compute gcd(a^(r/2) − 1, N) and gcd(a^(r/2) + 1, N).",
+    "formula": "Time complexity: O((log N)² (log log N)(log log log N)) — polynomial in log N\nClassical best: sub-exponential O(exp(c(log N)^(1/3)(log log N)^(2/3)))",
+    "example": "Factor N = 15 with a = 7:\n  f(x) = 7^x mod 15: f(0)=1, f(1)=7, f(2)=4, f(3)=13, f(4)=1...\n  Period r = 4 (even ✓)\n  a^(r/2) = 7² = 49 ≡ 4 (mod 15); 4 ≠ 14 ≡ −1 (mod 15) ✓\n  gcd(49−1, 15) = gcd(48, 15) = 3  → factor!\n  gcd(49+1, 15) = gcd(50, 15) = 5  → factor!\n  15 = 3 × 5 ✓",
+    "circuit_example": "from qiskit import QuantumCircuit\nfrom qiskit.circuit.library import QFT\n# Minimal period-finding circuit for N=15, a=7 (4-qubit example)\nqc = QuantumCircuit(4, 4)\nqc.h(range(4))          # Superposition on counting register\n# (Oracle for 7^x mod 15 implemented as controlled-unitary sequence)\n# Apply inverse QFT to extract period\nqc.compose(QFT(4, inverse=True), inplace=True)\nqc.measure_all()",
+    "related_topics": [
+      "Quantum Fourier Transform",
+      "Phase Kickback",
+      "Quantum Phase Estimation",
+      "Quantum Entanglement",
+      "CNOT Gate"
+    ],
+    "common_mistakes": [
+      "Assuming Shor's algorithm directly factors numbers — it reduces factoring to period finding, which the quantum subroutine solves.",
+      "Confusing the quantum part (period finding via QFT) with the classical part (GCD extraction).",
+      "Believing current quantum hardware can break RSA-2048 — practical implementation requires millions of error-corrected logical qubits."
+    ],
+    "aliases": [
+      "shor algorithm",
+      "shors factoring algorithm",
+      "quantum factoring",
+      "integer factorization quantum",
+      "shor's period finding"
+    ],
+    "keywords": [
+      "shor",
+      "factoring",
+      "rsa",
+      "period finding",
+      "quantum fourier transform",
+      "polynomial time",
+      "cryptography",
+      "prime factorization",
+      "modular exponentiation",
+      "continued fractions",
+      "gcd"
+    ],
+    "tags": [
+      "algorithms",
+      "cryptography",
+      "advanced",
+      "qft",
+      "number-theory"
+    ],
+    "source_name": "IBM Quantum Learning — Fundamentals of Quantum Algorithms",
+    "source_url": "https://learning.quantum.ibm.com/course/fundamentals-of-quantum-algorithms/quantum-query-algorithms",
+    "additional_sources": [
+      {
+        "title": "Qiskit Textbook — Phase Estimation and Factoring",
+        "url": "https://learn.qiskit.org/course/ch-algorithms/shor-s-algorithm"
+      },
+      {
+        "title": "Shor (1994) — Algorithms for quantum computation: discrete logarithms and factoring",
+        "url": "https://arxiv.org/abs/quant-ph/9508027"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": "2026-09-10T08:07:08.069292+00:00",
+    "updated_at": "2026-09-10T08:07:08.069292+00:00",
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": "2026-09-10T08:07:08.069292+00:00",
+    "verification_notes": "Content curated from IBM Quantum Learning and Qiskit Textbook. Mathematical steps verified against Shor (1994). Complexity notation confirmed correct.",
+    "ingestion_source_id": "ibm-quantum-learning",
+    "difficulty_level": "advanced",
+    "subcategory": "Cryptography-Breaking Algorithms",
+    "canonical_circuit": null
+  },
+  {
+    "id": "superposition",
+    "topic_name": "Superposition",
+    "slug": "superposition",
+    "category": "Foundations",
+    "short_definition": "The linear combination of quantum basis states weighted by complex probability amplitudes before measurement.",
+    "beginner_explanation": "Superposition describes how a quantum state is a linear sum of computational basis states. Before measurement, the qubit is in a single, well-defined quantum state governed by complex numbers called probability amplitudes. When measured, this state collapses into one of the definite classical outcomes according to the Born rule.",
+    "detailed_explanation": "The principle of superposition arises directly from the linearity of the underlying Schrödinger wave mechanics. Any linear combination of valid state vectors is itself a valid state vector. Unlike classical probability distributions which only add positive real fractions, quantum probability amplitudes can interfere constructively or destructively because they carry both magnitude and phase.",
+    "mathematical_explanation": "Given basis states {|i⟩}, an arbitrary n-qubit superposition is expressed as |ψ⟩ = ∑_{i=0}^{2^n-1} c_i |i⟩ with ∑ |c_i|² = 1. The relative phase between terms (e.g. |+⟩ vs |-⟩) fundamentally alters interference patterns under subsequent unitary transformations.",
+    "formula": "|ψ⟩ = c₀|0⟩ + c₁|1⟩  with  |c₀|² + |c₁|² = 1",
+    "example": "Applying the Hadamard gate to |0⟩ produces the state |+⟩ = (|0⟩ + |1⟩)/√2. Applying it to |1⟩ yields |-⟩ = (|0⟩ - |1⟩)/√2. Both have 50/50 measurement chances, but their opposite relative phases create opposite interference results when another H gate is applied.",
+    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.h(0)  # Creates superposition: (|0⟩ + |1⟩)/√2",
+    "related_topics": [
+      "Qubit",
+      "Hadamard Gate",
+      "Quantum Interference",
+      "Measurement"
+    ],
+    "common_mistakes": [
+      "Confusing quantum superposition with classical parallel computing or uncertainty.",
+      "Ignoring the relative phase: |+⟩ and |-⟩ have identical measurement probabilities but distinct quantum properties."
+    ],
+    "aliases": [
+      "quantum superposition",
+      "linear superposition",
+      "superposition principle",
+      "state superposition"
+    ],
+    "keywords": [
+      "superposition",
+      "probability amplitudes",
+      "linear combination",
+      "plus state",
+      "minus state",
+      "relative phase"
+    ],
+    "tags": [
+      "foundations",
+      "superposition",
+      "amplitudes",
+      "interference"
+    ],
+    "source_name": "IBM Quantum Learning",
+    "source_url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/single-systems#superposition",
+    "additional_sources": [
+      {
+        "title": "Qiskit Textbook: The Atoms of Computation",
         "url": "https://learn.qiskit.org/"
       }
     ],
@@ -1375,62 +1489,167 @@
     "verification_notes": null,
     "ingestion_source_id": "manual-curation",
     "difficulty_level": null,
-    "subcategory": null
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 1,
+      "circuit_type": "single_qubit",
+      "title": "Superposition State",
+      "description": "Generates equal superposition state |ψ⟩ = (|0⟩ + |1⟩)/√2",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        }
+      ]
+    }
   },
   {
-    "id": "bloch-sphere",
-    "topic_name": "Bloch Sphere",
-    "slug": "bloch-sphere",
-    "category": "Visualization",
-    "short_definition": "A unit-sphere geometric representation of all pure states of a single two-level quantum system (qubit).",
-    "beginner_explanation": "The Bloch sphere is a 3D globe used to visualize the state of a single qubit. The North Pole corresponds to state |0⟩, the South Pole to state |1⟩, and the equator represents equal superpositions with differing relative phases (like |+⟩, |-⟩, |i⟩, and |-i⟩). Single-qubit quantum gates correspond to rotations of this sphere.",
-    "detailed_explanation": "Any pure single-qubit state can be written as |ψ⟩ = cos(θ/2)|0⟩ + e^{iφ}sin(θ/2)|1⟩, where 0 ≤ θ ≤ π is the polar angle and 0 ≤ φ < 2π is the azimuthal phase angle. This defines a point (x, y, z) = (sin θ cos φ, sin θ sin φ, cos θ) on the surface of the unit sphere. Mixed states reside inside the sphere with radius r < 1.",
-    "mathematical_explanation": "Spherical coordinates representation: |ψ⟩ = cos(θ/2)|0⟩ + e^{iφ}sin(θ/2)|1⟩. Bloch vector components: r_x = ⟨ψ|σ_x|ψ⟩, r_y = ⟨ψ|σ_y|ψ⟩, r_z = ⟨ψ|σ_z|ψ⟩. Pure states satisfy |r| = 1.",
-    "formula": "|ψ⟩ = cos(θ/2)|0⟩ + e^{iφ}sin(θ/2)|1⟩",
-    "example": "For θ = π/2 and φ = 0: |ψ⟩ = cos(π/4)|0⟩ + sin(π/4)|1⟩ = (1/√2)(|0⟩ + |1⟩) = |+⟩, located on the equator along the positive X-axis.",
-    "circuit_example": "from qiskit.visualization import plot_bloch_multivector\nfrom qiskit.quantum_info import Statevector\nsv = Statevector.from_label('+')\nplot_bloch_multivector(sv)",
+    "id": "toffoli-gate",
+    "topic_name": "Toffoli Gate",
+    "slug": "toffoli-gate",
+    "category": "Quantum Gates",
+    "short_definition": "A three-qubit reversible gate (also called CCX or controlled-controlled-NOT) that applies an X (NOT) operation on the target qubit if and only if both control qubits are in state |1⟩.",
+    "beginner_explanation": "The Toffoli gate is the quantum analogue of a classical AND gate combined with a NOT gate. It operates on three qubits: two control qubits (c₁ and c₂) and one target qubit (t). The target qubit is flipped (X applied) only when both controls are |1⟩; otherwise all qubits pass through unchanged. Because it is its own inverse (applying it twice returns to the original state), the Toffoli gate is reversible and unitary. It is also universal for classical reversible computation: any Boolean circuit can be implemented using Toffoli gates, making it important for embedding classical subroutines inside quantum algorithms.",
+    "detailed_explanation": "The Toffoli gate (CCX) maps |c₁⟩|c₂⟩|t⟩ → |c₁⟩|c₂⟩|t ⊕ (c₁ ∧ c₂)⟩ where ⊕ denotes XOR and ∧ denotes AND. Its 8×8 unitary matrix is the identity everywhere except the |110⟩ and |111⟩ subspace, where it swaps the amplitudes: M(|110⟩, |111⟩) = [[0,1],[1,0]]. The Toffoli gate cannot be directly decomposed into fewer than 5 two-qubit CNOT gates on arbitrary qubit connectivity. In Qiskit it is implemented as `qc.ccx(c1, c2, target)`. It plays a central role in quantum arithmetic (adders, multipliers), quantum error correction ancilla preparation, and phase oracles in Grover's algorithm.",
+    "mathematical_explanation": "Action: |c₁,c₂,t⟩ → |c₁,c₂, t ⊕ (c₁·c₂)⟩\n\n8×8 matrix (computational basis order |000⟩…|111⟩):\n  TOFF = diag(I₆) with |110⟩↔|111⟩ swap:\n  rows 6,7: [[0,1],[1,0]] embedded in identity\n\nDecomposition cost: 5 CNOT gates + single-qubit rotations\nSelf-inverse: TOFF² = I",
+    "formula": "|c₁,c₂,t⟩ → |c₁,c₂, t ⊕ (c₁ ∧ c₂)⟩\nActivates when: c₁ = c₂ = 1",
+    "example": "|1,1,0⟩ → |1,1,1⟩  (target flipped: 0 ⊕ 1 = 1)\n|1,1,1⟩ → |1,1,0⟩  (target flipped: 1 ⊕ 1 = 0)\n|1,0,1⟩ → |1,0,1⟩  (c₂=0, no flip)\n|0,1,0⟩ → |0,1,0⟩  (c₁=0, no flip)",
+    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(3, 3)\n# Set both controls to |1⟩\nqc.x(0)  # control 1\nqc.x(1)  # control 2\n# Apply Toffoli gate: flips qubit 2 since c1=c2=1\nqc.ccx(0, 1, 2)\nqc.measure_all()\n# Expected output: |111⟩ (both controls remain |1⟩, target flipped 0→1)",
     "related_topics": [
-      "Qubit",
-      "Superposition",
-      "Hadamard Gate",
+      "CNOT Gate",
       "X Gate",
-      "Z Gate"
+      "Grover's Algorithm",
+      "Quantum Error Correction",
+      "Deutsch-Jozsa Algorithm"
     ],
     "common_mistakes": [
-      "Trying to visualize multi-qubit entangled states on a single Bloch sphere (entanglement cannot be represented on independent spheres).",
-      "Confusing state angles (θ) with physical physical rotation angles (a π/2 rotation rotates state by θ=π)."
+      "Confusing the Toffoli gate with CNOT — CNOT has one control; Toffoli has two.",
+      "Assuming Toffoli is a native gate on all quantum hardware — it must be decomposed into CNOT + single-qubit gates on most devices.",
+      "Forgetting that Toffoli is self-inverse (applying it twice returns the original state)."
     ],
     "aliases": [
-      "bloch",
-      "bloch sphere",
-      "bloch representation",
-      "bloch vector",
-      "bloch coordinates",
-      "bloch sphere visualization"
+      "ccx gate",
+      "ccx",
+      "controlled controlled not",
+      "ccnot",
+      "toffoli",
+      "controlled-controlled-x",
+      "three qubit gate"
     ],
     "keywords": [
-      "bloch",
-      "bloch sphere",
-      "bloch vector",
-      "polar angle",
-      "azimuthal angle",
-      "theta",
-      "phi",
-      "qubit visualization",
-      "sphere"
+      "toffoli",
+      "ccx",
+      "ccnot",
+      "three qubit",
+      "reversible",
+      "controlled not",
+      "classical reversibility",
+      "quantum and gate",
+      "universal gate"
     ],
     "tags": [
-      "visualization",
-      "bloch-sphere",
-      "geometry",
-      "qubit"
+      "quantum-gates",
+      "multi-qubit",
+      "intermediate",
+      "reversible",
+      "arithmetic"
     ],
-    "source_name": "IBM Quantum Learning",
-    "source_url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/single-systems#the-bloch-sphere",
+    "source_name": "Qiskit Textbook — Multiple Qubit Gates",
+    "source_url": "https://learn.qiskit.org/course/ch-gates/more-circuit-identities",
     "additional_sources": [
       {
-        "title": "Qiskit Visualization Guide: Bloch Sphere",
-        "url": "https://docs.quantum.ibm.com/"
+        "title": "IBM Quantum Learning — Multi-Qubit Gates",
+        "url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/multiple-systems"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": "2026-09-10T08:07:08.369099+00:00",
+    "updated_at": "2026-09-10T08:07:08.369099+00:00",
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": "2026-09-10T08:07:08.369099+00:00",
+    "verification_notes": "Matrix representation and CNOT decomposition cost verified against Qiskit documentation and Nielsen & Chuang.",
+    "ingestion_source_id": "qiskit-textbook",
+    "difficulty_level": "intermediate",
+    "subcategory": "Multi-Qubit Gates",
+    "canonical_circuit": {
+      "num_qubits": 3,
+      "circuit_type": "multi_qubit",
+      "title": "Toffoli Gate (CCX)",
+      "description": "Applies X on controls 0 & 1, flipping target qubit 2",
+      "gates": [
+        {
+          "type": "X",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "X",
+          "target": 1,
+          "step": 0
+        },
+        {
+          "type": "CNOT",
+          "control": 0,
+          "target": 2,
+          "step": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "x-gate",
+    "topic_name": "X Gate",
+    "slug": "x-gate",
+    "category": "Quantum Gates",
+    "short_definition": "The Pauli-X operator that performs a bit-flip operation, rotating the state vector by π radians around the X-axis of the Bloch sphere.",
+    "beginner_explanation": "The X gate is the quantum counterpart of the classical NOT gate. It flips |0⟩ into |1⟩, and |1⟩ into |0⟩. On the Bloch sphere, it acts as a 180-degree rotation around the X-axis.",
+    "detailed_explanation": "The Pauli-X gate is represented by the 2x2 matrix [[0, 1], [1, 0]]. Because it is both unitary and Hermitian (X = X† and X² = I), applying it twice returns the qubit to its original state. When applied to superpositions, it swaps the coefficients: X(α|0⟩ + β|1⟩) = β|0⟩ + α|1⟩.",
+    "mathematical_explanation": "Matrix representation: X = [ [0, 1], [1, 0] ]. Action: X|0⟩ = |1⟩, X|1⟩ = |0⟩. Eigenvectors: |+⟩ with eigenvalue +1, and |-⟩ with eigenvalue -1.",
+    "formula": "X = [[0, 1], [1, 0]],  X|0⟩ = |1⟩,  X|1⟩ = |0⟩",
+    "example": "If |ψ⟩ = 0.8|0⟩ + 0.6|1⟩, applying the X gate yields X|ψ⟩ = 0.6|0⟩ + 0.8|1⟩.",
+    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.x(0)  # Flips |0⟩ to |1⟩",
+    "related_topics": [
+      "Y Gate",
+      "Z Gate",
+      "Hadamard Gate",
+      "Qubit"
+    ],
+    "common_mistakes": [
+      "Assuming X flips the phase (phase-flip is done by Z).",
+      "Thinking X has no effect on |+⟩ (it leaves |+⟩ unchanged because |+⟩ is an eigenstate with eigenvalue +1)."
+    ],
+    "aliases": [
+      "pauli-x",
+      "pauli x gate",
+      "not gate",
+      "quantum not",
+      "bit flip gate",
+      "gate that flips a qubit",
+      "x operator"
+    ],
+    "keywords": [
+      "x gate",
+      "pauli-x",
+      "not gate",
+      "bit flip",
+      "gate that flips a qubit",
+      "qubit flip",
+      "inversion"
+    ],
+    "tags": [
+      "gates",
+      "single-qubit",
+      "pauli",
+      "bit-flip"
+    ],
+    "source_name": "IBM Quantum Learning",
+    "source_url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/quantum-circuits#single-qubit-gates",
+    "additional_sources": [
+      {
+        "title": "Qiskit Circuit Library: XGate",
+        "url": "https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.XGate"
       }
     ],
     "verification_status": "verified",
@@ -1442,6 +1661,158 @@
     "verification_notes": null,
     "ingestion_source_id": "manual-curation",
     "difficulty_level": null,
-    "subcategory": null
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 1,
+      "circuit_type": "single_qubit",
+      "title": "Pauli-X (NOT) Gate",
+      "description": "Flips the ground state |0⟩ to excited state |1⟩",
+      "gates": [
+        {
+          "type": "X",
+          "target": 0,
+          "step": 0
+        }
+      ]
+    }
+  },
+  {
+    "id": "y-gate",
+    "topic_name": "Y Gate",
+    "slug": "y-gate",
+    "category": "Quantum Gates",
+    "short_definition": "The Pauli-Y operator that performs both a bit flip and a phase flip (multiplication by complex unit i), rotating by π around the Y-axis.",
+    "beginner_explanation": "The Y gate is a fundamental quantum gate that combines a bit-flip and a phase-flip. It flips |0⟩ to i|1⟩ and |1⟩ to -i|0⟩, introducing an imaginary phase factor.",
+    "detailed_explanation": "Pauli-Y is defined by the matrix [[0, -i], [i, 0]]. Like all Pauli matrices, Y is unitary and Hermitian (Y = Y† and Y² = I). Geometrically, it rotates the qubit state by π radians around the Y-axis of the Bloch sphere.",
+    "mathematical_explanation": "Matrix: Y = [ [0, -i], [i, 0] ]. Action: Y|0⟩ = i|1⟩, Y|1⟩ = -i|0⟩. Eigenvectors: |i⟩ = (|0⟩ + i|1⟩)/√2 (eigenvalue +1) and |-i⟩ = (|0⟩ - i|1⟩)/√2 (eigenvalue -1).",
+    "formula": "Y = [[0, -i], [i, 0]],  Y|0⟩ = i|1⟩,  Y|1⟩ = -i|0⟩",
+    "example": "Applying Y to |0⟩ produces state i|1⟩. In terms of measurement probabilities, |i|² = 1, so the qubit will be measured as 1 with 100% certainty, but carries an imaginary global phase.",
+    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.y(0)  # Applies Pauli-Y gate",
+    "related_topics": [
+      "X Gate",
+      "Z Gate",
+      "Bloch Sphere"
+    ],
+    "common_mistakes": [
+      "Forgetting the factor of i when calculating transformed state vectors.",
+      "Confusing the action of Y with the composite gate XZ (XZ = -iY)."
+    ],
+    "aliases": [
+      "pauli-y",
+      "pauli y gate",
+      "y operator",
+      "bit and phase flip gate"
+    ],
+    "keywords": [
+      "y gate",
+      "pauli-y",
+      "imaginary phase",
+      "bloch rotation",
+      "bit phase flip"
+    ],
+    "tags": [
+      "gates",
+      "single-qubit",
+      "pauli"
+    ],
+    "source_name": "IBM Quantum Learning",
+    "source_url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/quantum-circuits",
+    "additional_sources": [
+      {
+        "title": "Qiskit API Reference: YGate",
+        "url": "https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.YGate"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": "2026-09-10T06:56:17.431669+00:00",
+    "updated_at": "2026-09-10T06:59:29.920777+00:00",
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": null
+  },
+  {
+    "id": "z-gate",
+    "topic_name": "Z Gate",
+    "slug": "z-gate",
+    "category": "Quantum Gates",
+    "short_definition": "The Pauli-Z operator that applies a phase flip (multiplying |1⟩ by -1 while leaving |0⟩ unchanged).",
+    "beginner_explanation": "The Z gate is a phase-flip gate. It leaves the |0⟩ basis state completely unaffected, but flips the algebraic sign of the |1⟩ state. On the Bloch sphere, it rotates the state by 180 degrees around the vertical Z-axis.",
+    "detailed_explanation": "The matrix representation of Z is [[1, 0], [0, -1]]. Since Z leaves the computational basis states |0⟩ and |1⟩ as eigenstates (with eigenvalues +1 and -1 respectively), measuring a qubit immediately before or after a Z gate gives identical probabilities. However, it changes the relative phase of superpositions, swapping |+⟩ into |-⟩.",
+    "mathematical_explanation": "Matrix: Z = [ [1, 0], [0, -1] ]. Action: Z|0⟩ = |0⟩, Z|1⟩ = -|1⟩. Action on superposition: Z(α|0⟩ + β|1⟩) = α|0⟩ - β|1⟩.",
+    "formula": "Z = [[1, 0], [0, -1]],  Z|0⟩ = |0⟩,  Z|1⟩ = -|1⟩",
+    "example": "Applying Z to the equal superposition |+⟩ = (|0⟩ + |1⟩)/√2 transforms it into |-⟩ = (|0⟩ - |1⟩)/√2.",
+    "circuit_example": "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.z(0)  # Flips the phase of state |1⟩",
+    "related_topics": [
+      "X Gate",
+      "Y Gate",
+      "Hadamard Gate",
+      "Phase Kickback"
+    ],
+    "common_mistakes": [
+      "Expecting Z to change measurement probabilities in the standard computational basis (it only modifies the relative phase).",
+      "Failing to recognize that Z converts |+⟩ into |-⟩."
+    ],
+    "aliases": [
+      "pauli-z",
+      "pauli z gate",
+      "phase flip gate",
+      "phase flip",
+      "z operator"
+    ],
+    "keywords": [
+      "z gate",
+      "pauli-z",
+      "phase flip",
+      "relative phase",
+      "sign flip",
+      "bloch sphere"
+    ],
+    "tags": [
+      "gates",
+      "single-qubit",
+      "pauli",
+      "phase-flip"
+    ],
+    "source_name": "IBM Quantum Learning",
+    "source_url": "https://learning.quantum.ibm.com/course/basics-of-quantum-information/quantum-circuits",
+    "additional_sources": [
+      {
+        "title": "Qiskit API Reference: ZGate",
+        "url": "https://docs.quantum.ibm.com/api/qiskit/qiskit.circuit.library.ZGate"
+      }
+    ],
+    "verification_status": "verified",
+    "created_at": "2026-09-10T06:56:17.431669+00:00",
+    "updated_at": "2026-09-10T06:59:29.920777+00:00",
+    "status": "approved",
+    "knowledge_version": 1,
+    "last_verified_at": null,
+    "verification_notes": null,
+    "ingestion_source_id": "manual-curation",
+    "difficulty_level": null,
+    "subcategory": null,
+    "canonical_circuit": {
+      "num_qubits": 1,
+      "circuit_type": "single_qubit",
+      "title": "Pauli-Z Phase Flip",
+      "description": "Applies H to enter |+⟩, then Z to rotate relative phase by 180° into |−⟩",
+      "gates": [
+        {
+          "type": "H",
+          "target": 0,
+          "step": 0
+        },
+        {
+          "type": "Z",
+          "target": 0,
+          "step": 1
+        }
+      ]
+    }
   }
 ]

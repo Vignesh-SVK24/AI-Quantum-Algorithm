@@ -16,9 +16,13 @@ import {
   ChevronUp,
   Code2,
   AlertTriangle,
-  Layers
+  Layers,
+  Globe2
 } from 'lucide-react';
-import { searchQuantum, type QuantumTopicSearchResponse } from '../services/api';
+import { searchQuantum, simulateCircuit, type QuantumTopicSearchResponse } from '../services/api';
+import type { QuantumVisualizationData } from './visualization3d';
+
+const QuantumVisualizer = React.lazy(() => import('./visualization3d').then(m => ({ default: m.QuantumVisualizer })));
 
 export const HeroSearchBar: React.FC = () => {
   const navigate = useNavigate();
@@ -28,6 +32,9 @@ export const HeroSearchBar: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
   const [isDetailsExpanded, setIsDetailsExpanded] = useState(false);
+  const [is3DExpanded, setIs3DExpanded] = useState(false);
+  const [canonicalSimData, setCanonicalSimData] = useState<QuantumVisualizationData | null>(null);
+  const [isSimulating3D, setIsSimulating3D] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSearch = async (overrideQuery?: string) => {
@@ -42,6 +49,8 @@ export const HeroSearchBar: React.FC = () => {
     setError(null);
     setHasSearched(true);
     setIsDetailsExpanded(false);
+    setIs3DExpanded(false);
+    setCanonicalSimData(null);
 
     try {
       const data = await searchQuantum(textToSearch);
@@ -67,7 +76,45 @@ export const HeroSearchBar: React.FC = () => {
     setError(null);
     setHasSearched(false);
     setIsDetailsExpanded(false);
+    setIs3DExpanded(false);
+    setCanonicalSimData(null);
     inputRef.current?.focus();
+  };
+
+  const handleToggle3D = async () => {
+    if (is3DExpanded) {
+      setIs3DExpanded(false);
+      return;
+    }
+
+    setIs3DExpanded(true);
+    if (!canonicalSimData && result?.topic?.canonical_circuit) {
+      const circ = result.topic.canonical_circuit;
+      setIsSimulating3D(true);
+      try {
+        const sim = await simulateCircuit({
+          gates: circ.gates,
+          num_qubits: circ.num_qubits,
+          shots: 1024
+        });
+        setCanonicalSimData({
+          numQubits: circ.num_qubits,
+          circuitOperations: circ.gates,
+          currentStep: circ.gates.length,
+          statevector: sim.statevector,
+          basisStateProbabilities: sim.probabilities,
+          measurementCounts: sim.measurement_counts,
+          currentState: sim.statevector,
+          circuitTitle: circ.title,
+          circuitDescription: circ.description,
+          algorithmName: circ.circuit_type
+        });
+      } catch (e) {
+        console.warn("Canonical circuit simulation failed:", e);
+      } finally {
+        setIsSimulating3D(false);
+      }
+    }
   };
 
   const handleRelatedTopicClick = (topicName: string) => {
@@ -351,6 +398,63 @@ export const HeroSearchBar: React.FC = () => {
                   </div>
                 )}
               </div>
+
+              {/* Collapsible 3D Visualization Section */}
+              {result.topic.canonical_circuit && (
+                <div className="pt-2 border-t border-black-olive/10 space-y-2">
+                  <button
+                    type="button"
+                    onClick={handleToggle3D}
+                    className="w-full flex items-center justify-between p-3 rounded-2xl bg-floral-white shadow-neu-raised hover:shadow-neu-pressed transition-all text-left group"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-slate-gray/10 flex items-center justify-center text-slate-gray shadow-neu-sm-pressed group-hover:scale-105 transition-transform">
+                        <Globe2 className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-slate-gray flex items-center gap-1.5">
+                          <span>{result.topic.canonical_circuit.title || 'Interactive 3D Quantum Visualization'}</span>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-gray text-floral-white font-mono">
+                            3D Engine
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-black-olive/70 line-clamp-1">
+                          {result.topic.canonical_circuit.description || 'Explore state evolution on 3D Bloch Sphere & 3D Circuit'}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 text-xs font-bold text-slate-gray">
+                      <span>{is3DExpanded ? 'Close 3D' : 'Explore in 3D'}</span>
+                      {is3DExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                    </div>
+                  </button>
+
+                  {is3DExpanded && (
+                    <div className="p-3 sm:p-4 rounded-2xl bg-floral-white shadow-neu-pressed border border-black-olive/5 animate-in fade-in duration-200">
+                      {isSimulating3D ? (
+                        <div className="h-56 flex flex-col items-center justify-center gap-2 text-slate-gray">
+                          <Loader2 className="w-6 h-6 animate-spin" />
+                          <span className="text-xs font-mono font-medium">Running local deterministic Qiskit simulation...</span>
+                        </div>
+                      ) : canonicalSimData ? (
+                        <React.Suspense
+                          fallback={
+                            <div className="h-56 flex items-center justify-center text-slate-gray">
+                              <Loader2 className="w-6 h-6 animate-spin" />
+                            </div>
+                          }
+                        >
+                          <QuantumVisualizer data={canonicalSimData} />
+                        </React.Suspense>
+                      ) : (
+                        <div className="text-xs text-black-olive/60 p-4 text-center">
+                          Failed to simulate canonical circuit.
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Clickable Related Topics */}
               {result.related_topics && result.related_topics.length > 0 && (

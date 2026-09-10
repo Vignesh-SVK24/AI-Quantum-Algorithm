@@ -582,6 +582,14 @@ export interface QuantumTopicSource {
   url: string;
 }
 
+export interface CanonicalCircuit {
+  num_qubits: number;
+  circuit_type?: string;
+  title?: string;
+  description?: string;
+  gates: SimulateGate[];
+}
+
 export interface QuantumTopic {
   id: string;
   topic_name: string;
@@ -594,6 +602,7 @@ export interface QuantumTopic {
   formula?: string | null;
   example?: string | null;
   circuit_example?: string | null;
+  canonical_circuit?: CanonicalCircuit | null;
   related_topics: string[];
   common_mistakes: string[];
   aliases: string[];

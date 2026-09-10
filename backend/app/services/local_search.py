@@ -116,12 +116,12 @@ def load_all_topics() -> tuple[List[Dict[str, Any]], str]:
                 topics = []
                 for r in rows:
                     d = dict(r)
-                    for list_field in ["related_topics", "common_mistakes", "aliases", "keywords", "tags", "additional_sources"]:
-                        if isinstance(d.get(list_field), str):
+                    for list_field in ["related_topics", "common_mistakes", "aliases", "keywords", "tags", "additional_sources", "canonical_circuit"]:
+                        if isinstance(d.get(list_field), str) and d[list_field]:
                             try:
                                 d[list_field] = json.loads(d[list_field])
                             except Exception:
-                                d[list_field] = []
+                                pass
                     topics.append(d)
                 _cached_topics = topics
                 _cached_engine = "sqlite_local_cache"

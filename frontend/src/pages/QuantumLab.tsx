@@ -24,6 +24,9 @@ import { BlochSphereWidget } from '../components/BlochSphereWidget';
 import { StateComparisonWidget } from '../components/StateComparisonWidget';
 import { MeasurementHistogramWidget } from '../components/MeasurementHistogramWidget';
 import { AITutorPanel } from '../components/AITutorPanel';
+import type { QuantumVisualizationData } from '../components/visualization3d';
+
+const QuantumVisualizer = React.lazy(() => import('../components/visualization3d').then(m => ({ default: m.QuantumVisualizer })));
 
 type GateType = 'H' | 'X' | 'Z' | 'CNOT';
 
@@ -85,7 +88,19 @@ export const QuantumLab: React.FC = () => {
   const [simResult, setSimResult] = useState<SimulateResponse | null>(null);
   const [simError, setSimError] = useState<string | null>(null);
   const [isSimulating, setIsSimulating] = useState(false);
-  const [activeTab, setActiveTab] = useState<'all' | 'before-after' | 'bloch' | 'histogram'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'before-after' | 'bloch' | 'histogram' | '3d'>('all');
+
+  const visualizationData: QuantumVisualizationData = React.useMemo(() => {
+    return {
+      numQubits: simResult ? simResult.num_qubits : numQubits,
+      circuitOperations: circuit,
+      currentStep: circuit.length,
+      statevector: simResult ? simResult.statevector : [],
+      basisStateProbabilities: simResult ? simResult.probabilities : {},
+      measurementCounts: simResult ? simResult.measurement_counts : {},
+      currentState: simResult ? simResult.statevector : []
+    };
+  }, [simResult, circuit, numQubits]);
 
   // Responsive Layout States
   const [isPaletteCollapsed, setIsPaletteCollapsed] = useState<boolean>(false);
@@ -554,6 +569,15 @@ export const QuantumLab: React.FC = () => {
                   >
                     Shots
                   </button>
+                  <button
+                    onClick={() => setActiveTab('3d')}
+                    title="Interactive 3D Quantum Engine"
+                    className={`px-2 py-0.5 rounded-lg font-medium transition-all ${
+                      activeTab === '3d' ? 'bg-slate-gray text-floral-white shadow-neu-sm-raised' : 'text-black-olive/70 hover:text-black-olive'
+                    }`}
+                  >
+                    3D
+                  </button>
                 </div>
               )}
 
@@ -686,6 +710,22 @@ export const QuantumLab: React.FC = () => {
                       probabilities={simResult.probabilities}
                       shots={simResult.shots}
                     />
+                  </div>
+                )}
+
+                {/* 6. 3D Interactive Quantum Engine */}
+                {(activeTab === '3d') && (
+                  <div className="col-span-full">
+                    <React.Suspense
+                      fallback={
+                        <div className="h-64 flex flex-col items-center justify-center gap-2 text-slate-gray">
+                          <Loader2 className="w-6 h-6 animate-spin" />
+                          <span className="text-xs font-mono">Loading 3D Visualizer...</span>
+                        </div>
+                      }
+                    >
+                      <QuantumVisualizer data={visualizationData} />
+                    </React.Suspense>
                   </div>
                 )}
 
