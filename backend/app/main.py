@@ -6,6 +6,7 @@ except Exception:
     QISKIT_VERSION = "2.5.2 (Statevector Engine)"
 
 import os
+import urllib.error
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -214,11 +215,47 @@ async def chat_with_tutor(req: ChatMessageRequest, request: Request):
         )
         return result
     except ValueError as ve:
-        raise HTTPException(status_code=400, detail={"message": str(ve)})
+        raise HTTPException(status_code=400, detail={"message": str(ve), "error_type": "invalid_input"})
+    except RuntimeError as re:
+        err_msg = str(re)
+        if "GEMINI_API_KEY is missing" in err_msg:
+            raise HTTPException(
+                status_code=503,
+                detail={"message": "Gemini API key is not configured on the backend server. Please set GEMINI_API_KEY in backend/.env.", "error_type": "gemini_key_missing"}
+            )
+        elif "tutor is busy" in err_msg:
+            raise HTTPException(
+                status_code=429,
+                detail={"message": "The Gemini AI model is currently busy or rate-limited. Please wait a moment and try again.", "error_type": "gemini_rate_limit"}
+            )
+        raise HTTPException(
+            status_code=500,
+            detail={"message": f"Tutor runtime error: {err_msg}", "error_type": "tutor_runtime_error"}
+        )
+    except urllib.error.HTTPError as he:
+        if he.code in (400, 403):
+            raise HTTPException(
+                status_code=502,
+                detail={"message": "Google Gemini API authentication failed. Please verify that your GEMINI_API_KEY is valid.", "error_type": "gemini_auth_error"}
+            )
+        elif he.code == 429:
+            raise HTTPException(
+                status_code=429,
+                detail={"message": "Google Gemini API quota or rate limit exceeded. Please wait a moment before asking again.", "error_type": "gemini_rate_limit"}
+            )
+        elif he.code >= 500:
+            raise HTTPException(
+                status_code=502,
+                detail={"message": "Google Gemini API service temporarily unavailable. Please try again in a moment.", "error_type": "gemini_unavailable"}
+            )
+        raise HTTPException(
+            status_code=502,
+            detail={"message": f"Gemini API returned HTTP {he.code}.", "error_type": "gemini_http_error"}
+        )
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail={"message": "An error occurred while communicating with the tutor service."}
+            detail={"message": f"An error occurred while communicating with the tutor service: {str(e)}", "error_type": "internal_error"}
         )
 
 
