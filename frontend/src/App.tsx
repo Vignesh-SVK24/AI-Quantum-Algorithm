@@ -10,13 +10,15 @@ import { AITutor } from './pages/AITutor';
 import { Practice } from './pages/Practice';
 import { Dashboard } from './pages/Dashboard';
 import { About } from './pages/About';
+import { BackgroundVideo } from './components/BackgroundVideo';
 
 export const App: React.FC = () => {
   return (
     <HashRouter>
-      <div className="min-h-screen flex flex-col bg-floral-white text-black-olive">
+      <div className="min-h-screen flex flex-col relative bg-floral-white/75 text-black-olive transition-colors">
+        <BackgroundVideo />
         <Navbar />
-        <main className="flex-1">
+        <main className="flex-1 relative z-10">
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/basics" element={<QuantumBasics />} />
