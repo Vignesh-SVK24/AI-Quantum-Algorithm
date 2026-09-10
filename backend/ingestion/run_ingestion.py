@@ -37,6 +37,11 @@ import sys
 from pathlib import Path
 from typing import Any
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s  %(levelname)-8s  %(name)s — %(message)s",
@@ -104,6 +109,7 @@ class PipelineResult:
 def run_pipeline(
     candidates: list[tuple[Path, dict[str, Any]]],
     dry_run: bool = False,
+    publish_local: bool = False,
     topic_filter: str | None = None,
 ) -> list[PipelineResult]:
     """
@@ -112,6 +118,7 @@ def run_pipeline(
     Args:
         candidates: List from fetcher.load_all_candidates() or similar.
         dry_run: If True, verify but do not create Supabase jobs.
+        publish_local: If True, publish verified candidates directly to SQLite and JSON fallback.
         topic_filter: If set, only process candidates whose slug matches.
 
     Returns:
@@ -119,7 +126,7 @@ def run_pipeline(
     """
     from ingestion.structurer import structure_candidate
     from ingestion.verifier import verify_candidate
-    from ingestion.publisher import create_job
+    from ingestion.publisher import create_job, publish_to_sqlite, refresh_json_fallback
 
     results = []
 
@@ -179,7 +186,19 @@ def run_pipeline(
             results.append(result)
             continue
 
-        # Step 3: Stage (create Supabase job)
+        # Step 3: Publish locally OR Stage (create Supabase job)
+        if publish_local:
+            try:
+                publish_to_sqlite(structured)
+                result.stage = "published_local"
+                print(_green(f"    ✓ Published to SQLite cache"))
+            except Exception as e:
+                result.error = f"Publish SQLite error: {e}"
+                result.stage = "failed"
+                print(_red(f"    ✗ SQLite publish failed: {e}"))
+            results.append(result)
+            continue
+
         if dry_run:
             print(_yellow("    ~ Dry run: skipping Supabase job creation"))
             result.stage = "dry_run"
@@ -203,12 +222,20 @@ def run_pipeline(
 
         results.append(result)
 
+    if publish_local:
+        try:
+            refresh_json_fallback()
+            print(_green(f"\n  ✓ Refreshed bundled JSON fallback with all published topics"))
+        except Exception as e:
+            print(_yellow(f"\n  ~ Could not refresh JSON fallback: {e}"))
+
     return results
 
 
-def print_summary(results: list[PipelineResult], dry_run: bool) -> None:
+def print_summary(results: list[PipelineResult], dry_run: bool, publish_local: bool = False) -> None:
     """Print a final summary table."""
     staged = [r for r in results if r.stage == "staged"]
+    published = [r for r in results if r.stage == "published_local"]
     dry = [r for r in results if r.stage == "dry_run"]
     failed_verify = [r for r in results if r.passed_verification is False and r.stage == "verified"]
     failed_err = [r for r in results if r.stage == "failed"]
@@ -217,12 +244,20 @@ def print_summary(results: list[PipelineResult], dry_run: bool) -> None:
     print(_bold("  Pipeline Summary"))
     print("─" * 72)
     print(f"  Total candidates processed:  {len(results)}")
-    if dry_run:
-        print(f"  Passed verification:  {_green(str(len(dry)))}  (dry run — not staged)")
+    if publish_local:
+        print(f"  Published to SQLite/JSON:    {_green(str(len(published)))}")
+    elif dry_run:
+        print(f"  Passed verification:         {_green(str(len(dry)))}  (dry run — not staged)")
     else:
-        print(f"  Staged for review:    {_green(str(len(staged)))}")
-    print(f"  Failed verification:  {_red(str(len(failed_verify)))}")
-    print(f"  Errors:               {_red(str(len(failed_err)))}")
+        print(f"  Staged for review:           {_green(str(len(staged)))}")
+    print(f"  Failed verification:         {_red(str(len(failed_verify)))}")
+    print(f"  Errors:                      {_red(str(len(failed_err)))}")
+
+    if published:
+        print(f"\n  {_bold('Published topics')} (immediately available in Search Bar):")
+        for r in published:
+            slug = r.structured.get("slug") if r.structured else "?"
+            print(f"    ✓ {slug}")
 
     if staged:
         print(f"\n  {_bold('Staged jobs')} (run `python -m ingestion.admin_review` to review):")
@@ -252,6 +287,11 @@ def main() -> None:
         help="Verify candidates but do not create Supabase staging jobs",
     )
     parser.add_argument(
+        "--publish-local", "-p",
+        action="store_true",
+        help="Directly publish verified candidates to local SQLite and refresh JSON fallback",
+    )
+    parser.add_argument(
         "--file", "-f",
         metavar="FILEPATH",
         help="Process a specific candidate JSON file instead of all files in candidates/",
@@ -278,8 +318,10 @@ def main() -> None:
 
     print()
     print(_bold("  Quantum Knowledge Ingestion Pipeline — Stage 1"))
-    if args.dry_run:
-        print(_yellow("  Mode: DRY RUN (no Supabase writes)"))
+    if args.publish_local:
+        print(_green("  Mode: PUBLISH LOCAL (SQLite + JSON fallback)"))
+    elif args.dry_run:
+        print(_yellow("  Mode: DRY RUN (no writes)"))
     print()
 
     if args.sync_sources:
@@ -309,9 +351,15 @@ def main() -> None:
     print(f"  Loaded {len(raw_candidates)} candidate record(s)\n")
 
     # Run pipeline
-    results = run_pipeline(raw_candidates, dry_run=args.dry_run, topic_filter=args.topic)
-    print_summary(results, dry_run=args.dry_run)
+    results = run_pipeline(
+        raw_candidates,
+        dry_run=args.dry_run,
+        publish_local=args.publish_local,
+        topic_filter=args.topic,
+    )
+    print_summary(results, dry_run=args.dry_run, publish_local=args.publish_local)
 
 
 if __name__ == "__main__":
     main()
+

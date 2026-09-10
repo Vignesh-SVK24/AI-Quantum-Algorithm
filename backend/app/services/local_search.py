@@ -155,10 +155,17 @@ def load_all_topics() -> tuple[List[Dict[str, Any]], str]:
 
     return [], "none"
 
+def clear_topic_cache() -> None:
+    """Clears the in-memory topic cache so subsequent searches re-read from storage."""
+    global _cached_topics, _cached_engine
+    _cached_topics = None
+    _cached_engine = None
+
 def normalize_query(query: str) -> str:
-    """Normalizes search query: lowercases, trims, removes excess whitespace and punctuation."""
+    """Normalizes search query: lowercases, trims, removes excess whitespace, punctuation, and possessive 's."""
     q = query.lower().strip()
     q = q.replace("|0⟩", "|0>").replace("|1⟩", "|1>").replace("|+⟩", "|+>").replace("|-⟩", "|->")
+    q = re.sub(r"['’]s\b", "", q)
     q = re.sub(r'[^\w\s\-\+>]', ' ', q)
     q = re.sub(r'\s+', ' ', q).strip()
     return q
@@ -203,29 +210,60 @@ def search_quantum_db(query: str) -> QuantumTopicSearchResponse:
         }
 
     # =========================================================================
-    # STEP 1: EXACT MATCHES (Topic name, aliases, stripped query, exact keywords)
+    # STEP 1: EXACT MATCHES (Evaluated globally in priority order)
+    # Priority: exact topic-name match -> exact alias match -> stripped query match -> exact keyword match
     # =========================================================================
+
+    # Pass 1a: Exact topic name or slug match across ALL topics
     for t in topics:
         t_name = t.get("topic_name", "")
         name_lower = t_name.lower().strip()
+        name_norm = normalize_query(t_name)
         slug_lower = t.get("slug", "").lower().strip()
+
+        if norm_q in (name_lower, slug_lower, name_norm) or norm_q.replace("s ", " ") == name_norm:
+            return _build_match_response(raw_query, t, engine)
+
+    # Pass 1b: Exact alias match across ALL topics
+    for t in topics:
         aliases = [a.lower().strip() for a in t.get("aliases", []) if a]
+        norm_aliases = [normalize_query(a) for a in aliases if a]
+
+        if (
+            norm_q in aliases
+            or norm_q in norm_aliases
+            or norm_q.replace("s ", " ") in norm_aliases
+        ):
+            return _build_match_response(raw_query, t, engine)
+
+    # Pass 1c: Stripped conversational query match across ALL topics
+    if stripped_q and stripped_q != norm_q:
+        for t in topics:
+            t_name = t.get("topic_name", "")
+            name_lower = t_name.lower().strip()
+            name_norm = normalize_query(t_name)
+            slug_lower = t.get("slug", "").lower().strip()
+            aliases = [a.lower().strip() for a in t.get("aliases", []) if a]
+            norm_aliases = [normalize_query(a) for a in aliases if a]
+
+            if (
+                stripped_q in (name_lower, slug_lower, name_norm)
+                or stripped_q.replace("s ", " ") == name_norm
+                or stripped_q in aliases
+                or stripped_q in norm_aliases
+            ):
+                return _build_match_response(raw_query, t, engine)
+
+    # Pass 1d: Exact keyword match across ALL topics (only if no name/alias matched)
+    for t in topics:
         keywords = [k.lower().strip() for k in t.get("keywords", []) if k]
+        norm_keywords = [normalize_query(k) for k in keywords if k]
 
-        # 1a. Direct exact topic name or slug match
-        if norm_q == name_lower or norm_q == slug_lower:
-            return _build_match_response(raw_query, t, engine)
-
-        # 1b. Direct exact alias match
-        if norm_q in aliases:
-            return _build_match_response(raw_query, t, engine)
-
-        # 1c. Stripped query exact match
-        if stripped_q and (stripped_q == name_lower or stripped_q == slug_lower or stripped_q in aliases):
-            return _build_match_response(raw_query, t, engine)
-
-        # 1d. Exact keyword match
-        if norm_q in keywords or (stripped_q and stripped_q in keywords):
+        if (
+            norm_q in keywords
+            or norm_q in norm_keywords
+            or (stripped_q and (stripped_q in keywords or stripped_q in norm_keywords))
+        ):
             return _build_match_response(raw_query, t, engine)
 
     # =========================================================================
