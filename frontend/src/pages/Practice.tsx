@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   CheckCircle2, 
@@ -9,210 +9,395 @@ import {
   ArrowLeft,
   Sparkles,
   Check,
-  TrendingUp
+  TrendingUp,
+  Lock,
+  AlertCircle,
+  BookOpen,
+  Layers,
+  Zap,
+  Target,
+  ShieldCheck
 } from 'lucide-react';
-import { recordQuizCompletion } from '../services/progress';
+import { 
+  getPracticeProgress, 
+  savePracticeProgress, 
+  recordPracticeRoundAttempt, 
+  type PracticeLevel, 
+  type PracticeProgress 
+} from '../services/progress';
+import { 
+  PRACTICE_QUESTIONS, 
+  getQuestionsForRound, 
+  type PracticeQuestion 
+} from '../data/practiceQuestionsData';
 
-interface Question {
-  id: number;
-  type: 'predict' | 'true_false' | 'multiple_choice';
-  category: string;
-  question: string;
-  options: string[];
-  correctIndex: number;
-  explanation: string;
+const PASSING_THRESHOLD_PCT = 70; // 70% required to advance (7/10)
+
+interface LevelConfig {
+  id: PracticeLevel;
+  name: string;
+  tagline: string;
+  description: string;
+  badgeColor: string;
+  icon: typeof BookOpen;
 }
 
-const QUESTIONS: Question[] = [
+const LEVEL_CONFIGS: LevelConfig[] = [
   {
-    id: 1,
-    type: 'predict',
-    category: 'Superposition & Gates',
-    question: "If the Hadamard (H) gate is applied to state |0⟩, what is the expected measurement probability distribution?",
-    options: [
-      "100% |0⟩",
-      "100% |1⟩",
-      "~50% |0⟩ and ~50% |1⟩",
-      "75% |0⟩ and 25% |1⟩"
-    ],
-    correctIndex: 2,
-    explanation: "H|0⟩ creates the equal superposition (|0⟩ + |1⟩)/√2. Measuring yields |0⟩ with probability |1/√2|² = 0.5 (50%) and |1⟩ with probability 0.5 (50%)."
+    id: 'beginner',
+    name: 'Beginner',
+    tagline: 'Foundations & Single Qubits',
+    description: 'Master qubit states, Dirac notation, basic Pauli & Hadamard gates, and measurement collapse.',
+    badgeColor: 'text-slate-gray',
+    icon: BookOpen,
   },
   {
-    id: 2,
-    type: 'true_false',
-    category: 'Quantum Foundations',
-    question: "A qubit in superposition is physically 0 and 1 at the exact same moment.",
-    options: [
-      "True",
-      "False"
-    ],
-    correctIndex: 1,
-    explanation: "False! A qubit is in a single, well-defined quantum state with complex probability amplitudes α and β. It is NOT physically in two classical states simultaneously."
+    id: 'intermediate',
+    name: 'Intermediate',
+    tagline: 'Entanglement & Circuits',
+    description: 'Explore 2-qubit CNOT gates, Bell states, phase kickback, teleportation, and BB84 cryptography.',
+    badgeColor: 'text-slate-gray',
+    icon: Layers,
   },
   {
-    id: 3,
-    type: 'predict',
-    category: 'Quantum Gates',
-    question: "If an X (Pauli-X) gate is applied to a qubit in state |0⟩, what is the resulting state?",
-    options: [
-      "|0⟩",
-      "|1⟩",
-      "(|0⟩ + |1⟩)/√2",
-      "-|0⟩"
-    ],
-    correctIndex: 1,
-    explanation: "The X gate acts as a quantum bit-flip (NOT gate), rotating the state by π about the X-axis of the Bloch sphere, mapping |0⟩ to |1⟩."
-  },
-  {
-    id: 4,
-    type: 'multiple_choice',
-    category: 'Probability Amplitudes',
-    question: "What is the conservation law relating the probability amplitudes α and β of a normalized single-qubit state |ψ⟩ = α|0⟩ + β|1⟩?",
-    options: [
-      "α + β = 1",
-      "|α|² + |β|² = 1",
-      "|α| + |β| = 1",
-      "α² + β² = 0"
-    ],
-    correctIndex: 1,
-    explanation: "According to Born's rule, total probability must sum to 1: P(0) + P(1) = |α|² + |β|² = 1."
-  },
-  {
-    id: 5,
-    type: 'predict',
-    category: 'Entanglement & Circuits',
-    question: "What state is prepared by starting with |00⟩, applying H to qubit 0, and then applying CNOT with control qubit 0 and target qubit 1?",
-    options: [
-      "(|00⟩ + |01⟩)/√2",
-      "(|00⟩ + |11⟩)/√2 (Bell State |Φ⁺⟩)",
-      "|11⟩",
-      "(|01⟩ + |10⟩)/√2"
-    ],
-    correctIndex: 1,
-    explanation: "H on q[0] creates (|0⟩+|1⟩)|0⟩/√2 = (|00⟩+|10⟩)/√2. The CNOT flips q[1] whenever q[0] is 1, producing the maximally entangled Bell state (|00⟩+|11⟩)/√2."
-  },
-  {
-    id: 6,
-    type: 'multiple_choice',
-    category: 'Bloch Sphere',
-    question: "On the Bloch sphere, which quantum states are located at the North and South poles, respectively?",
-    options: [
-      "|+⟩ and |−⟩",
-      "|0⟩ and |1⟩",
-      "|i⟩ and |−i⟩",
-      "|00⟩ and |11⟩"
-    ],
-    correctIndex: 1,
-    explanation: "By convention, |0⟩ is at the North pole (θ = 0) and |1⟩ is at the South pole (θ = π). Equal superpositions lie along the equator (θ = π/2)."
-  },
-  {
-    id: 7,
-    type: 'multiple_choice',
-    category: 'Algorithms',
-    question: "In the Deutsch-Jozsa algorithm with 2 input qubits, if all input qubits measure |00⟩, what does this prove about the oracle function?",
-    options: [
-      "The function is guaranteed balanced",
-      "The function is guaranteed constant",
-      "The oracle failed",
-      "Nothing can be deduced without 2 more queries"
-    ],
-    correctIndex: 1,
-    explanation: "In Deutsch-Jozsa, constructive interference concentrates 100% of amplitude on |00⟩ if and only if the function is constant. Any other outcome indicates a balanced function."
-  },
-  {
-    id: 8,
-    type: 'true_false',
-    category: 'Algorithms',
-    question: "Quantum search with Grover's algorithm is 'instant' because it checks all possible inputs in parallel.",
-    options: [
-      "True",
-      "False"
-    ],
-    correctIndex: 1,
-    explanation: "False! Quantum search is an iterative geometric rotation (amplitude amplification) taking O(√N) steps. It gradually amplifies the marked item's probability amplitude."
-  },
-  {
-    id: 9,
-    type: 'predict',
-    category: 'Relative Phase',
-    question: "If a qubit state has amplitudes α = 1/√2 and β = -1/√2, what is the probability of measuring |1⟩?",
-    options: [
-      "-50%",
-      "0%",
-      "50% (0.5)",
-      "100%"
-    ],
-    correctIndex: 2,
-    explanation: "Probability is the magnitude squared: P(1) = |β|² = |-1/√2|² = 1/2 = 0.5 (50%). The minus sign represents a relative phase of π, which affects interference, not individual probability!"
-  },
-  {
-    id: 10,
-    type: 'multiple_choice',
-    category: 'Measurement',
-    question: "What happens to a qubit in superposition when it is measured in the computational basis?",
-    options: [
-      "It preserves its superposition forever",
-      "It irreversibly collapses into either |0⟩ or |1⟩",
-      "It duplicates into two qubits",
-      "Its phase rotates by 90 degrees"
-    ],
-    correctIndex: 1,
-    explanation: "Measurement causes wavefunction collapse: the superposition is destroyed, and the qubit irreversibly takes on either classical state |0⟩ or |1⟩."
+    id: 'advanced',
+    name: 'Advanced',
+    tagline: 'Algorithms & Error Correction',
+    description: 'Deep dive into Deutsch-Jozsa, Grover search, QFT, Phase Estimation, Shor, and Quantum Error Correction.',
+    badgeColor: 'text-slate-gray',
+    icon: Zap,
   }
 ];
 
 export const Practice: React.FC = () => {
+  // Load persistent user progress
+  const [progress, setProgress] = useState<PracticeProgress>(getPracticeProgress());
+
+  // Navigation state
+  const [selectedLevel, setSelectedLevel] = useState<PracticeLevel>(progress.currentLevel);
+  const [selectedRound, setSelectedRound] = useState<1 | 2 | 3>(progress.currentRound);
+
+  // Active quiz state
   const [currentIdx, setCurrentIdx] = useState<number>(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [score, setScore] = useState<number>(0);
   const [answeredCount, setAnsweredCount] = useState<number>(0);
-  const [isFinished, setIsFinished] = useState<boolean>(false);
+  const [recordedAnswers, setRecordedAnswers] = useState<Array<{
+    questionId: number;
+    selectedOption: number;
+    isCorrect: boolean;
+    topicId: string;
+  }>>([]);
 
-  const q = QUESTIONS[currentIdx];
+  // Screen states: 'quiz' | 'round_result' | 'level_summary'
+  const [screenMode, setScreenMode] = useState<'quiz' | 'round_result' | 'level_summary'>('quiz');
+  const [roundResultData, setRoundResultData] = useState<{
+    score: number;
+    total: number;
+    passed: boolean;
+    newRoundUnlocked: number | null;
+    newLevelUnlocked: PracticeLevel | null;
+  } | null>(null);
+
+  // Network / Loading state
+  const [isLoadingQuestions, setIsLoadingQuestions] = useState<boolean>(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [loadedQuestions, setLoadedQuestions] = useState<PracticeQuestion[]>([]);
+
+  // Load questions for the active (level, round) pair
+  useEffect(() => {
+    let isMounted = true;
+    setIsLoadingQuestions(true);
+    setApiError(null);
+
+    // Fetch from backend API if available, with robust local fallback
+    async function fetchQuestions() {
+      try {
+        const queryParams = new URLSearchParams({
+          level: selectedLevel,
+          round: selectedRound.toString(),
+          user_id: 'local_student'
+        });
+
+        // Add learned topics parameter
+        if (progress.learnedTopics.length > 0) {
+          queryParams.append('topics', progress.learnedTopics.join(','));
+        }
+
+        const resp = await fetch(`http://127.0.0.1:8000/practice/questions?${queryParams.toString()}`, {
+          signal: AbortSignal.timeout(1500)
+        });
+
+        if (resp.ok) {
+          const data = await resp.json();
+          if (isMounted && data.questions && data.questions.length > 0) {
+            // Map backend schema to PracticeQuestion
+            const mapped: PracticeQuestion[] = data.questions.map((q: any) => ({
+              id: q.id,
+              level: q.level,
+              round: q.round,
+              topicId: q.topic_id,
+              topicName: q.topic_name,
+              questionType: q.question_type,
+              question: q.question,
+              options: q.options,
+              correctIndex: q.correct_answer,
+              explanation: q.explanation,
+              difficulty: q.difficulty,
+              sourceContentId: q.source_content_id
+            }));
+            setLoadedQuestions(mapped);
+            setIsLoadingQuestions(false);
+            return;
+          }
+        }
+      } catch {
+        // Backend offline or unreachable — seamlessly use local verified question corpus
+        if (isMounted) {
+          setApiError('Quantum Practice operating in offline verified mode.');
+        }
+      }
+
+      if (isMounted) {
+        // Personalization: weight weak topics if present
+        let localQs = getQuestionsForRound(selectedLevel, selectedRound);
+        if (progress.weakTopics.length > 0) {
+          const weakSet = new Set(progress.weakTopics);
+          const weakQs = localQs.filter(q => weakSet.has(q.topicId));
+          const otherQs = localQs.filter(q => !weakSet.has(q.topicId));
+          localQs = [...weakQs, ...otherQs];
+        }
+        setLoadedQuestions(localQs);
+        setIsLoadingQuestions(false);
+      }
+    }
+
+    fetchQuestions();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedLevel, selectedRound, progress.weakTopics, progress.learnedTopics]);
+
+  // Current active question
+  const currentQuestions = loadedQuestions.length > 0 
+    ? loadedQuestions 
+    : getQuestionsForRound(selectedLevel, selectedRound);
+
+  const q = currentQuestions[currentIdx] || currentQuestions[0];
   const hasAnsweredCurrent = selectedAnswer !== null;
 
-  const handleSelectOption = (idx: number) => {
-    if (hasAnsweredCurrent) return;
-    setSelectedAnswer(idx);
-    const isCorrect = idx === q.correctIndex;
-    if (isCorrect) {
-      setScore(prev => prev + 1);
-    }
-    const newAnswered = answeredCount + 1;
-    setAnsweredCount(newAnswered);
-
-    if (newAnswered === QUESTIONS.length) {
-      const finalScore = isCorrect ? score + 1 : score;
-      recordQuizCompletion(finalScore, QUESTIONS.length);
-    }
+  // Level unlocking checks
+  const isLevelUnlocked = (level: PracticeLevel) => {
+    return progress.unlockedLevels.includes(level);
   };
 
-  const handleNext = () => {
-    if (currentIdx < QUESTIONS.length - 1) {
-      setCurrentIdx(prev => prev + 1);
-      setSelectedAnswer(null);
-    } else {
-      setIsFinished(true);
-    }
+  const isLevelCompleted = (level: PracticeLevel) => {
+    return progress.completedLevels.includes(level);
   };
 
-  const handleRestart = () => {
+  const isRoundUnlocked = (level: PracticeLevel, round: 1 | 2 | 3) => {
+    if (!isLevelUnlocked(level)) return false;
+    const maxUnlocked = progress.unlockedRounds[level] || 1;
+    return round <= maxUnlocked;
+  };
+
+  // Switch level
+  const handleSelectLevel = (level: PracticeLevel) => {
+    if (!isLevelUnlocked(level)) return;
+    setSelectedLevel(level);
+    const highestRound = (progress.unlockedRounds[level] || 1) as 1 | 2 | 3;
+    setSelectedRound(highestRound);
+    resetRoundState();
+    setScreenMode('quiz');
+    savePracticeProgress({ currentLevel: level, currentRound: highestRound });
+    setProgress(getPracticeProgress());
+  };
+
+  // Switch round
+  const handleSelectRound = (round: 1 | 2 | 3) => {
+    if (!isRoundUnlocked(selectedLevel, round)) return;
+    setSelectedRound(round);
+    resetRoundState();
+    setScreenMode('quiz');
+    savePracticeProgress({ currentLevel: selectedLevel, currentRound: round });
+    setProgress(getPracticeProgress());
+  };
+
+  const resetRoundState = () => {
     setCurrentIdx(0);
     setSelectedAnswer(null);
     setScore(0);
     setAnsweredCount(0);
-    setIsFinished(false);
+    setRecordedAnswers([]);
+    setRoundResultData(null);
   };
 
-  const scorePct = Math.round((score / QUESTIONS.length) * 100);
+  // Answer selection handler
+  const handleSelectOption = (idx: number) => {
+    if (hasAnsweredCurrent || !q) return;
+
+    setSelectedAnswer(idx);
+    const isCorrect = idx === q.correctIndex;
+    const newScore = isCorrect ? score + 1 : score;
+    if (isCorrect) {
+      setScore(newScore);
+    }
+
+    const newRecord = {
+      questionId: q.id,
+      selectedOption: idx,
+      isCorrect,
+      topicId: q.topicId,
+    };
+    const updatedAnswers = [...recordedAnswers, newRecord];
+    setRecordedAnswers(updatedAnswers);
+    setAnsweredCount(answeredCount + 1);
+
+    // If last question answered in round, process completion
+    if (currentIdx === currentQuestions.length - 1) {
+      const topicItems = updatedAnswers.map(a => ({
+        topicId: a.topicId,
+        isCorrect: a.isCorrect,
+      }));
+
+      const attemptResult = recordPracticeRoundAttempt(
+        selectedLevel,
+        selectedRound,
+        newScore,
+        currentQuestions.length,
+        topicItems
+      );
+
+      setProgress(attemptResult.progress);
+      setRoundResultData({
+        score: newScore,
+        total: currentQuestions.length,
+        passed: attemptResult.passed,
+        newRoundUnlocked: attemptResult.newRoundUnlocked,
+        newLevelUnlocked: attemptResult.newLevelUnlocked,
+      });
+
+      // Also submit asynchronously to backend if available
+      try {
+        fetch('http://127.0.0.1:8000/practice/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: 'local_student',
+            level: selectedLevel,
+            round: selectedRound,
+            answers: updatedAnswers.map(a => ({
+              question_id: a.questionId,
+              selected_option: a.selectedOption,
+              is_correct: a.isCorrect,
+              topic_id: a.topicId
+            }))
+          })
+        }).catch(() => {});
+      } catch {}
+    }
+  };
+
+  // Move to next question or show end of round
+  const handleNextQuestion = () => {
+    if (currentIdx < currentQuestions.length - 1) {
+      setCurrentIdx(prev => prev + 1);
+      setSelectedAnswer(null);
+    } else {
+      setScreenMode('round_result');
+    }
+  };
+
+  // Advance to next round or level
+  const handleProceedNextRound = () => {
+    if (selectedRound < 3) {
+      const nextR = (selectedRound + 1) as 2 | 3;
+      setSelectedRound(nextR);
+      resetRoundState();
+      setScreenMode('quiz');
+      savePracticeProgress({ currentLevel: selectedLevel, currentRound: nextR });
+      setProgress(getPracticeProgress());
+    } else {
+      // Completed all 3 rounds of the level -> show level summary
+      setScreenMode('level_summary');
+    }
+  };
+
+  // Retry the current round
+  const handleRetryRound = () => {
+    resetRoundState();
+    setScreenMode('quiz');
+  };
+
+  // Advance to next unlocked level from level summary
+  const handleUnlockAndProceedNextLevel = () => {
+    let nextL: PracticeLevel = 'beginner';
+    if (selectedLevel === 'beginner' && isLevelUnlocked('intermediate')) {
+      nextL = 'intermediate';
+    } else if (selectedLevel === 'intermediate' && isLevelUnlocked('advanced')) {
+      nextL = 'advanced';
+    }
+    setSelectedLevel(nextL);
+    setSelectedRound(1);
+    resetRoundState();
+    setScreenMode('quiz');
+    savePracticeProgress({ currentLevel: nextL, currentRound: 1 });
+    setProgress(getPracticeProgress());
+  };
+
+  // Calculate overall level score (across 3 rounds)
+  const levelStats = useMemo(() => {
+    let totalScore = 0;
+    let totalQuestions = 0;
+    let roundsPassed = 0;
+
+    for (let r = 1; r <= 3; r++) {
+      const rKey = `${selectedLevel}-${r}`;
+      const rData = progress.roundScores[rKey];
+      if (rData) {
+        totalScore += rData.score;
+        totalQuestions += rData.total;
+        if (rData.passed) roundsPassed += 1;
+      }
+    }
+
+    const pct = totalQuestions > 0 ? Math.round((totalScore / totalQuestions) * 100) : 0;
+    return { totalScore, totalQuestions, roundsPassed, pct };
+  }, [selectedLevel, progress.roundScores]);
+
+  // Topic mastery lists for level summary
+  const { strongTopicsList, weakTopicsList } = useMemo(() => {
+    const strong: string[] = [];
+    const weak: string[] = [];
+
+    // Filter by topics belonging to the selected level
+    const levelQuestions = PRACTICE_QUESTIONS.filter(q => q.level === selectedLevel);
+    const levelTopicIds = new Set(levelQuestions.map(q => q.topicId));
+
+    for (const tId of levelTopicIds) {
+      const stat = progress.topicPerformance[tId];
+      if (stat && stat.attempted >= 1) {
+        const accuracy = stat.correct / stat.attempted;
+        const matchingQ = levelQuestions.find(q => q.topicId === tId);
+        const name = matchingQ?.topicName || tId;
+        if (accuracy >= 0.8 && stat.attempted >= 2) {
+          strong.push(`${name} (${Math.round(accuracy * 100)}%)`);
+        } else if (accuracy < 0.7) {
+          weak.push(`${name} (${Math.round(accuracy * 100)}%)`);
+        }
+      }
+    }
+
+    return { strongTopicsList: strong, weakTopicsList: weak };
+  }, [selectedLevel, progress.topicPerformance]);
 
   return (
     <div className="min-h-screen bg-floral-white text-black-olive">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         
-        {/* Header */}
-        <div className="flex items-center justify-between pb-4">
+        {/* Header with breadcrumb and Neumorphic controls */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-black-olive/10">
           <div className="space-y-1">
             <Link 
               to="/" 
@@ -225,166 +410,453 @@ export const Practice: React.FC = () => {
                 <Sparkles className="w-5 h-5" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-black-olive tracking-tight">Quantum Practice &amp; Quiz</h1>
-                <p className="text-xs text-black-olive/70">Test and reinforce your quantum mechanics and circuit concepts</p>
+                <h1 className="text-2xl font-bold text-black-olive tracking-tight">Quantum Progressive Practice</h1>
+                <p className="text-xs text-black-olive/70">Master quantum computing through 3 progressive levels and 9 mastery rounds</p>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="px-4 py-2 rounded-2xl bg-floral-white shadow-neu-pressed text-xs font-mono">
-              <span className="text-black-olive/70">Score: </span>
-              <span className="text-slate-gray font-bold text-sm">{score}</span>
-              <span className="text-black-olive/70"> / {QUESTIONS.length}</span>
+          {/* Top Quick Status Pill */}
+          <div className="flex items-center gap-3 self-start sm:self-center">
+            <div className="px-4 py-2 rounded-2xl bg-floral-white shadow-neu-pressed text-xs font-mono flex items-center gap-2">
+              <span className="text-black-olive/70">Active Level:</span>
+              <span className="text-slate-gray font-bold uppercase">{selectedLevel}</span>
+              <span className="text-black-olive/40">•</span>
+              <span className="text-black-olive/70">R{selectedRound}</span>
             </div>
           </div>
         </div>
 
-        {/* Quiz Container */}
-        {!isFinished ? (
+        {/* ============================================================ */}
+        {/* LEVEL SELECTOR: 3 Levels (Beginner, Intermediate, Advanced) */}
+        {/* ============================================================ */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {LEVEL_CONFIGS.map((cfg) => {
+            const unlocked = isLevelUnlocked(cfg.id);
+            const completed = isLevelCompleted(cfg.id);
+            const isSelected = selectedLevel === cfg.id;
+            const Icon = cfg.icon;
+
+            return (
+              <button
+                key={cfg.id}
+                onClick={() => handleSelectLevel(cfg.id)}
+                disabled={!unlocked}
+                className={`p-5 rounded-3xl text-left transition-all relative overflow-hidden flex flex-col justify-between ${
+                  isSelected
+                    ? 'bg-floral-white shadow-neu-pressed border-2 border-slate-gray'
+                    : unlocked
+                    ? 'bg-floral-white shadow-neu-raised hover:shadow-neu-pressed opacity-95'
+                    : 'bg-floral-white shadow-neu-pressed opacity-50 cursor-not-allowed'
+                }`}
+              >
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className={`w-8 h-8 rounded-xl bg-floral-white shadow-neu-sm-raised flex items-center justify-center ${cfg.badgeColor}`}>
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    {completed ? (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-mono font-bold text-slate-gray px-2 py-0.5 rounded-full bg-floral-white shadow-neu-sm-raised">
+                        <Check className="w-3 h-3 text-slate-gray" /> Passed
+                      </span>
+                    ) : unlocked ? (
+                      <span className="text-[10px] font-mono text-black-olive/60 uppercase font-semibold px-2 py-0.5 rounded-full bg-floral-white shadow-neu-sm-raised">
+                        Unlocked
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-mono text-black-olive/50 px-2 py-0.5 rounded-full bg-floral-white shadow-neu-pressed">
+                        <Lock className="w-3 h-3" /> Locked
+                      </span>
+                    )}
+                  </div>
+
+                  <div>
+                    <h3 className="text-base font-bold text-black-olive">{cfg.name}</h3>
+                    <p className="text-xs font-medium text-slate-gray">{cfg.tagline}</p>
+                  </div>
+                  
+                  <p className="text-[11px] text-black-olive/70 line-clamp-2 leading-relaxed">
+                    {cfg.description}
+                  </p>
+                </div>
+
+                {/* Progress bar per level */}
+                <div className="mt-4 pt-3 border-t border-black-olive/5">
+                  <div className="flex justify-between text-[10px] font-mono text-black-olive/60 mb-1">
+                    <span>Round Progress</span>
+                    <span>{(progress.unlockedRounds[cfg.id] || 1)} / 3 Rounds</span>
+                  </div>
+                  <div className="h-1.5 bg-floral-white shadow-neu-pressed rounded-full overflow-hidden p-0.5">
+                    <div 
+                      className="h-full bg-slate-gray rounded-full transition-all"
+                      style={{ width: `${Math.min(100, ((progress.unlockedRounds[cfg.id] || 1) / 3) * 100)}%` }}
+                    />
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* ============================================================ */}
+        {/* ROUND SELECTOR TABS (Round 1, Round 2, Round 3)              */}
+        {/* ============================================================ */}
+        <div className="p-4 rounded-2xl bg-floral-white shadow-neu-raised flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <Target className="w-4 h-4 text-slate-gray" />
+            <span className="text-xs font-bold uppercase tracking-wider text-black-olive font-mono">
+              {selectedLevel} Rounds:
+            </span>
+          </div>
+
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            {[1, 2, 3].map((rNum) => {
+              const r = rNum as 1 | 2 | 3;
+              const unlocked = isRoundUnlocked(selectedLevel, r);
+              const isCurrent = selectedRound === r && screenMode === 'quiz';
+              const rKey = `${selectedLevel}-${r}`;
+              const roundData = progress.roundScores[rKey];
+
+              return (
+                <button
+                  key={r}
+                  onClick={() => handleSelectRound(r)}
+                  disabled={!unlocked}
+                  className={`flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all flex items-center justify-center gap-2 ${
+                    isCurrent
+                      ? 'bg-floral-white shadow-neu-pressed border-2 border-slate-gray text-slate-gray'
+                      : unlocked
+                      ? 'bg-floral-white shadow-neu-raised hover:shadow-neu-pressed text-black-olive'
+                      : 'bg-floral-white shadow-neu-pressed opacity-40 cursor-not-allowed text-black-olive/40'
+                  }`}
+                >
+                  <span>Round {r}</span>
+                  {roundData?.passed ? (
+                    <CheckCircle2 className="w-3.5 h-3.5 text-slate-gray" />
+                  ) : !unlocked ? (
+                    <Lock className="w-3 h-3 text-black-olive/40" />
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {apiError && (
+          <div className="p-3.5 rounded-2xl bg-floral-white shadow-neu-pressed text-xs text-black-olive/80 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-slate-gray flex-shrink-0" />
+              <span>{apiError}</span>
+            </div>
+            <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-floral-white shadow-neu-sm-raised text-slate-gray font-bold">
+              Autonomous Offline
+            </span>
+          </div>
+        )}
+
+        {isLoadingQuestions && (
+          <div className="text-center py-2 text-xs font-mono text-slate-gray">
+            Syncing question repository...
+          </div>
+        )}
+
+        {/* ============================================================ */}
+        {/* SCREEN 1: ACTIVE QUIZ VIEW                                    */}
+        {/* ============================================================ */}
+        {screenMode === 'quiz' && (
           <div className="space-y-6">
             
-            {/* Progress indicator */}
+            {/* Header: Progress, Level, Round & Question Indicator */}
             <div className="space-y-2">
-              <div className="flex justify-between text-xs font-mono text-black-olive/70">
-                <span>Question {currentIdx + 1} of {QUESTIONS.length}</span>
-                <span>Category: {q.category}</span>
+              <div className="flex flex-wrap justify-between items-center text-xs font-mono text-black-olive/70 gap-2">
+                <span className="font-bold text-slate-gray">
+                  {selectedLevel.toUpperCase()} — Round {selectedRound} of 3 — Question {currentIdx + 1} of {currentQuestions.length}
+                </span>
+                <span>Topic: <strong className="text-black-olive">{q?.topicName || 'Foundations'}</strong></span>
               </div>
               <div className="h-2.5 bg-floral-white shadow-neu-pressed rounded-full overflow-hidden p-0.5">
                 <div
                   className="h-full bg-slate-gray rounded-full transition-all duration-300 shadow-neu-sm-raised"
-                  style={{ width: `${((currentIdx + 1) / QUESTIONS.length) * 100}%` }}
+                  style={{ width: `${((currentIdx + 1) / currentQuestions.length) * 100}%` }}
                 />
               </div>
             </div>
 
             {/* Raised Question Card */}
-            <div className="p-6 md:p-8 rounded-3xl bg-floral-white shadow-neu-raised space-y-6">
-              
-              <div className="space-y-2.5">
-                <span className="text-[10px] font-mono uppercase tracking-wider px-3 py-1 rounded-full bg-floral-white shadow-neu-sm-raised text-slate-gray font-bold">
-                  {q.type.replace('_', ' ')}
-                </span>
-                <h2 className="text-lg md:text-xl font-bold text-black-olive leading-snug">
-                  {q.question}
-                </h2>
-              </div>
-
-              {/* Answer Options as Raised Buttons that go Inset when selected */}
-              <div className="space-y-3">
-                {q.options.map((option, idx) => {
-                  let btnStyle = "bg-floral-white shadow-neu-raised hover:shadow-neu-pressed text-black-olive";
-                  let icon = null;
-
-                  if (hasAnsweredCurrent) {
-                    if (idx === q.correctIndex) {
-                      // Correct: Highlighted in Slate Gray with check glyph
-                      btnStyle = "bg-floral-white shadow-neu-pressed border-2 border-slate-gray text-slate-gray font-bold";
-                      icon = <CheckCircle2 className="w-5 h-5 text-slate-gray flex-shrink-0" />;
-                    } else if (idx === selectedAnswer) {
-                      // Incorrect: Muted Black Olive tone with cross glyph
-                      btnStyle = "bg-floral-white shadow-neu-pressed text-black-olive/70";
-                      icon = <XCircle className="w-5 h-5 text-black-olive/70 flex-shrink-0" />;
-                    } else {
-                      btnStyle = "bg-floral-white opacity-50 text-black-olive/50";
-                    }
-                  }
-
-                  return (
-                    <button
-                      key={idx}
-                      onClick={() => handleSelectOption(idx)}
-                      disabled={hasAnsweredCurrent}
-                      className={`w-full p-4 rounded-2xl text-left text-sm font-medium transition-all flex items-center justify-between gap-3 ${btnStyle}`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="w-6 h-6 rounded-lg bg-floral-white shadow-neu-sm-raised flex items-center justify-center font-mono text-xs text-black-olive font-bold">
-                          {String.fromCharCode(65 + idx)}
-                        </span>
-                        <span>{option}</span>
-                      </div>
-                      {icon}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Immediate Feedback Box */}
-              {hasAnsweredCurrent && (
-                <div className={`p-4 rounded-2xl bg-floral-white shadow-neu-pressed text-xs leading-relaxed space-y-1.5 transition-all ${
-                  selectedAnswer === q.correctIndex
-                    ? 'text-slate-gray'
-                    : 'text-black-olive/80'
-                }`}>
-                  <div className="font-bold flex items-center gap-1.5">
-                    {selectedAnswer === q.correctIndex ? (
-                      <>
-                        <Check className="w-4 h-4 text-slate-gray" />
-                        <span>Correct!</span>
-                      </>
-                    ) : (
-                      <>
-                        <XCircle className="w-4 h-4 text-black-olive/70" />
-                        <span>Incorrect — Let's Review:</span>
-                      </>
-                    )}
+            {q && (
+              <div className="p-6 md:p-8 rounded-3xl bg-floral-white shadow-neu-raised space-y-6">
+                
+                <div className="space-y-2.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono uppercase tracking-wider px-3 py-1 rounded-full bg-floral-white shadow-neu-sm-raised text-slate-gray font-bold">
+                      {q.questionType.replace('_', ' ')}
+                    </span>
+                    <span className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-floral-white shadow-neu-sm-raised text-black-olive/60">
+                      Level: {q.level}
+                    </span>
                   </div>
-                  <p className="text-black-olive/80">{q.explanation}</p>
+                  <h2 className="text-lg md:text-xl font-bold text-black-olive leading-snug">
+                    {q.question}
+                  </h2>
                 </div>
-              )}
 
-              {/* Navigation CTA Button */}
-              {hasAnsweredCurrent && (
-                <div className="flex justify-end pt-2">
-                  <button
-                    onClick={handleNext}
-                    className="px-6 py-3 rounded-2xl bg-slate-gray text-floral-white font-semibold text-xs shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-2"
-                  >
-                    <span>{currentIdx === QUESTIONS.length - 1 ? 'View Final Results' : 'Next Question'}</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
+                {/* Options List */}
+                <div className="space-y-3">
+                  {q.options.map((option, idx) => {
+                    let btnStyle = "bg-floral-white shadow-neu-raised hover:shadow-neu-pressed text-black-olive";
+                    let icon = null;
+
+                    if (hasAnsweredCurrent) {
+                      if (idx === q.correctIndex) {
+                        btnStyle = "bg-floral-white shadow-neu-pressed border-2 border-slate-gray text-slate-gray font-bold";
+                        icon = <CheckCircle2 className="w-5 h-5 text-slate-gray flex-shrink-0" />;
+                      } else if (idx === selectedAnswer) {
+                        btnStyle = "bg-floral-white shadow-neu-pressed text-black-olive/70";
+                        icon = <XCircle className="w-5 h-5 text-black-olive/70 flex-shrink-0" />;
+                      } else {
+                        btnStyle = "bg-floral-white opacity-50 text-black-olive/50";
+                      }
+                    }
+
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => handleSelectOption(idx)}
+                        disabled={hasAnsweredCurrent}
+                        className={`w-full p-4 rounded-2xl text-left text-sm font-medium transition-all flex items-center justify-between gap-3 ${btnStyle}`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="w-6 h-6 rounded-lg bg-floral-white shadow-neu-sm-raised flex items-center justify-center font-mono text-xs text-black-olive font-bold flex-shrink-0">
+                            {String.fromCharCode(65 + idx)}
+                          </span>
+                          <span className="leading-snug">{option}</span>
+                        </div>
+                        {icon}
+                      </button>
+                    );
+                  })}
                 </div>
-              )}
 
+                {/* Immediate Feedback Box Grounded in DB Explanation */}
+                {hasAnsweredCurrent && (
+                  <div className={`p-4 rounded-2xl bg-floral-white shadow-neu-pressed text-xs leading-relaxed space-y-1.5 transition-all ${
+                    selectedAnswer === q.correctIndex
+                      ? 'text-slate-gray'
+                      : 'text-black-olive/80'
+                  }`}>
+                    <div className="font-bold flex items-center gap-1.5">
+                      {selectedAnswer === q.correctIndex ? (
+                        <>
+                          <Check className="w-4 h-4 text-slate-gray" />
+                          <span>Correct!</span>
+                        </>
+                      ) : (
+                        <>
+                          <XCircle className="w-4 h-4 text-black-olive/70" />
+                          <span>Incorrect — Conceptual Explanation:</span>
+                        </>
+                      )}
+                    </div>
+                    <p className="text-black-olive/80">{q.explanation}</p>
+                  </div>
+                )}
+
+                {/* Navigation Next CTA */}
+                {hasAnsweredCurrent && (
+                  <div className="flex justify-end pt-2">
+                    <button
+                      onClick={handleNextQuestion}
+                      className="px-6 py-3 rounded-2xl bg-slate-gray text-floral-white font-semibold text-xs shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-2"
+                    >
+                      <span>
+                        {currentIdx === currentQuestions.length - 1 
+                          ? 'Complete Round' 
+                          : 'Next Question'}
+                      </span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ============================================================ */}
+        {/* SCREEN 2: END OF ROUND RESULT VIEW                           */}
+        {/* ============================================================ */}
+        {screenMode === 'round_result' && roundResultData && (
+          <div className="p-8 sm:p-12 rounded-3xl bg-floral-white shadow-neu-raised text-center space-y-6">
+            <div className={`w-16 h-16 rounded-2xl bg-floral-white shadow-neu-pressed flex items-center justify-center mx-auto ${
+              roundResultData.passed ? 'text-slate-gray' : 'text-black-olive/60'
+            }`}>
+              {roundResultData.passed ? <Award className="w-8 h-8" /> : <AlertCircle className="w-8 h-8" />}
+            </div>
+
+            <div className="space-y-2">
+              <h2 className="text-2xl font-bold text-black-olive">
+                {roundResultData.passed ? `Round ${selectedRound} Passed!` : `Round ${selectedRound} Needs Practice`}
+              </h2>
+              <p className="text-sm text-black-olive/70">
+                You scored <strong className="text-slate-gray font-bold">{roundResultData.score} out of {roundResultData.total}</strong> ({Math.round((roundResultData.score / roundResultData.total) * 100)}%).
+              </p>
+              <p className="text-xs text-black-olive/60">
+                Passing requirement: {PASSING_THRESHOLD_PCT}% (7 out of 10 questions).
+              </p>
+            </div>
+
+            {/* Threshold Feedback Panel */}
+            <div className="max-w-md mx-auto p-5 rounded-2xl bg-floral-white shadow-neu-pressed text-xs text-black-olive/80 leading-relaxed text-left space-y-2">
+              {roundResultData.passed ? (
+                <>
+                  <p className="font-bold text-slate-gray flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-slate-gray" /> Great mastery of this round!
+                  </p>
+                  <p>
+                    {selectedRound < 3 
+                      ? `Round ${selectedRound + 1} is now unlocked. Continue advancing through ${selectedLevel} level.`
+                      : `All 3 rounds of ${selectedLevel} level are completed! View your full level mastery summary.`}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="font-bold text-black-olive flex items-center gap-1.5">
+                    <AlertCircle className="w-4 h-4 text-black-olive/70" /> Below passing threshold ({PASSING_THRESHOLD_PCT}%)
+                  </p>
+                  <p>
+                    Don't worry — quantum mechanics requires iteration. Review the concept explanations and retry this round as many times as you need.
+                  </p>
+                </>
+              )}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+              <button
+                onClick={handleRetryRound}
+                className="px-6 py-3 rounded-2xl bg-floral-white text-black-olive font-semibold text-xs shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-2"
+              >
+                <RotateCcw className="w-4 h-4" /> Retry Round {selectedRound}
+              </button>
+
+              {roundResultData.passed && (
+                <button
+                  onClick={handleProceedNextRound}
+                  className="px-6 py-3 rounded-2xl bg-slate-gray text-floral-white font-semibold text-xs shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-2"
+                >
+                  <span>
+                    {selectedRound < 3 
+                      ? `Next: Round ${selectedRound + 1}` 
+                      : `View ${selectedLevel.toUpperCase()} Summary`}
+                  </span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              )}
             </div>
           </div>
-        ) : (
-          /* Quiz Results Summary Screen (Raised Card) */
-          <div className="p-8 sm:p-12 rounded-3xl bg-floral-white shadow-neu-raised text-center space-y-6">
+        )}
+
+        {/* ============================================================ */}
+        {/* SCREEN 3: END OF LEVEL SUMMARY VIEW                          */}
+        {/* ============================================================ */}
+        {screenMode === 'level_summary' && (
+          <div className="p-8 sm:p-12 rounded-3xl bg-floral-white shadow-neu-raised text-center space-y-8">
             <div className="w-16 h-16 rounded-2xl bg-floral-white shadow-neu-pressed flex items-center justify-center mx-auto text-slate-gray">
               <Award className="w-8 h-8" />
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-2xl font-bold text-black-olive">Quiz Completed!</h2>
+              <h2 className="text-2xl font-bold text-black-olive">
+                🎉 {selectedLevel.toUpperCase()} Level Completed!
+              </h2>
               <p className="text-sm text-black-olive/70">
-                You scored <strong className="text-slate-gray font-bold">{score} out of {QUESTIONS.length}</strong> ({scorePct}%).
+                Cumulative score across all 3 rounds: <strong className="text-slate-gray font-bold">{levelStats.totalScore} / {levelStats.totalQuestions || 30}</strong> ({levelStats.pct}%).
               </p>
             </div>
 
-            {/* Performance Rating Inset Panel */}
-            <div className="max-w-md mx-auto p-5 rounded-2xl bg-floral-white shadow-neu-pressed text-xs text-black-olive/80 leading-relaxed">
-              {scorePct >= 80 ? (
-                <p>🎉 <strong>Outstanding grasp of quantum concepts!</strong> You are ready to design complex multi-qubit algorithms in the Lab.</p>
-              ) : scorePct >= 50 ? (
-                <p>👍 <strong>Solid foundation!</strong> Review the Bloch sphere and phase kickback lessons to sharpen your intuition.</p>
-              ) : (
-                <p>📚 <strong>Great effort!</strong> Revisit the Quantum Basics module to reinforce superposition amplitudes and Born's rule.</p>
-              )}
+            {/* Dynamic Performance Breakdown (Strong areas vs Needs practice) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left max-w-xl mx-auto">
+              
+              {/* Strong Areas Card */}
+              <div className="p-4 rounded-2xl bg-floral-white shadow-neu-pressed space-y-2">
+                <div className="flex items-center gap-2 font-bold text-xs text-slate-gray">
+                  <ShieldCheck className="w-4 h-4 text-slate-gray" />
+                  <span>Strong Areas (≥80%):</span>
+                </div>
+                {strongTopicsList.length > 0 ? (
+                  <ul className="space-y-1 text-xs text-black-olive/80 pl-2">
+                    {strongTopicsList.map((t, idx) => (
+                      <li key={idx} className="flex items-center gap-1.5">
+                        <Check className="w-3 h-3 text-slate-gray" /> {t}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-[11px] text-black-olive/60 italic">Complete more attempts to identify top mastery areas.</p>
+                )}
+              </div>
+
+              {/* Needs Practice Card */}
+              <div className="p-4 rounded-2xl bg-floral-white shadow-neu-pressed space-y-2">
+                <div className="flex items-center gap-2 font-bold text-xs text-black-olive">
+                  <AlertCircle className="w-4 h-4 text-black-olive/70" />
+                  <span>Needs Practice (&lt;70%):</span>
+                </div>
+                {weakTopicsList.length > 0 ? (
+                  <ul className="space-y-1 text-xs text-black-olive/80 pl-2">
+                    {weakTopicsList.map((t, idx) => (
+                      <li key={idx} className="flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-slate-gray" /> {t}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-[11px] text-black-olive/60 italic">No significant weak areas identified in this level!</p>
+                )}
+              </div>
+
             </div>
 
+            {/* Navigation Buttons from Summary */}
             <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
               <button
-                onClick={handleRestart}
+                onClick={() => {
+                  setSelectedRound(1);
+                  resetRoundState();
+                  setScreenMode('quiz');
+                }}
                 className="px-6 py-3 rounded-2xl bg-floral-white text-black-olive font-semibold text-xs shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-2"
               >
-                <RotateCcw className="w-4 h-4" /> Retake Quiz
+                <RotateCcw className="w-4 h-4" /> Retake {selectedLevel} Level
               </button>
+
+              {/* Advance to next level if available */}
+              {selectedLevel === 'beginner' && isLevelUnlocked('intermediate') && (
+                <button
+                  onClick={handleUnlockAndProceedNextLevel}
+                  className="px-6 py-3 rounded-2xl bg-slate-gray text-floral-white font-semibold text-xs shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-2"
+                >
+                  <span>Proceed to Intermediate Level</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              )}
+
+              {selectedLevel === 'intermediate' && isLevelUnlocked('advanced') && (
+                <button
+                  onClick={handleUnlockAndProceedNextLevel}
+                  className="px-6 py-3 rounded-2xl bg-slate-gray text-floral-white font-semibold text-xs shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-2"
+                >
+                  <span>Proceed to Advanced Level</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              )}
+
               <Link
                 to="/dashboard"
-                className="px-6 py-3 rounded-2xl bg-slate-gray text-floral-white font-semibold text-xs shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-2"
+                className="px-6 py-3 rounded-2xl bg-floral-white text-slate-gray font-semibold text-xs shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-2"
               >
-                <TrendingUp className="w-4 h-4" /> View on Dashboard
+                <TrendingUp className="w-4 h-4" /> View Platform Progress
               </Link>
             </div>
           </div>

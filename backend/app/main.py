@@ -22,6 +22,7 @@ from app.gemini_tutor import (
 from app.services.local_search import search_quantum_db
 from app.feedback import FeedbackPayload, record_feedback, get_feedback_summary
 from app.accuracy_test import run_accuracy_tests
+from app.practice import practice_router
 
 app = FastAPI(
     title="Quantum Algorithm Learning Platform API",
@@ -42,6 +43,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(practice_router)
+app.include_router(practice_router, prefix="/api")
 
 
 class GatePayload(BaseModel):
