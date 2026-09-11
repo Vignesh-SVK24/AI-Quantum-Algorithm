@@ -160,26 +160,24 @@ export const AITutor: React.FC = () => {
                   The AI Tutor acts as a quantum computing teaching assistant for beginners, grounded in Dirac bra-ket notation, probability amplitudes, and quantum logic gates.
                 </p>
 
-                <div className="space-y-2.5 pt-3 border-t border-soft-sand">
-                  <h4 className="text-[11px] font-bold text-black-olive uppercase tracking-wider">Pedagogical Features</h4>
-                  <ul className="space-y-2 text-xs text-black-olive/75">
-                    <li className="flex items-start gap-2">
-                      <span className="text-muted-sage font-bold">•</span>
-                      <span>Beginner-friendly explanations without confusing jargon</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-muted-sage font-bold">•</span>
-                      <span>Strict scientific accuracy (avoids "0 and 1 at same time" trope)</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-muted-sage font-bold">•</span>
-                      <span>Exponential backoff on 429 rate limit errors (1s, 2s, 4s)</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-muted-sage font-bold">•</span>
-                      <span>Server-side API key protection with sliding-window rate limit</span>
-                    </li>
-                  </ul>
+                {/* AI Tutor Video Demonstration */}
+                <div className="pt-3 border-t border-soft-sand flex flex-col items-center">
+                  <div className="w-full max-w-[280px] sm:max-w-[300px] overflow-hidden rounded-2xl border border-soft-sand bg-warm-ivory/60 shadow-inner flex items-center justify-center">
+                    <video
+                      controls
+                      playsInline
+                      muted
+                      preload="metadata"
+                      className="w-full h-auto object-contain rounded-2xl block"
+                      title="AI Quantum Tutor demonstration video"
+                      aria-label="AI Quantum Tutor demonstration video"
+                    >
+                      <source src={`${import.meta.env.BASE_URL}video/Use_the_provided_AI_Quantum_Tu.mp4`} type="video/mp4" />
+                      <source src="./video/Use_the_provided_AI_Quantum_Tu.mp4" type="video/mp4" />
+                      <source src="/video/Use_the_provided_AI_Quantum_Tu.mp4" type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
                 </div>
               </div>
 
