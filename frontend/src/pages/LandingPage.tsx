@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
   FlaskConical, 
@@ -7,31 +7,13 @@ import {
   Sparkles, 
   ArrowRight, 
   CheckCircle2, 
-  Terminal, 
   ChevronRight,
   LayoutDashboard
 } from 'lucide-react';
-import { CircuitPlaceholder } from '../components/CircuitPlaceholder';
+import { LiveBlochDemo } from '../components/LiveBlochDemo';
 import { HeroSearchBar } from '../components/HeroSearchBar';
-import { getTestCircuit, type CircuitTestResponse } from '../services/api';
 
 export const LandingPage: React.FC = () => {
-  const [testResult, setTestResult] = useState<CircuitTestResponse | null>(null);
-  const [isSimulating, setIsSimulating] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  const handleRunTest = async () => {
-    setIsSimulating(true);
-    setErrorMsg(null);
-    try {
-      const data = await getTestCircuit();
-      setTestResult(data);
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Failed to communicate with Qiskit simulator backend');
-    } finally {
-      setIsSimulating(false);
-    }
-  };
 
   const steps = [
     {
@@ -146,55 +128,32 @@ export const LandingPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Right Column: Live Schematic Preview */}
-            <div className="lg:col-span-6 space-y-4">
+            {/* Right Column: Live Interactive Bloch Demo */}
+            <div className="lg:col-span-6 space-y-3">
               <div className="text-xs font-mono text-olive-mist flex items-center justify-between px-1">
                 <span className="flex items-center gap-1.5">
                   <Cpu className="w-3.5 h-3.5 text-warm-gold" />
                   INTERACTIVE QUANTUM TESTBENCH
                 </span>
                 <span className="text-deep-olive font-semibold text-[11px] bg-warm-ivory px-2 py-0.5 rounded border border-soft-sand">
-                  Statevector Engine
+                  Live 3D Statevector
                 </span>
               </div>
 
-              <div className="bg-[#FFFDF7] border border-soft-sand rounded-2xl p-4 sm:p-6 shadow-sm">
-                <CircuitPlaceholder onRunTest={handleRunTest} isRunning={isSimulating} />
-
-                {/* Simulation Result Inset Card */}
-                {testResult && (
-                  <div className="mt-4 rounded-xl bg-warm-ivory/80 border border-soft-sand p-4 font-mono text-xs text-black-olive space-y-2.5">
-                    <div className="flex items-center justify-between text-black-olive font-semibold">
-                      <div className="flex items-center gap-2">
-                        <Terminal className="w-4 h-4 text-warm-gold" />
-                        <span>{testResult.circuit_name}</span>
-                      </div>
-                      <span className="text-[11px] text-olive-mist">{testResult.shots} shots</span>
-                    </div>
-                    <p className="text-olive-mist text-[11px] font-sans">{testResult.description}</p>
-                    
-                    <div className="grid grid-cols-2 gap-3 pt-1">
-                      <div className="p-3 rounded-lg bg-floral-white border border-soft-sand">
-                        <span className="text-olive-mist block text-[10px] uppercase">Statevector:</span>
-                        <span className="text-deep-olive font-bold text-xs">
-                          |0⟩: {testResult.statevector[0].real.toFixed(3)}, |1⟩: {testResult.statevector[1].real.toFixed(3)}
-                        </span>
-                      </div>
-                      <div className="p-3 rounded-lg bg-floral-white border border-soft-sand">
-                        <span className="text-olive-mist block text-[10px] uppercase">Measured Counts:</span>
-                        <span className="text-deep-olive font-bold text-xs">
-                          {Object.entries(testResult.measurement_counts).map(([k, v]) => `${k}: ${v}`).join(', ')}
-                        </span>
-                      </div>
-                    </div>
+              <div className="bg-[#FFFDF7] border border-soft-sand rounded-2xl p-4 sm:p-5 shadow-sm space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <h3 className="text-sm font-bold text-black-olive flex items-center gap-1.5">
+                      <Sparkles className="w-4 h-4 text-warm-gold" />
+                      Try Flipping a Qubit State
+                    </h3>
+                    <p className="text-xs text-olive-mist leading-relaxed mt-0.5">
+                      Interact with this live single-qubit Bloch sphere. Apply gates below to observe how superposition, bit-flips, and phase rotations transform the 3D statevector in real time.
+                    </p>
                   </div>
-                )}
+                </div>
 
-                {errorMsg && (
-                  <div className="mt-4 p-3.5 rounded-xl bg-warm-ivory border border-cocoa-noir/30 text-cocoa-noir text-xs font-mono">
-                    Connection notice: {errorMsg} (Ensure backend server is running on port 8000)
-                  </div>
-                )}
+                <LiveBlochDemo />
               </div>
             </div>
           </div>
