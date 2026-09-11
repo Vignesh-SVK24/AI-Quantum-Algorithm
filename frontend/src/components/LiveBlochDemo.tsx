@@ -1,6 +1,5 @@
-import React, { useState, useEffect, Suspense, lazy } from 'react';
-import { RotateCcw, Zap, Activity, Info } from 'lucide-react';
-import { simulateCircuit, type SimulateGate, type SimulateResponse } from '../services/api';
+import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
+import { Activity, Info } from 'lucide-react';
 import type { ComplexAmplitude, QuantumVisualizationData } from './visualization3d/types';
 import { WebGLFallback } from './visualization3d/WebGLFallback';
 
@@ -19,13 +18,6 @@ const INITIAL_PROBABILITIES: Record<string, number> = {
   '|1⟩': 0.0
 };
 
-const GATE_DESCRIPTIONS: Record<string, { name: string; action: string }> = {
-  H: { name: 'Hadamard', action: 'Creates equal superposition |+⟩ = (|0⟩+|1⟩)/√2 (rotates 90° to +X)' },
-  X: { name: 'Pauli-X', action: 'Bit-flip NOT gate (rotates 180° around X-axis, flips |0⟩ ↔ |1⟩)' },
-  Y: { name: 'Pauli-Y', action: 'Bit and phase flip (rotates 180° around Y-axis, maps to |+i⟩ / |−i⟩)' },
-  Z: { name: 'Pauli-Z', action: 'Phase-flip gate (rotates 180° around Z-axis, flips relative sign |+⟩ ↔ |−⟩)' }
-};
-
 function checkWebGLSupport(): boolean {
   if (typeof window === 'undefined') return false;
   try {
@@ -40,57 +32,58 @@ function checkWebGLSupport(): boolean {
 }
 
 export const LiveBlochDemo: React.FC = () => {
-  const [appliedGates, setAppliedGates] = useState<SimulateGate[]>([]);
-  const [statevector, setStatevector] = useState<ComplexAmplitude[]>(INITIAL_STATEVECTOR);
-  const [probabilities, setProbabilities] = useState<Record<string, number>>(INITIAL_PROBABILITIES);
-  const [lastGate, setLastGate] = useState<string | null>(null);
-  const [isSimulating, setIsSimulating] = useState<boolean>(false);
+  const [statevector] = useState<ComplexAmplitude[]>(INITIAL_STATEVECTOR);
+  const [probabilities] = useState<Record<string, number>>(INITIAL_PROBABILITIES);
   const [hasWebGL, setHasWebGL] = useState<boolean>(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     setHasWebGL(checkWebGLSupport());
   }, []);
 
-  const handleApplyGate = async (gateType: 'H' | 'X' | 'Y' | 'Z') => {
-    if (isSimulating) return;
-    setIsSimulating(true);
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
 
-    const newGate: SimulateGate = {
-      id: `live-g-${Date.now()}-${appliedGates.length}`,
-      type: gateType,
-      target: 0,
-      step: appliedGates.length
+    video.setAttribute('playsinline', 'true');
+    video.setAttribute('webkit-playsinline', 'true');
+    video.setAttribute('x5-playsinline', 'true');
+
+    // 1. Attempt autoplay with original sound enabled
+    video.muted = false;
+    const playPromise = video.play();
+
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        // Browser blocked autoplay with sound; gracefully fall back to muted autoplay
+        video.muted = true;
+        video.play().catch(() => {});
+      });
+    }
+
+    // 2. Once user interacts with the page or video, enable audio
+    const handleUserInteraction = () => {
+      if (video) {
+        video.muted = false;
+        if (video.paused) {
+          video.play().catch(() => {});
+        }
+      }
+      window.removeEventListener('click', handleUserInteraction);
+      window.removeEventListener('touchstart', handleUserInteraction);
+      window.removeEventListener('keydown', handleUserInteraction);
     };
 
-    const nextGates = [...appliedGates, newGate];
-    setAppliedGates(nextGates);
-    setLastGate(gateType);
+    window.addEventListener('click', handleUserInteraction);
+    window.addEventListener('touchstart', handleUserInteraction, { passive: true });
+    window.addEventListener('keydown', handleUserInteraction);
 
-    try {
-      const res: SimulateResponse = await simulateCircuit({
-        num_qubits: 1,
-        gates: nextGates
-      });
-
-      if (res && res.statevector && res.statevector.length >= 2) {
-        setStatevector(res.statevector);
-      }
-      if (res && res.probabilities) {
-        setProbabilities(res.probabilities);
-      }
-    } catch (err) {
-      console.error('Failed to simulate live single qubit gate:', err);
-    } finally {
-      setIsSimulating(false);
-    }
-  };
-
-  const handleReset = () => {
-    setAppliedGates([]);
-    setStatevector(INITIAL_STATEVECTOR);
-    setProbabilities(INITIAL_PROBABILITIES);
-    setLastGate(null);
-  };
+    return () => {
+      window.removeEventListener('click', handleUserInteraction);
+      window.removeEventListener('touchstart', handleUserInteraction);
+      window.removeEventListener('keydown', handleUserInteraction);
+    };
+  }, []);
 
   const p0 = probabilities['|0⟩'] ?? probabilities['|0>'] ?? 1.0;
   const p1 = probabilities['|1⟩'] ?? probabilities['|1>'] ?? 0.0;
@@ -109,8 +102,8 @@ export const LiveBlochDemo: React.FC = () => {
 
   const fallbackData: QuantumVisualizationData = {
     numQubits: 1,
-    circuitOperations: appliedGates,
-    currentStep: appliedGates.length,
+    circuitOperations: [],
+    currentStep: 0,
     statevector,
     basisStateProbabilities: probabilities,
     currentState: statevector
@@ -118,7 +111,7 @@ export const LiveBlochDemo: React.FC = () => {
 
   return (
     <div className="w-full space-y-4">
-      {/* 3D Canvas / Fallback Frame */}
+      {/* Existing content above: 3D Canvas / Fallback Frame */}
       <div className="relative rounded-2xl overflow-hidden bg-floral-white shadow-neu-pressed border border-black-olive/10 min-h-[290px] sm:min-h-[320px] flex items-center justify-center">
         {hasWebGL ? (
           <Suspense
@@ -129,7 +122,7 @@ export const LiveBlochDemo: React.FC = () => {
               </div>
             }
           >
-            <BlochSphere3D statevector={statevector} selectedGate={lastGate || undefined} />
+            <BlochSphere3D statevector={statevector} />
           </Suspense>
         ) : (
           <WebGLFallback data={fallbackData} reason="WebGL hardware acceleration disabled. 2D projection active." />
@@ -142,70 +135,32 @@ export const LiveBlochDemo: React.FC = () => {
         </div>
       </div>
 
-      {/* Interactive Gate Buttons & Controls */}
+      {/* Quantum Video Showcase (Replaces Apply Single-Qubit Gates division) */}
       <div className="p-3.5 sm:p-4 rounded-2xl bg-[#FFFDF7] border border-soft-sand shadow-sm space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="text-[11px] font-mono font-bold text-black-olive uppercase tracking-wider flex items-center gap-1.5">
-            <Zap className="w-3.5 h-3.5 text-warm-gold" />
-            Apply Single-Qubit Gates:
-          </span>
-
-          <button
-            type="button"
-            onClick={handleReset}
-            disabled={appliedGates.length === 0 || isSimulating}
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-mono font-semibold bg-floral-white text-black-olive border border-soft-sand shadow-neu-sm-raised hover:shadow-neu-sm-pressed disabled:opacity-40 disabled:pointer-events-none transition-all"
-          >
-            <RotateCcw className="w-3 h-3" />
-            <span>Reset |0⟩</span>
-          </button>
+        {/* Responsive Video Container */}
+        <div className="w-full overflow-hidden rounded-xl border border-soft-sand/80 bg-floral-white/80 shadow-inner flex items-center justify-center">
+          <div className="w-full max-w-[700px] aspect-video relative flex items-center justify-center">
+            <video
+              ref={videoRef}
+              autoPlay
+              loop
+              playsInline
+              disablePictureInPicture
+              preload="metadata"
+              src={`${import.meta.env.BASE_URL}video/Use_the_provided_image_as_the.mp4`}
+              className="w-full h-full object-contain rounded-xl block select-none pointer-events-none"
+              title="AI Quantum Tutor demonstrating quantum computing concepts"
+              aria-label="AI Quantum Tutor demonstrating quantum computing concepts"
+            >
+              <source src={`${import.meta.env.BASE_URL}video/Use_the_provided_image_as_the.mp4`} type="video/mp4" />
+              <source src="./video/Use_the_provided_image_as_the.mp4" type="video/mp4" />
+              <source src="/video/Use_the_provided_image_as_the.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
         </div>
 
-        {/* Gate Palette Row */}
-        <div className="grid grid-cols-4 gap-2">
-          {(['H', 'X', 'Y', 'Z'] as const).map((g) => {
-            const isLast = lastGate === g;
-            return (
-              <button
-                key={g}
-                type="button"
-                onClick={() => handleApplyGate(g)}
-                disabled={isSimulating}
-                className={`py-2 px-1 sm:px-3 rounded-xl font-mono text-xs sm:text-sm font-bold transition-all flex flex-col items-center justify-center gap-0.5 border ${
-                  isLast
-                    ? 'bg-slate-gray text-floral-white border-slate-gray shadow-neu-pressed'
-                    : 'bg-floral-white text-black-olive border-soft-sand shadow-neu-raised hover:shadow-neu-sm-pressed active:scale-95'
-                }`}
-                title={GATE_DESCRIPTIONS[g]?.action}
-              >
-                <span>{g}</span>
-                <span className={`text-[9px] font-sans font-normal ${isLast ? 'text-floral-white/80' : 'text-olive-mist'}`}>
-                  {GATE_DESCRIPTIONS[g]?.name}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Chained Gate Sequence History */}
-        <div className="flex items-center gap-1.5 text-[10px] font-mono text-olive-mist overflow-x-auto py-1 px-1">
-          <span className="font-semibold text-black-olive flex-shrink-0">Sequence:</span>
-          <span className="px-1.5 py-0.5 rounded bg-floral-white border border-soft-sand text-deep-olive font-bold">|0⟩</span>
-          {appliedGates.length === 0 ? (
-            <span className="italic text-olive-mist/70">(Click any gate above to apply)</span>
-          ) : (
-            appliedGates.map((g, idx) => (
-              <React.Fragment key={g.id || idx}>
-                <span className="text-soft-sand">→</span>
-                <span className="px-1.5 py-0.5 rounded bg-slate-gray text-floral-white font-bold text-[10px]">
-                  {g.type}
-                </span>
-              </React.Fragment>
-            ))
-          )}
-        </div>
-
-        {/* Statevector & Probability Readout Card */}
+        {/* Existing Content Below: Statevector & Probability Readout Card */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
           {/* Probability Bars */}
           <div className="p-2.5 rounded-xl bg-floral-white border border-soft-sand space-y-1.5">
@@ -249,9 +204,7 @@ export const LiveBlochDemo: React.FC = () => {
             </div>
             <div className="text-[10px] text-olive-mist pt-1 flex items-center gap-1">
               <Info className="w-3 h-3 text-warm-gold flex-shrink-0" />
-              <span>
-                {lastGate ? GATE_DESCRIPTIONS[lastGate]?.action : 'Qubit initialized in pure ground state |0⟩.'}
-              </span>
+              <span>Qubit initialized in pure ground state |0⟩.</span>
             </div>
           </div>
         </div>
