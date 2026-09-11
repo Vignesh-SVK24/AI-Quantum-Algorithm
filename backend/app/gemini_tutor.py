@@ -485,12 +485,129 @@ def perform_hallucination_self_check(reply: str, query: str) -> tuple[str, bool]
         if "not" not in clean_reply.lower() and "misconception" not in clean_reply.lower():
             refutation = (
                 "**Important Scientific Clarification**: A qubit is **not** physically 0 and 1 at the same time. "
-                "Instead, it exists in a single, well-defined quantum state described by probability amplitudes $\\alpha$ and $\\beta$. "
+                "Instead, it exists in a single, well-defined quantum state described by probability amplitudes α and β. "
                 "These amplitudes determine the probability of measurement outcomes via Born's rule.\n\n"
             )
             clean_reply = refutation + clean_reply
 
     return clean_reply, True
+
+
+def clean_math_and_symbols(text: str) -> str:
+    """
+    Cleans raw LaTeX syntax, dollar signs ($), backslashes, and obscure math macros
+    into clean, natural Unicode quantum notation (e.g., |0⟩, |1⟩, α, β, 1/√2, ⊕).
+    Preserves python code blocks intact.
+    """
+    if not text:
+        return ""
+
+    code_pattern = re.compile(r'(```[\s\S]*?```)')
+    parts = code_pattern.split(text)
+
+    cleaned_parts = []
+    for part in parts:
+        if part.startswith("```") and part.endswith("```"):
+            cleaned_parts.append(part)
+            continue
+
+        s = part
+        # 1. Text wrappers
+        s = re.sub(r'\\text\{([^}]*)\}', r'\1', s)
+        s = re.sub(r'\\mathrm\{([^}]*)\}', r'\1', s)
+        s = re.sub(r'\\mathbf\{([^}]*)\}', r'\1', s)
+
+        # 2. Fractions
+        s = re.sub(r'\\frac\{1\}\{\\sqrt\{2\}\}', '1/√2', s)
+        s = re.sub(r'\\frac\{1\}\{2\}', '1/2', s)
+        s = re.sub(r'\\frac\{([^}]+)\}\{([^}]+)\}', r'\1/\2', s)
+
+        # 3. Square roots
+        s = re.sub(r'\\sqrt\{([^}]+)\}', r'√\1', s)
+        s = re.sub(r'\\sqrt\s*([0-9a-zA-Z])', r'√\1', s)
+
+        # 4. Dirac notation
+        s = s.replace(r'\rangle', '⟩')
+        s = s.replace(r'\langle', '⟨')
+
+        # 5. Bell state symbols
+        s = s.replace(r'\Phi^+', 'Φ⁺').replace(r'\Phi^-', 'Φ⁻')
+        s = s.replace(r'\Psi^+', 'Ψ⁺').replace(r'\Psi^-', 'Ψ⁻')
+        s = s.replace(r'\Phi', 'Φ').replace(r'\Psi', 'Ψ')
+
+        # 6. Greek letters
+        greek_replacements = [
+            (r'\\alpha', 'α'),
+            (r'\\beta', 'β'),
+            (r'\\gamma', 'γ'),
+            (r'\\delta', 'δ'),
+            (r'\\epsilon', 'ε'),
+            (r'\\theta', 'θ'),
+            (r'\\lambda', 'λ'),
+            (r'\\mu', 'μ'),
+            (r'\\pi', 'π'),
+            (r'\\sigma', 'σ'),
+            (r'\\phi', 'ϕ'),
+            (r'\\psi', 'ψ'),
+            (r'\\omega', 'ω'),
+        ]
+        for pattern, rep in greek_replacements:
+            s = re.sub(pattern, rep, s)
+
+        # 7. Quantum and mathematical operators
+        operator_replacements = [
+            (r'\\oplus', '⊕'),
+            (r'\\otimes', '⊗'),
+            (r'\\approx', '≈'),
+            (r'\\neq', '≠'),
+            (r'\\ne\b', '≠'),
+            (r'\\leq', '≤'),
+            (r'\\le\b', '≤'),
+            (r'\\geq', '≥'),
+            (r'\\ge\b', '≥'),
+            (r'\\times', '×'),
+            (r'\\cdot', '·'),
+            (r'\\pm', '±'),
+            (r'\^\\dagger', '†'),
+            (r'\^\dagger', '†'),
+            (r'\\dagger', '†'),
+            (r'\\to\b', '→'),
+            (r'\\rightarrow', '→'),
+            (r'\\in\b', '∈'),
+            (r'\\sum', '∑'),
+            (r'\\prod', '∏'),
+            (r'\\infty', '∞'),
+        ]
+        for pattern, rep in operator_replacements:
+            s = re.sub(pattern, rep, s)
+
+        # 8. Superscripts and subscripts
+        s = re.sub(r'(\w|\)|⟩)\^2\b', r'\1²', s)
+        s = re.sub(r'(\w|\)|⟩)\^\{2\}', r'\1²', s)
+        s = re.sub(r'(\w|\)|⟩)\^n\b', r'\1ⁿ', s)
+        s = re.sub(r'(\w|\)|⟩)\^\{n\}', r'\1ⁿ', s)
+        s = re.sub(r'_0\b', '₀', s)
+        s = re.sub(r'_1\b', '₁', s)
+        s = re.sub(r'_2\b', '₂', s)
+        s = re.sub(r'_i\b', 'ᵢ', s)
+
+        # 9. Remove math mode dollar delimiters: $$...$$ and $...$
+        s = re.sub(r'\$\$(.*?)\$\$', r'\1', s)
+        s = re.sub(r'\$([^$\n]+)\$', r'\1', s)
+
+        # 10. Clean up \ket and \bra
+        s = re.sub(r'\\ket\{([^}]*)\}', r'|\1⟩', s)
+        s = re.sub(r'\\bra\{([^}]*)\}', r'⟨\1|', s)
+
+        # 11. Clean up stray backslashes before plain words
+        s = re.sub(r'\\([a-zA-Z]+)', r'\1', s)
+
+        # Clean double spaces
+        s = re.sub(r'[ \t]+', ' ', s)
+
+        cleaned_parts.append(s)
+
+    return "".join(cleaned_parts).strip()
 
 
 # =========================================================================
@@ -520,7 +637,10 @@ def build_system_prompt(
         "2. If asked a question containing a misconception, explicitly correct it.\n"
         "3. If a question is outside the provided reference material or beyond confident consensus, "
         "clearly state that it is outside your current reference scope rather than guessing.\n"
-        "4. Structure explanations in clear, numbered steps (Step 1: Initial state -> Step 2: Gate -> Step 3: Resulting state -> Step 4: Measurement).\n\n"
+        "4. Structure explanations in clear, numbered steps (Step 1: Initial state -> Step 2: Gate -> Step 3: Resulting state -> Step 4: Measurement).\n"
+        "5. TEXT & SYMBOL CLARITY: Present math in clean, natural plain text using readable Unicode symbols (|0⟩, |1⟩, |ψ⟩ = α|0⟩ + β|1⟩, 1/√2, ⊕). "
+        "NEVER output raw LaTeX code (do NOT write \\alpha, \\beta, \\frac, \\rangle, or surround text with dollar signs like $\\alpha$ or $|0\\rangle$). "
+        "Make your responses crystal clear, clean, and directly human-readable without confusing code symbols.\n\n"
     )
 
     # Difficulty mode adjustment
@@ -798,13 +918,13 @@ def process_tutor_chat(
             raw_reply = (
                 f"### {e_main.get('title')}\n\n"
                 f"{e_main.get('summary')}\n\n"
-                f"**Step 1: Ground State** — Qubit begins in $|0\\rangle$.\n"
+                f"**Step 1: Ground State** — Qubit begins in |0⟩.\n"
                 f"**Step 2: Gate Application** — The operation transforms the probability amplitudes.\n"
                 f"**Step 3: Measurement** — Measurement collapses the amplitudes into classical outcomes according to Born's rule."
             )
         else:
             raw_reply = (
-                "In quantum systems, information is represented using probability amplitudes satisfying $|\\alpha|^2 + |\\beta|^2 = 1$. "
+                "In quantum systems, information is represented using probability amplitudes satisfying |α|² + |β|² = 1. "
                 "When measured, the superposition collapses to a definite state outcome."
             )
 
@@ -818,8 +938,11 @@ def process_tutor_chat(
     if qiskit_code and "```python" not in verified_reply:
         verified_reply += f"\n\n### Verified Qiskit Python Code\n```python\n{qiskit_code.strip()}\n```"
 
+    # 9. Clean all raw LaTeX and unwanted symbol artifacts into crisp, clear Unicode
+    final_reply = clean_math_and_symbols(verified_reply)
+
     return {
-        "reply": verified_reply,
+        "reply": final_reply,
         "classification": classification,
         "research_category": research_category,
         "research_reasoning": research_reasoning,

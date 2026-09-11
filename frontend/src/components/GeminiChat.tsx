@@ -26,6 +26,7 @@ import {
   type TutorPracticeQuestion 
 } from '../services/api';
 import { ResearchIndicator } from './ResearchIndicator';
+import { TutorMessageRenderer } from './TutorMessageRenderer';
 
 interface ChatMessage {
   id: string;
@@ -397,8 +398,12 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
                 )}
 
                 {/* Main Message Text */}
-                <div className="leading-relaxed whitespace-pre-wrap font-sans break-words text-floral-white/95">
-                  {m.text}
+                <div className="leading-relaxed font-sans break-words text-floral-white/95">
+                  {m.sender === 'user' ? (
+                    <p className="whitespace-pre-wrap">{m.text}</p>
+                  ) : (
+                    <TutorMessageRenderer text={m.text} />
+                  )}
                 </div>
 
                 {/* Interactive Dynamic Practice Question Card */}

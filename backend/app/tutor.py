@@ -1,4 +1,4 @@
-﻿import os
+import os
 import json
 import urllib.request
 import urllib.error
@@ -112,17 +112,17 @@ def generate_grounded_fallback(question: str, context: dict) -> str:
                 f"### How Grover's Search Works\n\n"
                 f"- **Search Target**: Your marked item is **|{target}⟩**.\n"
                 f"- **Not Instant**: Quantum search is an iterative geometric rotation in a 2D subspace spanned by the target state and the uniform superposition.\n"
-                f"- **Oracle**: Inverts the sign of |{target}⟩, lowering the average amplitude $\\mu$.\n"
-                f"- **Diffusion**: Reflects all amplitudes across the mean ($2\\mu - \\alpha_i$), which inverts the negative amplitude of |{target}⟩ into a towering positive peak!\n"
-                f"- For $N=4$, exactly **1 iteration** achieves theoretical 100% success probability."
+                f"- **Oracle**: Inverts the sign of |{target}⟩, lowering the average amplitude μ.\n"
+                f"- **Diffusion**: Reflects all amplitudes across the mean (2μ - αᵢ), which inverts the negative amplitude of |{target}⟩ into a towering positive peak!\n"
+                f"- For N = 4, exactly **1 iteration** achieves theoretical 100% success probability."
             )
 
     # General fallback
     return (
         "### Quantum Assistant Tip\n\n"
         "In quantum computing, remember that qubits do not store 0 and 1 simultaneously. "
-        "Instead, a qubit is in a single, well-defined quantum state characterized by probability amplitudes $\\alpha$ and $\\beta$. "
-        "When measured in the computational basis, it collapses probabilistically according to $|\\alpha|^2$ and $|\\beta|^2$."
+        "Instead, a qubit is in a single, well-defined quantum state characterized by probability amplitudes α and β. "
+        "When measured in the computational basis, it collapses probabilistically according to |α|² and |β|²."
     )
 
 

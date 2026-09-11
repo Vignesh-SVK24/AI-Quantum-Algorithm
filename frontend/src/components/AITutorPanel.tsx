@@ -13,6 +13,7 @@ import {
   type TutorSourceCitation 
 } from '../services/api';
 import { ResearchIndicator } from './ResearchIndicator';
+import { TutorMessageRenderer } from './TutorMessageRenderer';
 
 interface Message {
   id: string;
@@ -193,7 +194,11 @@ export const AITutorPanel: React.FC<AITutorPanelProps> = ({ context, compact = f
                       : 'bg-slate-glow text-floral-white border border-soft-slate/40 shadow-md'
                   }`}
                 >
-                  <p className="leading-relaxed whitespace-pre-wrap">{m.text}</p>
+                  {m.sender === 'user' ? (
+                    <p className="leading-relaxed whitespace-pre-wrap">{m.text}</p>
+                  ) : (
+                    <TutorMessageRenderer text={m.text} />
+                  )}
                   
                   {/* Autonomous Research & Grounded Source Citations */}
                   {m.sender === 'tutor' && (
