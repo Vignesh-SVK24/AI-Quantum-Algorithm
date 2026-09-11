@@ -164,11 +164,13 @@ export const AITutor: React.FC = () => {
                 <div className="pt-3 border-t border-soft-sand flex flex-col items-center">
                   <div className="w-full max-w-[280px] sm:max-w-[300px] overflow-hidden rounded-2xl border border-soft-sand bg-warm-ivory/60 shadow-inner flex items-center justify-center">
                     <video
-                      controls
-                      playsInline
+                      autoPlay
+                      loop
                       muted
-                      preload="metadata"
-                      className="w-full h-auto object-contain rounded-2xl block"
+                      playsInline
+                      disablePictureInPicture
+                      preload="auto"
+                      className="w-full h-auto object-contain rounded-2xl block select-none pointer-events-none"
                       title="AI Quantum Tutor demonstration video"
                       aria-label="AI Quantum Tutor demonstration video"
                     >
