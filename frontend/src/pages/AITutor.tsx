@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Bot, ArrowLeft, Sparkles, Layers, Cpu, Compass, BookOpen, Zap, ShieldAlert } from 'lucide-react';
 import { AITutorPanel } from '../components/AITutorPanel';
@@ -76,6 +76,44 @@ export const AITutor: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'chat' | 'circuit'>('chat');
   const [activeScenario, setActiveScenario] = useState<string>('hadamard');
   const selected = SAMPLE_SCENARIOS.find(s => s.id === activeScenario) || SAMPLE_SCENARIOS[0];
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Direct DOM assignments to bypass mobile WebKit/React JSX muted bug
+    video.defaultMuted = true;
+    video.muted = true;
+    video.setAttribute('playsinline', 'true');
+    video.setAttribute('webkit-playsinline', 'true');
+    video.setAttribute('x5-playsinline', 'true');
+
+    const playVideo = () => {
+      if (video.paused) {
+        video.play().catch(() => {
+          // Autoplay policy: will start on first touch/interaction
+        });
+      }
+    };
+
+    playVideo();
+
+    // Fallback: start on first touch or click on mobile devices
+    const handleInteraction = () => {
+      playVideo();
+      window.removeEventListener('touchstart', handleInteraction);
+      window.removeEventListener('click', handleInteraction);
+    };
+
+    window.addEventListener('touchstart', handleInteraction, { passive: true });
+    window.addEventListener('click', handleInteraction);
+
+    return () => {
+      window.removeEventListener('touchstart', handleInteraction);
+      window.removeEventListener('click', handleInteraction);
+    };
+  }, [activeTab]);
 
   return (
     <div className="min-h-screen bg-floral-white text-black-olive">
@@ -139,13 +177,10 @@ export const AITutor: React.FC = () => {
         {/* Tab 1: Gemini Flash Direct AI Chat */}
         {activeTab === 'chat' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <div className="lg:col-span-8">
-              <GeminiChat circuitContext={selected.context} />
-            </div>
-
-            <div className="lg:col-span-4 space-y-5">
+            {/* About Card with AI Tutor Video (Order 1 on mobile, Col-span-4 on desktop) */}
+            <div className="order-1 lg:order-2 lg:col-span-4 space-y-5">
               {/* About Card (Light Surface #FFFDF7) */}
-              <div className="p-6 rounded-3xl bg-[#FFFDF7] border border-soft-sand shadow-sm space-y-4">
+              <div className="p-5 sm:p-6 rounded-3xl bg-[#FFFDF7] border border-soft-sand shadow-sm space-y-4">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-warm-ivory border border-soft-sand flex items-center justify-center text-black-olive shadow-sm">
                     <Sparkles className="w-4 h-4 text-warm-gold" />
@@ -160,17 +195,19 @@ export const AITutor: React.FC = () => {
                   The AI Tutor acts as a quantum computing teaching assistant for beginners, grounded in Dirac bra-ket notation, probability amplitudes, and quantum logic gates.
                 </p>
 
-                {/* AI Tutor Video Demonstration */}
+                {/* AI Tutor Video Demonstration (Mobile-Optimized & Autoplay Safe) */}
                 <div className="pt-3 border-t border-soft-sand flex flex-col items-center">
-                  <div className="w-full max-w-[280px] sm:max-w-[300px] overflow-hidden rounded-2xl border border-soft-sand bg-warm-ivory/60 shadow-inner flex items-center justify-center">
+                  <div className="w-full max-w-[240px] sm:max-w-[280px] aspect-[9/16] min-h-[380px] sm:min-h-[440px] overflow-hidden rounded-2xl border border-soft-sand bg-warm-ivory/60 shadow-inner flex items-center justify-center relative">
                     <video
+                      ref={videoRef}
                       autoPlay
                       loop
                       muted
                       playsInline
                       disablePictureInPicture
                       preload="auto"
-                      className="w-full h-auto object-contain rounded-2xl block select-none pointer-events-none"
+                      src={`${import.meta.env.BASE_URL}video/Use_the_provided_AI_Quantum_Tu.mp4`}
+                      className="w-full h-full object-contain rounded-2xl block select-none pointer-events-none"
                       title="AI Quantum Tutor demonstration video"
                       aria-label="AI Quantum Tutor demonstration video"
                     >
@@ -183,8 +220,29 @@ export const AITutor: React.FC = () => {
                 </div>
               </div>
 
-              {/* Security & Rate Limits (Dark Anchor Card - Cocoa Noir) */}
-              <div className="p-6 rounded-3xl bg-cocoa-noir text-warm-ivory border border-cocoa-noir/40 shadow-md space-y-3">
+              {/* Security & Rate Limits (Desktop right column) */}
+              <div className="hidden lg:block p-6 rounded-3xl bg-cocoa-noir text-warm-ivory border border-cocoa-noir/40 shadow-md space-y-3">
+                <h3 className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-warm-gold">
+                  <ShieldAlert className="w-4 h-4 text-warm-gold" /> Security &amp; Rate Limits
+                </h3>
+                <div className="text-xs text-warm-ivory/80 space-y-2.5 leading-relaxed">
+                  <p>
+                    Your API key is never transmitted or exposed to browser clients. Requests pass through the local FastAPI backend with rate limiting to prevent quota exhaustion.
+                  </p>
+                  <div className="bg-deep-slate/80 p-3 rounded-2xl border border-soft-slate/40 font-mono text-[11px] text-soft-cyan">
+                    Limit: 15 req/min per IP<br />
+                    Backoff: 1s, 2s, 4s retry on 429
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Main Chat: Order 2 on mobile, Col-span-8 on desktop */}
+            <div className="order-2 lg:order-1 lg:col-span-8 space-y-5">
+              <GeminiChat circuitContext={selected.context} />
+
+              {/* Security & Rate Limits (Mobile below chat) */}
+              <div className="block lg:hidden p-5 sm:p-6 rounded-3xl bg-cocoa-noir text-warm-ivory border border-cocoa-noir/40 shadow-md space-y-3">
                 <h3 className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-warm-gold">
                   <ShieldAlert className="w-4 h-4 text-warm-gold" /> Security &amp; Rate Limits
                 </h3>
