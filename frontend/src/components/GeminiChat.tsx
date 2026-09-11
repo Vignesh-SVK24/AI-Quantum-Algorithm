@@ -21,12 +21,14 @@ import {
 import { 
   sendTutorChat, 
   sendTutorFeedback, 
+  getTutorConnectionStatus,
   type TutorContext, 
   type TutorSourceCitation,
   type TutorPracticeQuestion 
 } from '../services/api';
 import { ResearchIndicator } from './ResearchIndicator';
 import { TutorMessageRenderer } from './TutorMessageRenderer';
+import { GeminiKeyModal } from './GeminiKeyModal';
 
 interface ChatMessage {
   id: string;
@@ -107,6 +109,21 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isKeyModalOpen, setIsKeyModalOpen] = useState(false);
+  const [connStatus, setConnStatus] = useState<{ mode: 'backend' | 'direct_gemini' | 'offline'; label: string; hasKey: boolean }>({
+    mode: 'offline',
+    label: 'Checking status...',
+    hasKey: false
+  });
+
+  const refreshStatus = () => {
+    getTutorConnectionStatus().then(setConnStatus);
+  };
+
+  useEffect(() => {
+    refreshStatus();
+  }, []);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -315,8 +332,29 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
           </div>
         </div>
 
-        {/* Difficulty Mode Toggle */}
-        <div className="flex items-center gap-1 bg-deep-slate border border-soft-slate/50 p-1 rounded-2xl">
+        <div className="flex items-center gap-2">
+          {/* Connection Status & Key Setup */}
+          <button
+            onClick={() => setIsKeyModalOpen(true)}
+            title="Configure Gemini API Key"
+            className={`px-3 py-1.5 rounded-2xl text-[10px] font-bold flex items-center gap-1.5 transition-all border shadow-sm ${
+              connStatus.mode === 'backend'
+                ? 'bg-muted-sage/20 border-muted-sage/40 text-muted-sage'
+                : connStatus.mode === 'direct_gemini'
+                ? 'bg-soft-cyan/20 border-soft-cyan/40 text-soft-cyan hover:bg-soft-cyan/30'
+                : 'bg-warm-gold/15 border-warm-gold/30 text-warm-gold hover:bg-warm-gold/25'
+            }`}
+          >
+            <span className={`w-2 h-2 rounded-full ${
+              connStatus.mode === 'backend' || connStatus.mode === 'direct_gemini'
+                ? 'bg-muted-sage animate-pulse'
+                : 'bg-warm-gold'
+            }`} />
+            <span>{connStatus.mode === 'backend' ? 'Live Backend AI' : connStatus.mode === 'direct_gemini' ? 'Live Gemini AI' : 'Offline Mode (Click to Connect Key)'}</span>
+          </button>
+
+          {/* Difficulty Mode Toggle */}
+          <div className="flex items-center gap-1 bg-deep-slate border border-soft-slate/50 p-1 rounded-2xl">
           <span className="text-[10px] font-semibold text-warm-ivory/70 px-2 flex items-center gap-1">
             <GraduationCap className="w-3 h-3 text-soft-cyan" /> Mode:
           </span>
@@ -342,6 +380,7 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
           </button>
         </div>
       </div>
+    </div>
 
       {/* Error Notification Banner */}
       {errorMessage && (
@@ -648,7 +687,11 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
           <span>{input.length}/2500</span>
         </div>
       </div>
-
+      <GeminiKeyModal
+        isOpen={isKeyModalOpen}
+        onClose={() => setIsKeyModalOpen(false)}
+        onKeyUpdated={refreshStatus}
+      />
     </div>
   );
 };

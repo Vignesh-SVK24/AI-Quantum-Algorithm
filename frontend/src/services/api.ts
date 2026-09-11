@@ -587,6 +587,175 @@ export async function askAITutor(question: string, context: TutorContext): Promi
   };
 }
 
+export const LOCAL_STORAGE_GEMINI_KEY = 'quantum_gemini_api_key';
+
+export function getStoredGeminiApiKey(): string {
+  try {
+    const saved = localStorage.getItem(LOCAL_STORAGE_GEMINI_KEY)?.trim();
+    if (saved) return saved;
+  } catch {}
+  return ((import.meta.env.VITE_GEMINI_API_KEY as string | undefined)?.trim() || '');
+}
+
+export function setStoredGeminiApiKey(key: string): void {
+  try {
+    if (key && key.trim()) {
+      localStorage.setItem(LOCAL_STORAGE_GEMINI_KEY, key.trim());
+    } else {
+      localStorage.removeItem(LOCAL_STORAGE_GEMINI_KEY);
+    }
+  } catch {}
+}
+
+export function removeStoredGeminiApiKey(): void {
+  try {
+    localStorage.removeItem(LOCAL_STORAGE_GEMINI_KEY);
+  } catch {}
+}
+
+export async function testGeminiApiKey(apiKey: string): Promise<{ success: boolean; message: string }> {
+  const trimmed = apiKey?.trim();
+  if (!trimmed) return { success: false, message: 'Please enter a valid Gemini API key.' };
+
+  const candidateModels = ['gemini-flash-latest', 'gemini-1.5-flash', 'gemini-flash-lite-latest'];
+  for (const model of candidateModels) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(trimmed)}`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: 'Hello, reply with OK.' }] }]
+        })
+      });
+      if (res.ok) {
+        return { success: true, message: `Connected to Google Gemini (${model}) successfully!` };
+      }
+      if (res.status === 400 || res.status === 403) {
+        const errJson = await res.json().catch(() => ({}));
+        return { success: false, message: errJson?.error?.message || `Authentication failed (HTTP ${res.status}).` };
+      }
+    } catch {
+      // Continue to next model
+    }
+  }
+  return { success: false, message: 'Unable to connect to Google Gemini API. Please check your network or key.' };
+}
+
+export async function getTutorConnectionStatus(): Promise<{
+  mode: 'backend' | 'direct_gemini' | 'offline';
+  label: string;
+  hasKey: boolean;
+}> {
+  if (API_BASE_URL) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1200);
+      const res = await fetch(`${API_BASE_URL}/api/health`, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (res.ok) {
+        return { mode: 'backend', label: 'Live Backend AI (FastAPI + Gemini)', hasKey: true };
+      }
+    } catch {}
+  }
+  const key = getStoredGeminiApiKey();
+  if (key) {
+    return { mode: 'direct_gemini', label: 'Live Gemini AI (Direct API)', hasKey: true };
+  }
+  return { mode: 'offline', label: 'Offline Knowledge Base', hasKey: false };
+}
+
+async function callDirectGeminiTutor(
+  message: string,
+  apiKey: string,
+  mode: 'beginner' | 'intermediate' | 'advanced' = 'beginner',
+  circuitContext?: TutorContext | null,
+  history?: Array<{ role: 'user' | 'tutor'; text: string }> | null
+): Promise<TutorChatResponse> {
+  const candidateModels = ['gemini-flash-latest', 'gemini-1.5-flash', 'gemini-flash-lite-latest'];
+  
+  const systemPrompt = `You are the AI Quantum Tutor on the "Interactive Quantum Algorithm Learning Platform".
+Your role is to guide students in quantum computing with clarity, scientific precision, and encouragement.
+
+PEDAGOGICAL PRINCIPLES:
+1. SCIENTIFIC ACCURACY: NEVER describe superposition as "being 0 and 1 at the same time" or "being in two places at once". Instead, explain that the qubit is in a definite single quantum state with complex probability amplitudes |ψ⟩ = α|0⟩ + β|1⟩ that determine measurement probabilities. Use the "spinning coin" analogy for beginners!
+2. ADAPT TO STUDENT LEVEL: Current level is ${mode.toUpperCase()}.
+   - Beginner: Use intuitive analogies (spinning coin for Hadamard, linked dice for entanglement, light switch for Pauli-X). Avoid dense jargon.
+   - Intermediate: Explain matrix transformations, bra-ket statevectors, and phase kickbacks.
+   - Advanced: Include rigorous mathematical formalism, unitary operations, and algorithmic complexities.
+3. CLEAR FORMATTING & UNICODE:
+   - Use crisp Unicode characters for quantum notation: |0⟩, |1⟩, |ψ⟩, α, β, θ, φ, 1/√2, √2, ⊕, ⊗, |α|² + |β|² = 1.
+   - DO NOT output raw LaTeX math commands like \\alpha, \\beta, \\rangle, \\frac, or raw dollar signs $.
+   - Organize answers with clean bold headings, numbered steps, and bullet points.
+4. CODE EXAMPLES: When showing quantum code, write modern Qiskit code in fenced \`\`\`python blocks.
+5. CONVERSATION AWARENESS: If the student says "I don't understand" or asks to explain clearly, break down the previous topic even more simply using step-by-step intuition and everyday analogies.`;
+
+  const contents: Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }> = [];
+
+  if (history && history.length > 0) {
+    for (const h of history.slice(-6)) {
+      contents.push({
+        role: h.role === 'tutor' ? 'model' : 'user',
+        parts: [{ text: h.text }]
+      });
+    }
+  }
+
+  let promptText = message;
+  if (circuitContext?.circuit && circuitContext.circuit.length > 0) {
+    const gates = circuitContext.circuit.map((g, i) => `${i + 1}. ${g.type} on q[${g.target}]${g.control !== undefined ? ` (ctrl: q[${g.control}])` : ''}`).join(', ');
+    promptText += `\n\n[Active Circuit: ${circuitContext.num_qubits} qubits, gates: ${gates}]`;
+  }
+
+  contents.push({
+    role: 'user',
+    parts: [{ text: promptText }]
+  });
+
+  let lastError: Error | null = null;
+  for (const model of candidateModels) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: systemPrompt }] },
+          contents,
+          generationConfig: { temperature: 0.3, maxOutputTokens: 1200 }
+        })
+      });
+
+      if (!res.ok) {
+        if (res.status === 429 || res.status === 503) continue;
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData?.error?.message || `Gemini error ${res.status}`);
+      }
+
+      const data = await res.json();
+      const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (rawText) {
+        return {
+          reply: rawText,
+          classification: 'direct_ai_response',
+          sources: [
+            {
+              name: 'Google Gemini AI',
+              title: `Gemini ${model}`,
+              url: 'https://deepmind.google/technologies/gemini/'
+            }
+          ],
+          is_verified: true
+        };
+      }
+    } catch (e: any) {
+      lastError = e;
+    }
+  }
+
+  throw lastError || new Error('Failed to reach Gemini API.');
+}
+
 export async function sendTutorChat(
   message: string,
   mode: 'beginner' | 'intermediate' | 'advanced' = 'beginner',
@@ -599,72 +768,49 @@ export async function sendTutorChat(
     throw new Error('Please enter a question or topic to discuss with the AI Tutor.');
   }
 
-  // If no backend URL is configured (e.g. production static site on GitHub Pages)
-  if (!API_BASE_URL) {
-    return generateOfflineTutorResponse(trimmed, mode, circuitContext, history);
-  }
-
-  let response: Response;
-  try {
-    response = await fetch(`${API_BASE_URL}/tutor/chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: trimmed,
-        mode,
-        circuit_context: circuitContext || null,
-        history: history || null,
-        student_progress: studentProgress || null
-      })
-    });
-  } catch (_networkErr: any) {
-    if (API_BASE_URL.includes('127.0.0.1') || API_BASE_URL.includes('localhost')) {
-      throw new Error(
-        `Unable to reach local Quantum Backend (http://127.0.0.1:8000). Please ensure the backend service is running (\`uvicorn app.main:app --port 8000\`).`
-      );
-    } else {
-      throw new Error(
-        `Unable to reach Quantum Backend at ${API_BASE_URL}. Please verify network connectivity and backend status.`
-      );
-    }
-  }
-
-  if (!response.ok) {
-    let errorDetail = `Tutor request failed with status ${response.status}`;
+  // 1. Try local or configured backend server first
+  if (API_BASE_URL) {
     try {
-      const errJson = await response.json();
-      if (errJson?.detail?.message) {
-        errorDetail = errJson.detail.message;
-      } else if (typeof errJson?.detail === 'string') {
-        errorDetail = errJson.detail;
-      } else if (errJson?.message) {
-        errorDetail = errJson.message;
+      const response = await fetch(`${API_BASE_URL}/tutor/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: trimmed,
+          mode,
+          circuit_context: circuitContext || null,
+          history: history || null,
+          student_progress: studentProgress || null
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.reply) return data;
       }
     } catch {
-      if (response.status === 429) {
-        errorDetail = 'The tutor is busy (rate limit exceeded). Please wait a moment and try again.';
-      } else if (response.status === 502 || response.status === 503) {
-        errorDetail = 'The AI service is temporarily unavailable. Please try again in a moment.';
-      } else if (response.status === 504) {
-        errorDetail = 'The AI request timed out. Please try again with a shorter question.';
-      }
+      // If backend is unreachable, proceed to direct Gemini or offline fallback
     }
-    throw new Error(errorDetail);
   }
 
-  const data = await response.json();
-  if (!data || !data.reply) {
-    throw new Error('Received an empty response from the AI Tutor service. Please try asking again.');
+  // 2. Try direct Gemini API from browser if key is stored (e.g. on GitHub Pages)
+  const storedKey = getStoredGeminiApiKey();
+  if (storedKey) {
+    try {
+      return await callDirectGeminiTutor(trimmed, storedKey, mode, circuitContext, history);
+    } catch (err) {
+      console.warn('Direct Gemini API call failed, falling back to offline engine:', err);
+    }
   }
 
-  return data;
+  // 3. Fallback to conversational offline educational engine
+  return generateOfflineTutorResponse(trimmed, mode, circuitContext, history);
 }
 
 function generateOfflineTutorResponse(
   message: string,
   _mode: 'beginner' | 'intermediate' | 'advanced' = 'beginner',
   circuitContext?: TutorContext | null,
-  _history?: Array<{ role: 'user' | 'tutor'; text: string }> | null
+  history?: Array<{ role: 'user' | 'tutor'; text: string }> | null
 ): TutorChatResponse {
   const clean = message.trim();
   const lower = clean.toLowerCase();
@@ -847,7 +993,131 @@ Quantum Error Correction (QEC) protects fragile quantum information from environ
     };
   }
 
-  // 5. Concept Questions: search 22-topic catalog
+  // 5. Conversational Follow-up / Clarification / Simpler Explanation
+  const isClarification = 
+    /(\bno\b|\bdon'?t\s+understand\b|\bexplain\s+(it\s+)?clearly\b|\bsimpl(er|y|ify)\b|\bwhat\s+do\s+you\s+mean\b|\bconfus(ed|ing)\b|\banalogy\b|\beasy\b|\bbreak\s+it\s+down\b|\bmore\s+detail\b|\bcan\s+you\s+explain\b|\bwhat\s+does\s+that\s+mean\b)/i.test(lower);
+
+  if (isClarification && history && history.length > 0) {
+    const prevContextText = history.slice(-4).map(h => h.text).join(' ').toLowerCase();
+
+    // Context: Hadamard Gate
+    if (prevContextText.includes('hadamard') || prevContextText.includes('h gate') || prevContextText.includes('h-gate')) {
+      return {
+        reply: `### The Hadamard (H) Gate: The "Spinning Coin" Analogy
+
+I completely understand — quantum physics can feel very strange and abstract at first! Let's explain it simply without confusing jargon.
+
+#### 1. The Real-World Analogy: A Spinning Coin
+* Think of a normal classical bit as a coin lying flat on a table. It is **definitely Heads (0)** or **definitely Tails (1)**.
+* Applying the **Hadamard (H) gate** is like **flicking the coin so it starts spinning on the table**.
+* While the coin is spinning, it is not "both heads and tails at the same time" (that is a common myth!). It is in a dynamic, balanced quantum state called **superposition**.
+* There is an equal **50% probability** of measuring 0 (Heads) and a **50% probability** of measuring 1 (Tails).
+
+#### 2. What Happens When You Measure?
+* Measuring the qubit is like **slapping your hand down on the spinning coin**.
+* The coin is forced to land flat — it instantly collapses to either **0** (50% chance) or **1** (50% chance). Once measured, the superposition is gone.
+
+#### 3. What Happens If You Apply H Again? (Reversibility)
+* If you apply a second Hadamard gate before measuring ($H^2 = I$), the quantum waves interfere constructively and destructively.
+* This brings the qubit **right back to where it started (|0⟩) with 100% certainty!**
+
+**Key Takeaway**: The Hadamard gate is the quantum master switch that turns a definite 0 or 1 into an equal 50/50 quantum superposition.`,
+        classification: "concept_explanation",
+        sources: [
+          {
+            name: "IBM Quantum Learning",
+            title: "Single-Qubit Superposition & Hadamard",
+            url: "https://learning.quantum.ibm.com/course/basics-of-quantum-information/single-systems"
+          }
+        ],
+        is_verified: true
+      };
+    }
+
+    // Context: Superposition
+    if (prevContextText.includes('superposition') || prevContextText.includes('amplitudes')) {
+      return {
+        reply: `### Superposition Explained Simply
+
+Let's clear up the biggest misconception in quantum computing!
+
+#### 1. What Superposition Is NOT:
+* A qubit is **NOT** "0 and 1 at the same time".
+* A qubit is **NOT** "in two places at once".
+
+#### 2. What Superposition ACTUALLY Is:
+* Imagine a guitar string. You can pluck note A (state |0⟩), or you can pluck note B (state |1⟩).
+* If you pluck both, the string vibrates in a **single harmonious chord**! It is a single, well-defined physical vibration that contains both musical frequencies.
+* That chord is **superposition**: the qubit is in **one definite quantum state**, but its state has mathematical amplitudes ($\\alpha$ and $\\beta$) that dictate the probabilities of measuring 0 or 1.
+
+#### 3. The Conservation Rule:
+* The sum of all probabilities always equals 100% ($|\\alpha|^2 + |\\beta|^2 = 1$). If measuring |0⟩ is 50%, measuring |1⟩ is 50%.`,
+        classification: "concept_explanation",
+        sources: [
+          {
+            name: "IBM Quantum Learning",
+            title: "Superposition and Born's Rule",
+            url: "https://learning.quantum.ibm.com/"
+          }
+        ],
+        is_verified: true
+      };
+    }
+
+    // Context: Entanglement
+    if (prevContextText.includes('entanglement') || prevContextText.includes('bell state') || prevContextText.includes('cnot')) {
+      return {
+        reply: `### Quantum Entanglement: The "Magic Dice" Analogy
+
+Entanglement is often called "spooky action at a distance", but we can understand it with a simple analogy:
+
+#### 1. The Analogy: Two Linked Dice
+* Imagine you and your friend each hold a normal die. If you roll yours in New York, you get a random number (1 to 6). Your friend rolls theirs in Tokyo, and gets an independent random number.
+* Now imagine two **entangled quantum dice**.
+* When you roll your die, it lands on **6** at random.
+* Instantly, without sending any radio signal or message, your friend rolls their die — and it is **guaranteed to land on 6!**
+
+#### 2. How Circuits Create Entanglement:
+* You place a **Hadamard (H)** gate on qubit 0 to put it into superposition, then connect qubit 0 to qubit 1 with a **CNOT** gate.
+* The two qubits now share a single joint quantum state ($|00⟩ + |11⟩$)/√2. Measuring one instantly tells you the state of the other!`,
+        classification: "concept_explanation",
+        sources: [
+          {
+            name: "Nature Quantum Physics",
+            title: "Quantum Entanglement & Non-Locality",
+            url: "https://www.nature.com/articles/s41586-023-06927-3"
+          }
+        ],
+        is_verified: true
+      };
+    }
+
+    // Context: Pauli-X / Bit Flip
+    if (prevContextText.includes('pauli') || prevContextText.includes('x gate') || prevContextText.includes('not gate')) {
+      return {
+        reply: `### The Pauli-X Gate Explained Simply
+
+The **Pauli-X gate** is simply the quantum equivalent of a standard light switch:
+
+* If your qubit is in state **|0⟩** (light switch OFF), applying **X** flips it to **|1⟩** (light switch ON).
+* If your qubit is in state **|1⟩**, applying **X** flips it back to **|0⟩**.
+* On the Bloch Sphere (the 3D visualization of a qubit), applying an X gate is a **180° rotation around the X-axis**, moving the pointer from the North Pole (|0⟩) straight to the South Pole (|1⟩).
+
+It is a completely deterministic, reversible quantum bit-flip!`,
+        classification: "concept_explanation",
+        sources: [
+          {
+            name: "IBM Quantum Learning",
+            title: "Pauli Operators and Single-Qubit Gates",
+            url: "https://learning.quantum.ibm.com/"
+          }
+        ],
+        is_verified: true
+      };
+    }
+  }
+
+  // 6. Concept Questions: search 22-topic catalog
   const searchKey = lower
     .replace(/^(what\s+is\s+(a\s+|an\s+|the\s+)?|how\s+does\s+(a\s+|the\s+)?|tell\s+me\s+about\s+(a\s+|the\s+)?|explain\s+(a\s+|the\s+)?|why\s+does\s+(a\s+|the\s+)?)/i, '')
     .replace(/(\bwith\s+an?\s+example\b|\bexample\b|\bmean\b|\bwork\b)/g, '')
@@ -898,17 +1168,19 @@ ${mistakesBlock}`,
     };
   }
 
-  // 6. Default Educational Socratic response
+  // 7. Default Encouraging Pedagogical Response
   return {
-    reply: `### Quantum Computing Insights
+    reply: `### Quantum Learning Assistant
 
-In quantum information science, computation proceeds via unitary transformations on complex statevectors in Hilbert space:
+I am your Quantum Computing AI Tutor, here to help you understand every concept step by step! Quantum physics can feel unintuitive at first, but with clear analogies, anyone can grasp it.
 
-1. **State Space**: A state $|\\psi\\rangle = \\sum_i c_i |i\\rangle$ preserves unit total probability $\\sum_i |c_i|^2 = 1$.
-2. **Reversibility**: Every quantum gate (like $H$, $X$, $Z$, or $CNOT$) is a unitary operator ($U^\\dagger U = I$), preserving quantum coherence prior to measurement.
-3. **Measurement**: Extracting classical bits irreversibly collapses the superposition into a computational basis state according to Born's rule.
+Here are great concepts to explore:
+1. **The Qubit**: How a quantum bit differs from a classical bit.
+2. **The Hadamard (H) Gate**: The "spinning coin" gate that creates 50/50 superposition.
+3. **Quantum Measurement**: What happens when we observe a qubit and collapse its state.
+4. **Quantum Entanglement**: How two qubits become linked like magic dice.
 
-Feel free to ask about specific gates ($H$, $X$, $Z$, $CNOT$), concepts (Superposition, Entanglement, Bloch Sphere), or explore the **Quantum Lab** to build live circuits!`,
+Which topic would you like to explore, or what specific question can I clarify for you?`,
     classification: "concept_explanation",
     sources: [
       {
