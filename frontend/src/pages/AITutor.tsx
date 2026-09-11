@@ -306,14 +306,6 @@ export const AITutor: React.FC = () => {
                   })}
                 </div>
               </div>
-
-              {/* Context Telemetry Card (Slate Glow Dark Technical Card) */}
-              <div className="p-6 rounded-3xl bg-slate-glow text-warm-ivory border border-soft-slate/40 shadow-md space-y-3">
-                <h3 className="text-xs font-bold text-soft-cyan uppercase tracking-wider">Context Telemetry Passed to AI</h3>
-                <pre className="p-4 bg-deep-slate border border-soft-slate/30 rounded-2xl font-mono text-[10px] text-warm-ivory/80 overflow-x-auto">
-                  {JSON.stringify(selected.context, null, 2)}
-                </pre>
-              </div>
             </div>
 
             {/* Right Column: AI Tutor Chat Station */}
