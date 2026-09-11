@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
-import { Activity } from 'lucide-react';
+import { Activity, Sparkles } from 'lucide-react';
 import type { ComplexAmplitude, QuantumVisualizationData } from './visualization3d/types';
 import { WebGLFallback } from './visualization3d/WebGLFallback';
 
@@ -96,52 +96,64 @@ export const LiveBlochDemo: React.FC = () => {
 
   return (
     <div className="w-full space-y-4">
-      {/* 3D Canvas / Fallback Frame */}
-      <div className="relative rounded-2xl overflow-hidden bg-floral-white shadow-neu-pressed border border-black-olive/10 min-h-[290px] sm:min-h-[320px] flex items-center justify-center">
-        {hasWebGL ? (
-          <Suspense
-            fallback={
-              <div className="w-full h-72 sm:h-80 flex flex-col items-center justify-center gap-3 text-slate-gray font-mono text-xs">
-                <Activity className="w-6 h-6 animate-spin text-slate-gray" />
-                <span>Loading 3D Bloch Canvas...</span>
-              </div>
-            }
+      {/* Newly Added Video Showcase (Moved UP) */}
+      <div className="w-full overflow-hidden rounded-xl border border-soft-sand/80 bg-floral-white/80 shadow-inner flex items-center justify-center">
+        <div className="w-full max-w-[700px] aspect-video relative flex items-center justify-center">
+          <video
+            ref={videoRef}
+            autoPlay
+            loop
+            playsInline
+            disablePictureInPicture
+            preload="metadata"
+            src={`${import.meta.env.BASE_URL}video/Use_the_provided_image_as_the.mp4`}
+            className="w-full h-full object-contain rounded-xl block select-none pointer-events-none"
+            title="AI Quantum Tutor demonstrating quantum computing concepts"
+            aria-label="AI Quantum Tutor demonstrating quantum computing concepts"
           >
-            <BlochSphere3D statevector={statevector} />
-          </Suspense>
-        ) : (
-          <WebGLFallback data={fallbackData} reason="WebGL hardware acceleration disabled. 2D projection active." />
-        )}
-
-        {/* Live Interaction Badge */}
-        <div className="absolute top-3 right-3 pointer-events-none flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-floral-white/90 backdrop-blur-sm border border-black-olive/10 text-[10px] font-mono text-black-olive font-semibold shadow-neu-sm-raised">
-          <span className="w-1.5 h-1.5 rounded-full bg-muted-sage animate-pulse" />
-          <span>Real-time Qiskit Engine</span>
+            <source src={`${import.meta.env.BASE_URL}video/Use_the_provided_image_as_the.mp4`} type="video/mp4" />
+            <source src="./video/Use_the_provided_image_as_the.mp4" type="video/mp4" />
+            <source src="/video/Use_the_provided_image_as_the.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
         </div>
       </div>
 
-      {/* Quantum Video Showcase */}
-      <div className="p-3.5 sm:p-4 rounded-2xl bg-[#FFFDF7] border border-soft-sand shadow-sm">
-        {/* Responsive Video Container */}
-        <div className="w-full overflow-hidden rounded-xl border border-soft-sand/80 bg-floral-white/80 shadow-inner flex items-center justify-center">
-          <div className="w-full max-w-[700px] aspect-video relative flex items-center justify-center">
-            <video
-              ref={videoRef}
-              autoPlay
-              loop
-              playsInline
-              disablePictureInPicture
-              preload="metadata"
-              src={`${import.meta.env.BASE_URL}video/Use_the_provided_image_as_the.mp4`}
-              className="w-full h-full object-contain rounded-xl block select-none pointer-events-none"
-              title="AI Quantum Tutor demonstrating quantum computing concepts"
-              aria-label="AI Quantum Tutor demonstrating quantum computing concepts"
+      {/* "Try Flipping a Qubit State" with 3D Bloch Sphere (Moved DOWN) */}
+      <div className="space-y-3 pt-1">
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <h3 className="text-sm font-bold text-black-olive flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-warm-gold" />
+              Try Flipping a Qubit State
+            </h3>
+            <p className="text-xs text-olive-mist leading-relaxed mt-0.5">
+              Interact with this live single-qubit Bloch sphere. Observe how superposition, bit-flips, and phase rotations transform the 3D statevector in real time.
+            </p>
+          </div>
+        </div>
+
+        {/* 3D Canvas / Fallback Frame */}
+        <div className="relative rounded-2xl overflow-hidden bg-floral-white shadow-neu-pressed border border-black-olive/10 min-h-[290px] sm:min-h-[320px] flex items-center justify-center">
+          {hasWebGL ? (
+            <Suspense
+              fallback={
+                <div className="w-full h-72 sm:h-80 flex flex-col items-center justify-center gap-3 text-slate-gray font-mono text-xs">
+                  <Activity className="w-6 h-6 animate-spin text-slate-gray" />
+                  <span>Loading 3D Bloch Canvas...</span>
+                </div>
+              }
             >
-              <source src={`${import.meta.env.BASE_URL}video/Use_the_provided_image_as_the.mp4`} type="video/mp4" />
-              <source src="./video/Use_the_provided_image_as_the.mp4" type="video/mp4" />
-              <source src="/video/Use_the_provided_image_as_the.mp4" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+              <BlochSphere3D statevector={statevector} />
+            </Suspense>
+          ) : (
+            <WebGLFallback data={fallbackData} reason="WebGL hardware acceleration disabled. 2D projection active." />
+          )}
+
+          {/* Live Interaction Badge */}
+          <div className="absolute top-3 right-3 pointer-events-none flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-floral-white/90 backdrop-blur-sm border border-black-olive/10 text-[10px] font-mono text-black-olive font-semibold shadow-neu-sm-raised">
+            <span className="w-1.5 h-1.5 rounded-full bg-muted-sage animate-pulse" />
+            <span>Real-time Qiskit Engine</span>
           </div>
         </div>
       </div>

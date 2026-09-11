@@ -140,19 +140,7 @@ export const LandingPage: React.FC = () => {
                 </span>
               </div>
 
-              <div className="bg-[#FFFDF7] border border-soft-sand rounded-2xl p-4 sm:p-5 shadow-sm space-y-3">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <h3 className="text-sm font-bold text-black-olive flex items-center gap-1.5">
-                      <Sparkles className="w-4 h-4 text-warm-gold" />
-                      Try Flipping a Qubit State
-                    </h3>
-                    <p className="text-xs text-olive-mist leading-relaxed mt-0.5">
-                      Interact with this live single-qubit Bloch sphere. Apply gates below to observe how superposition, bit-flips, and phase rotations transform the 3D statevector in real time.
-                    </p>
-                  </div>
-                </div>
-
+              <div className="bg-[#FFFDF7] border border-soft-sand rounded-2xl p-4 sm:p-5 shadow-sm">
                 <LiveBlochDemo />
               </div>
             </div>
