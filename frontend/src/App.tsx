@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { LandingPage } from './pages/LandingPage';
@@ -11,12 +11,16 @@ import { AITutor } from './pages/AITutor';
 import { Practice } from './pages/Practice';
 import { Dashboard } from './pages/Dashboard';
 import { About } from './pages/About';
+import { LoginPage } from './pages/LoginPage';
 
-export const App: React.FC = () => {
+const AppContent: React.FC = () => {
+  const location = useLocation();
+  const isLoginPage = location.pathname === '/login';
+
   return (
-    <HashRouter>
-      <div className="min-h-screen flex flex-col relative text-black-olive">
-        {/* Decorative Background Video Layer */}
+    <div className="min-h-screen flex flex-col relative text-black-olive">
+      {/* Decorative Background Video Layer */}
+      {!isLoginPage && (
         <div className="fixed inset-0 w-full h-full -z-50 pointer-events-none overflow-hidden" aria-hidden="true">
           <video
             autoPlay
@@ -44,25 +48,34 @@ export const App: React.FC = () => {
             <path d="M-50,650 C420,520 780,720 1350,580 C1820,460 2150,640 2500,520" fill="none" stroke="url(#botanical-quantum-grad)" strokeWidth="1" strokeDasharray="6,6" />
           </svg>
         </div>
+      )}
 
-        <Navbar />
-        <main className="flex-1 relative z-10">
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/basics" element={<QuantumBasics />} />
-            <Route path="/lab" element={<QuantumLab />} />
-            <Route path="/playground" element={<AlgorithmPlayground />} />
-            <Route path="/playground/:algoId" element={<AlgorithmPlayground />} />
-            <Route path="/algorithms" element={<AlgorithmLab />} />
-            <Route path="/tutor" element={<AITutor />} />
-            <Route path="/practice" element={<Practice />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/about" element={<About />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
+      {!isLoginPage && <Navbar />}
+      <main className={`flex-1 relative z-10 ${isLoginPage ? 'flex items-center justify-center' : ''}`}>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/basics" element={<QuantumBasics />} />
+          <Route path="/lab" element={<QuantumLab />} />
+          <Route path="/playground" element={<AlgorithmPlayground />} />
+          <Route path="/playground/:algoId" element={<AlgorithmPlayground />} />
+          <Route path="/algorithms" element={<AlgorithmLab />} />
+          <Route path="/tutor" element={<AITutor />} />
+          <Route path="/practice" element={<Practice />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/about" element={<About />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
+      {!isLoginPage && <Footer />}
+    </div>
+  );
+};
+
+export const App: React.FC = () => {
+  return (
+    <HashRouter>
+      <AppContent />
     </HashRouter>
   );
 };
