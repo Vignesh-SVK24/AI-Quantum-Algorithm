@@ -12,7 +12,8 @@ import {
   Activity,
   Menu,
   X,
-  Layers
+  Layers,
+  LogIn
 } from 'lucide-react';
 import { checkBackendHealth } from '../services/api';
 
@@ -48,6 +49,7 @@ export const Navbar: React.FC = () => {
     { name: 'Practice', path: '/practice', icon: Sparkles },
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'About', path: '/about', icon: Info },
+    { name: 'Login', path: '/login', icon: LogIn },
   ];
 
   return (
@@ -121,6 +123,14 @@ export const Navbar: React.FC = () => {
                 </span>
               </div>
             </div>
+
+            <Link
+              to="/login"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-warm-ivory border border-soft-sand text-black-olive text-xs font-semibold shadow-sm hover:bg-soft-sand transition-all"
+            >
+              <LogIn className="w-3.5 h-3.5 text-warm-gold" />
+              Login
+            </Link>
 
             <Link
               to="/lab"

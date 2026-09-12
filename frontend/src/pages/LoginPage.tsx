@@ -290,13 +290,28 @@ export const LoginPage: React.FC = () => {
           </div>
 
           {/* Explore Primary Button */}
-          <div className="pt-2">
+          <div className="pt-2 space-y-2.5">
             <button
               type="submit"
               className="w-full py-3.5 px-6 rounded-xl font-bold text-sm bg-gradient-to-r from-warm-gold via-[#D8BC7E] to-muted-sage text-black-olive shadow-botanical-glow hover:brightness-105 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-warm-gold/60"
             >
               <span>Explore</span>
               <ArrowRight className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                try {
+                  sessionStorage.setItem('isExplored', 'true');
+                  sessionStorage.setItem('userName', 'Guest Explorer');
+                } catch {
+                  // Ignore
+                }
+                navigate('/');
+              }}
+              className="w-full py-2 text-center text-xs text-muted-sage hover:text-warm-ivory transition-colors cursor-pointer"
+            >
+              Skip and Enter as Guest &rarr;
             </button>
           </div>
         </form>

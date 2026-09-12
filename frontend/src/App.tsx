@@ -13,6 +13,14 @@ import { Dashboard } from './pages/Dashboard';
 import { About } from './pages/About';
 import { LoginPage } from './pages/LoginPage';
 
+const RootRoute: React.FC = () => {
+  const isExplored = typeof window !== 'undefined' && sessionStorage.getItem('isExplored') === 'true';
+  if (!isExplored) {
+    return <Navigate to="/login" replace />;
+  }
+  return <LandingPage />;
+};
+
 const AppContent: React.FC = () => {
   const location = useLocation();
   const isLoginPage = location.pathname === '/login';
@@ -53,7 +61,8 @@ const AppContent: React.FC = () => {
       {!isLoginPage && <Navbar />}
       <main className={`flex-1 relative z-10 ${isLoginPage ? 'flex items-center justify-center' : ''}`}>
         <Routes>
-          <Route path="/" element={<LandingPage />} />
+          <Route path="/" element={<RootRoute />} />
+          <Route path="/home" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/basics" element={<QuantumBasics />} />
           <Route path="/lab" element={<QuantumLab />} />
