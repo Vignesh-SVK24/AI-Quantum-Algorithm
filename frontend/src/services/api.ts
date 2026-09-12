@@ -801,9 +801,9 @@ export async function sendTutorChat(
     }
   }
 
-  // 2. Try direct Gemini API from browser if key is stored (e.g. on GitHub Pages)
+  // 2. Try direct Gemini API from browser if a valid key is stored (e.g. on GitHub Pages)
   const storedKey = getStoredGeminiApiKey();
-  if (storedKey) {
+  if (storedKey && !storedKey.startsWith('AQ.')) {
     try {
       return await callDirectGeminiTutor(trimmed, storedKey, mode, circuitContext, history);
     } catch (err) {
@@ -811,7 +811,7 @@ export async function sendTutorChat(
     }
   }
 
-  // 3. Fallback to conversational offline educational engine
+  // 3. Fallback to conversational offline educational engine (always answers)
   return generateOfflineTutorResponse(trimmed, mode, circuitContext, history);
 }
 
