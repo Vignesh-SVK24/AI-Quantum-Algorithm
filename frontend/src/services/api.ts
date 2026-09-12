@@ -617,7 +617,14 @@ export async function testGeminiApiKey(apiKey: string): Promise<{ success: boole
   const trimmed = apiKey?.trim();
   if (!trimmed) return { success: false, message: 'Please enter a valid Gemini API key.' };
 
-  const candidateModels = ['gemini-flash-latest', 'gemini-1.5-flash', 'gemini-flash-lite-latest'];
+  if (trimmed.startsWith('AQ.')) {
+    return {
+      success: false,
+      message: "The key entered starts with 'AQ.' (an internal Stitch MCP access token). For direct Google Gemini AI, please obtain a free Gemini API key from https://aistudio.google.com/app/apikey (starts with 'AIzaSy...'). Meanwhile, your AI Tutor is active and answering all queries via the local reasoning engine!"
+    };
+  }
+
+  const candidateModels = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-pro'];
   for (const model of candidateModels) {
     try {
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(trimmed)}`;
@@ -650,13 +657,15 @@ export async function getTutorConnectionStatus(): Promise<{
   if (API_BASE_URL) {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 1200);
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
       const res = await fetch(`${API_BASE_URL}/api/health`, { signal: controller.signal });
       clearTimeout(timeoutId);
       if (res.ok) {
-        return { mode: 'backend', label: 'Live Backend AI (FastAPI + Gemini)', hasKey: true };
+        return { mode: 'backend', label: 'Local Backend AI Engine', hasKey: true };
       }
-    } catch {}
+    } catch {
+      // Fall through to browser key or offline
+    }
   }
   const key = getStoredGeminiApiKey();
   if (key) {
@@ -672,7 +681,7 @@ async function callDirectGeminiTutor(
   circuitContext?: TutorContext | null,
   history?: Array<{ role: 'user' | 'tutor'; text: string }> | null
 ): Promise<TutorChatResponse> {
-  const candidateModels = ['gemini-flash-latest', 'gemini-1.5-flash', 'gemini-flash-lite-latest'];
+  const candidateModels = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-pro'];
   
   const systemPrompt = `You are the AI Quantum Tutor on the "Interactive Quantum Algorithm Learning Platform".
 Your role is to guide students in quantum computing with clarity, scientific precision, and encouragement.
@@ -821,6 +830,36 @@ function generateOfflineTutorResponse(
       reply: "I'm focused on quantum computing topics for this platform — happy to help with qubits, gates, superposition, quantum circuits, or algorithms!",
       classification: "off_topic",
       sources: [],
+      is_verified: true
+    };
+  }
+
+  // 1b. Greeting & Introduction
+  if (/^(hi|hello|hey|greetings|good\s+(morning|afternoon|evening)|who\s+are\s+you|what\s+can\s+you\s+do|how\s+can\s+you\s+help|help\s+me)\b/i.test(clean)) {
+    return {
+      reply: `### Hello! I am your AI Quantum Tutor ⚛️
+
+Welcome to the **Interactive Quantum Algorithm Learning Platform**! I am here to guide you through quantum mechanics, circuits, and algorithms with clear, step-by-step explanations.
+
+#### How I Can Help You:
+1. **Quantum Gates & Circuits**: Understand how Hadamard ($H$), Pauli ($X, Y, Z$), and $CNOT$ gates transform qubits, and see their live representation on the 3D Bloch Sphere.
+2. **Foundational Concepts**: Explore Superposition, Entanglement, and Probability Amplitudes with intuitive real-world analogies.
+3. **Quantum Algorithms**: Step through Grover's Search and the Deutsch-Jozsa algorithm with visual and mathematical breakdowns.
+4. **Interactive Circuit Guidance**: Place gates in the Testbench and ask me *"Explain my circuit"* for real-time analysis and Qiskit code!
+
+**Try asking me:**
+- *"What does the Hadamard gate do?"*
+- *"Explain quantum superposition with an analogy"*
+- *"How does Grover's search algorithm work?"*
+- *"What is a Bell state and how is it created?"*`,
+      classification: "concept_explanation",
+      sources: [
+        {
+          name: "Quantum Platform AI Tutor",
+          title: "Interactive Quantum Learning Guide",
+          url: "https://learning.quantum.ibm.com/"
+        }
+      ],
       is_verified: true
     };
   }

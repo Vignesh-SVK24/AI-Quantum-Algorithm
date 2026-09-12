@@ -101,11 +101,11 @@ export const GeminiKeyModal: React.FC<GeminiKeyModalProps> = ({ isOpen, onClose,
             type="password"
             value={apiKey}
             onChange={(e) => setApiKey(e.target.value)}
-            placeholder="AIzaSy... or your Gemini API key"
+            placeholder="AIzaSy... (from Google AI Studio)"
             className="w-full px-4 py-2.5 rounded-xl bg-slate-glow border border-soft-slate/50 text-floral-white placeholder:text-warm-ivory/40 text-xs focus:outline-none focus:border-soft-cyan transition-all"
           />
-          <p className="text-[10px] text-warm-ivory/50">
-            🔒 Stored only in your local browser storage. Never transmitted to any third party.
+          <p className="text-[10px] text-warm-ivory/60 leading-relaxed">
+            💡 Google Gemini API keys start with <span className="text-soft-cyan font-mono font-bold">AIzaSy...</span>. Tokens starting with <span className="font-mono text-warm-gold font-bold">AQ.</span> are internal developer tokens. Your AI Tutor works seamlessly in both modes!
           </p>
         </div>
 

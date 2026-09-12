@@ -72,10 +72,11 @@ INDUSTRY_PATTERNS = [
 
 # Foundational quantum concepts fully covered by the platform's internal knowledge base
 FOUNDATIONAL_CONCEPTS = [
-    "qubit", "superposition", "hadamard", "pauli", "cnot", "bloch", "measurement",
-    "born rule", "amplitude", "statevector", "phase", "bell state", "entanglement",
+    "qubit", "qubits", "superposition", "hadamard", "pauli", "pauli-x", "pauli-y", "pauli-z",
+    "cnot", "cx", "gate", "gates", "circuit", "circuits", "bloch", "bloch sphere", "measurement",
+    "born rule", "amplitude", "amplitudes", "statevector", "phase", "bell state", "entanglement",
     "deutsch-jozsa", "deutsch jozsa", "grover", "grover's", "shor", "shor's",
-    "dirac", "bra-ket", "unitary", "computational basis", "teleportation"
+    "dirac", "bra-ket", "unitary", "computational basis", "teleportation", "testbench", "simulation"
 ]
 
 def analyze_research_decision(query: str, has_high_confidence_kb_match: bool = False) -> tuple[ResearchCategory, bool, str]:
@@ -87,6 +88,19 @@ def analyze_research_decision(query: str, has_high_confidence_kb_match: bool = F
     """
     q_lower = query.lower().strip()
     
+    # 0. Check for greetings and introductory meta queries
+    greeting_patterns = [
+        r"^(hi|hello|hey|greetings|good\s+(morning|afternoon|evening))\b",
+        r"\b(who\s+are\s+you|what\s+are\s+you|what\s+can\s+you\s+do|how\s+can\s+you\s+help|help\s+me)\b",
+        r"\b(what\s+is\s+your\s+name|introduce\s+yourself)\b"
+    ]
+    if any(re.search(pat, q_lower) for pat in greeting_patterns):
+        return (
+            "INTERNAL_KNOWLEDGE",
+            False,
+            "Conversational greeting or tutor capability inquiry; handled directly by AI Tutor."
+        )
+
     # 1. Check for temporal/recent cues
     has_temporal = any(re.search(pat, q_lower) for pat in TEMPORAL_PATTERNS)
     
