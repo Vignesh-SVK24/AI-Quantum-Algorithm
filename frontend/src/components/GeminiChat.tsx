@@ -145,30 +145,34 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
 
   // Handle follow-up context passed from HeroSearchBar on the Landing Page
   useEffect(() => {
-    const state = location.state as { initialQuestion?: string; initialAnswer?: string; sources?: any[] } | null;
-    if (state?.initialQuestion && state?.initialAnswer) {
+    const state = location.state as { initialQuestion?: string; initialAnswer?: string; sources?: any[]; autoSend?: boolean } | null;
+    if (state?.initialQuestion) {
       const q = state.initialQuestion;
-      const a = state.initialAnswer;
-      setMessages(prev => {
-        if (prev.some(m => m.text === q)) return prev;
-        return [
-          ...prev,
-          {
-            id: `hero-q-${Date.now()}`,
-            sender: 'user',
-            text: q,
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          },
-          {
-            id: `hero-a-${Date.now() + 1}`,
-            sender: 'tutor',
-            text: a,
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            sources: state.sources || [],
-            is_verified: true
-          }
-        ];
-      });
+      if (state.autoSend) {
+        handleSend(q);
+      } else if (state.initialAnswer) {
+        const a = state.initialAnswer;
+        setMessages(prev => {
+          if (prev.some(m => m.text === q)) return prev;
+          return [
+            ...prev,
+            {
+              id: `hero-q-${Date.now()}`,
+              sender: 'user',
+              text: q,
+              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            },
+            {
+              id: `hero-a-${Date.now() + 1}`,
+              sender: 'tutor',
+              text: a,
+              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              sources: state.sources || [],
+              is_verified: true
+            }
+          ];
+        });
+      }
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
@@ -625,12 +629,51 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Suggested Starter Chips */}
+      {/* Suggested Starter & Follow-up Chips */}
       <div className="px-6 py-3 bg-deep-slate border-t border-soft-slate/30 overflow-x-auto">
         <div className="flex items-center gap-2 pb-0.5">
           <span className="text-[10px] uppercase font-bold tracking-wider text-warm-ivory/50 flex items-center gap-1 mr-1 flex-shrink-0">
-            Prompts:
+            {messages.length > 1 ? 'Follow-ups:' : 'Prompts:'}
           </span>
+          {messages.length > 1 && (
+            <>
+              <button
+                onClick={() => handleSend('Give me another example')}
+                disabled={loading}
+                className="px-3.5 py-1.5 rounded-full bg-soft-cyan/15 border border-soft-cyan/40 hover:border-soft-cyan text-xs text-soft-cyan hover:text-floral-white hover:bg-soft-cyan/25 whitespace-nowrap transition-all flex items-center gap-1 disabled:opacity-40 shadow-sm"
+              >
+                <span>💡 Give me another example</span>
+              </button>
+              <button
+                onClick={() => handleSend('Explain this clearly in a structured breakdown')}
+                disabled={loading}
+                className="px-3.5 py-1.5 rounded-full bg-soft-cyan/15 border border-soft-cyan/40 hover:border-soft-cyan text-xs text-soft-cyan hover:text-floral-white hover:bg-soft-cyan/25 whitespace-nowrap transition-all flex items-center gap-1 disabled:opacity-40 shadow-sm"
+              >
+                <span>🔍 Explain clearly</span>
+              </button>
+              <button
+                onClick={() => handleSend('Explain this mathematically')}
+                disabled={loading}
+                className="px-3.5 py-1.5 rounded-full bg-slate-glow border border-soft-slate/40 hover:border-soft-cyan text-xs text-warm-ivory/80 hover:text-floral-white hover:bg-slate-glow/80 whitespace-nowrap transition-all flex items-center gap-1 disabled:opacity-40 shadow-sm"
+              >
+                <span>📐 Explain mathematically</span>
+              </button>
+              <button
+                onClick={() => handleSend('Show me a circuit example')}
+                disabled={loading}
+                className="px-3.5 py-1.5 rounded-full bg-slate-glow border border-soft-slate/40 hover:border-soft-cyan text-xs text-warm-ivory/80 hover:text-floral-white hover:bg-slate-glow/80 whitespace-nowrap transition-all flex items-center gap-1 disabled:opacity-40 shadow-sm"
+              >
+                <span>⚡ Circuit example</span>
+              </button>
+              <button
+                onClick={() => handleSend("Explain like I'm a beginner")}
+                disabled={loading}
+                className="px-3.5 py-1.5 rounded-full bg-slate-glow border border-soft-slate/40 hover:border-soft-cyan text-xs text-warm-ivory/80 hover:text-floral-white hover:bg-slate-glow/80 whitespace-nowrap transition-all flex items-center gap-1 disabled:opacity-40 shadow-sm"
+              >
+                <span>🧸 Explain simply</span>
+              </button>
+            </>
+          )}
           {STARTER_QUESTIONS.map((q, idx) => (
             <button
               key={idx}

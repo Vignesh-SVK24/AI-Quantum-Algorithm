@@ -1032,123 +1032,273 @@ Quantum Error Correction (QEC) protects fragile quantum information from environ
     };
   }
 
-  // 5. Conversational Follow-up / Clarification / Simpler Explanation
-  const isClarification = 
-    /(\bno\b|\bdon'?t\s+understand\b|\bexplain\s+(it\s+)?clearly\b|\bsimpl(er|y|ify)\b|\bwhat\s+do\s+you\s+mean\b|\bconfus(ed|ing)\b|\banalogy\b|\beasy\b|\bbreak\s+it\s+down\b|\bmore\s+detail\b|\bcan\s+you\s+explain\b|\bwhat\s+does\s+that\s+mean\b)/i.test(lower);
+  // Helper to resolve active topic from query, history, or circuit context
+  const resolveActiveTopic = () => {
+    // 1. Direct match in query
+    let found = QUANTUM_TOPICS_CATALOG.find(t => 
+      t.slug.toLowerCase() === lower || 
+      t.topic_name.toLowerCase() === lower ||
+      t.aliases?.some(a => a.toLowerCase() === lower)
+    );
+    if (found) return found;
 
-  if (isClarification && history && history.length > 0) {
-    const prevContextText = history.slice(-4).map(h => h.text).join(' ').toLowerCase();
+    const stripped = lower
+      .replace(/^(what\s+is\s+(a\s+|an\s+|the\s+)?|how\s+does\s+(a\s+|the\s+)?|tell\s+me\s+about\s+(a\s+|the\s+)?|explain\s+(a\s+|the\s+)?|why\s+does\s+(a\s+|the\s+)?)/i, '')
+      .replace(/(\bwith\s+an?\s+example\b|\banother\s+example\b|\bdifferent\s+example\b|\bexample\b|\bmean\b|\bwork\b|\bclearly\b|\bsimply\b|\bmathematically\b|\bcircuit\b)/g, '')
+      .trim();
 
-    // Context: Hadamard Gate
-    if (prevContextText.includes('hadamard') || prevContextText.includes('h gate') || prevContextText.includes('h-gate')) {
+    if (stripped.length >= 3) {
+      found = QUANTUM_TOPICS_CATALOG.find(t =>
+        t.topic_name.toLowerCase() === stripped ||
+        t.slug.toLowerCase() === stripped ||
+        t.aliases?.some(a => a.toLowerCase() === stripped) ||
+        t.topic_name.toLowerCase().includes(stripped) ||
+        stripped.includes(t.topic_name.toLowerCase()) ||
+        t.slug.toLowerCase().includes(stripped)
+      );
+      if (found) return found;
+    }
+
+    // 2. Scan recent conversation history (prioritizing user queries first, then longest names)
+    if (history && history.length > 0) {
+      const recentHistory = [...history].reverse().slice(0, 6);
+      const sortedCatalog = [...QUANTUM_TOPICS_CATALOG].sort((a, b) => b.topic_name.length - a.topic_name.length);
+      
+      // Pass 2a: Check user turns
+      for (const turn of recentHistory) {
+        if (turn.role === 'user') {
+          const text = turn.text.toLowerCase();
+          for (const t of sortedCatalog) {
+            if (text.includes(t.topic_name.toLowerCase()) || text.includes(t.slug.toLowerCase()) || t.aliases?.some(a => text.includes(a.toLowerCase()))) {
+              return t;
+            }
+          }
+        }
+      }
+
+      // Pass 2b: Fallback to all turns
+      for (const turn of recentHistory) {
+        const text = turn.text.toLowerCase();
+        for (const t of sortedCatalog) {
+          if (text.includes(t.topic_name.toLowerCase()) || text.includes(t.slug.toLowerCase()) || t.aliases?.some(a => text.includes(a.toLowerCase()))) {
+            return t;
+          }
+        }
+      }
+    }
+
+    // 3. Fallback to circuit context
+    if (circuitContext?.circuit && circuitContext.circuit.length > 0) {
+      const gTypes = circuitContext.circuit.map(g => g.type);
+      if (gTypes.includes('H') && gTypes.some(g => g === 'CNOT' || g === 'CX')) {
+        return QUANTUM_TOPICS_CATALOG.find(t => t.id === 'bell_states') || null;
+      }
+      if (gTypes.includes('H')) return QUANTUM_TOPICS_CATALOG.find(t => t.id === 'hadamard_gate') || null;
+      if (gTypes.includes('X')) return QUANTUM_TOPICS_CATALOG.find(t => t.id === 'pauli_x_gate') || null;
+      if (gTypes.includes('Z')) return QUANTUM_TOPICS_CATALOG.find(t => t.id === 'pauli_z_gate') || null;
+    }
+
+    return null;
+  };
+
+  const activeTopic = resolveActiveTopic();
+
+  // 5. Enriched Topic Conversational Follow-up Intents
+  const isAnotherExample = /(another|different|more|next)\s+example|give\s+me\s+(another|a\s+different)\s+example|show\s+another\s+example/i.test(lower);
+  const isExplainClearly = /explain\s+(it\s+|this\s+)?clearly|structured\s+breakdown|comprehensive\s+explanation|detailed\s+breakdown|explain\s+completely/i.test(lower);
+  const isExplainSimply = /explain\s+(it\s+|this\s+)?simply|simple\s+explanation|like\s+i('m| am)\s+(new|beginner|5|a\s+kid|young)|beginner\s+friendly|explain\s+easy/i.test(lower);
+  const isExplainMath = /explain\s+(it\s+|this\s+)?mathematically|mathematical\s+formulation|math\s+behind|show\s+(the\s+)?math|dirac\s+notation|equations?/i.test(lower);
+  const isCircuitReq = /circuit\s+example|show\s+(me\s+)?(a\s+)?circuit|qiskit\s+code|circuit\s+code|how\s+to\s+build\s+(it\s+)?in\s+qiskit/i.test(lower);
+  const isAnalogyReq = /analogy|explain\s+using\s+an\s+analogy|real\s+world\s+analogy|metaphor/i.test(lower);
+
+  if (activeTopic && (isAnotherExample || isExplainClearly || isExplainSimply || isExplainMath || isCircuitReq || isAnalogyReq)) {
+    const name = activeTopic.topic_name;
+    const we = activeTopic.worked_examples || [];
+    const apps = activeTopic.applications || [];
+    const limits = activeTopic.limitations || [];
+
+    // Follow-up: Distinct Another Example
+    if (isAnotherExample) {
+      let shownCount = 0;
+      if (history && history.length > 0) {
+        const histText = history.map(h => h.text.toLowerCase()).join(' ');
+        for (const ex of we) {
+          if (histText.includes(ex.title.toLowerCase()) || histText.includes(ex.content.slice(0, 35).toLowerCase())) {
+            shownCount++;
+          }
+        }
+      }
+      let targetIdx = Math.min(shownCount, Math.max(0, we.length - 1));
+      if (lower.includes('second') && we.length >= 2) targetIdx = 1;
+      else if (lower.includes('third') && we.length >= 3) targetIdx = 2;
+
+      if (we.length > 0 && targetIdx < we.length) {
+        const ex = we[targetIdx];
+        let replyText = `### Distinct Example (${targetIdx + 1} of ${we.length}): ${ex.title} (${ex.type.toUpperCase()})\n\n`;
+        replyText += `Here is a genuinely distinct worked example for **${name}**:\n\n`;
+        replyText += `${ex.content}\n\n`;
+        if (ex.circuit_ascii) {
+          replyText += `**ASCII Circuit Diagram:**\n\`\`\`text\n${ex.circuit_ascii}\n\`\`\`\n\n`;
+        }
+        replyText += `*(Ask for another example to explore ${name} in a different scenario!)*`;
+
+        return {
+          reply: replyText,
+          classification: "concept_explanation",
+          qiskit_code: activeTopic.circuit_example || null,
+          sources: [
+            {
+              name: activeTopic.source_name || "IBM Quantum Learning",
+              title: `${name} - ${ex.title}`,
+              url: activeTopic.source_url || "https://learning.quantum.ibm.com/",
+              source_type: "platform"
+            }
+          ],
+          is_verified: true
+        };
+      }
+    }
+
+    // Follow-up: Explain Clearly (8-Part Structured Breakdown)
+    if (isExplainClearly) {
+      let replyText = `### ${name}: Complete 8-Part Structured Breakdown\n\n`;
+      replyText += `#### 1. Core Definition\n${activeTopic.short_definition}\n\n`;
+      replyText += `#### 2. Simple Intuition\n${activeTopic.simple_explanation || activeTopic.beginner_explanation}\n\n`;
+      replyText += `#### 3. How It Works\n${activeTopic.detailed_explanation}\n\n`;
+      if (activeTopic.mathematical_explanation) {
+        replyText += `#### 4. Mathematical Representation\n${activeTopic.mathematical_explanation}\n\n`;
+        if (activeTopic.formula) {
+          replyText += `**Governing Formula**: $$${activeTopic.formula}$$\n\n`;
+        }
+      }
+      if (we.length > 0) {
+        replyText += `#### 5. Step-by-Step Worked Example: ${we[0].title}\n${we[0].content}\n\n`;
+      }
+      if (apps.length > 0) {
+        replyText += `#### 6. Real-World Applications\n` + apps.map(a => `- ${a}`).join('\n') + `\n\n`;
+      }
+      if (limits.length > 0) {
+        replyText += `#### 7. Physical / NISQ Constraints & Limitations\n` + limits.map(l => `- ⚠️ ${l}`).join('\n') + `\n\n`;
+      }
+      if (activeTopic.common_mistakes && activeTopic.common_mistakes.length > 0) {
+        replyText += `#### 8. Key Scientific Distinction\n` + activeTopic.common_mistakes.map(m => `- 💡 ${m}`).join('\n');
+      }
+
       return {
-        reply: `### The Hadamard (H) Gate: The "Spinning Coin" Analogy
-
-I completely understand — quantum physics can feel very strange and abstract at first! Let's explain it simply without confusing jargon.
-
-#### 1. The Real-World Analogy: A Spinning Coin
-* Think of a normal classical bit as a coin lying flat on a table. It is **definitely Heads (0)** or **definitely Tails (1)**.
-* Applying the **Hadamard (H) gate** is like **flicking the coin so it starts spinning on the table**.
-* While the coin is spinning, it is not "both heads and tails at the same time" (that is a common myth!). It is in a dynamic, balanced quantum state called **superposition**.
-* There is an equal **50% probability** of measuring 0 (Heads) and a **50% probability** of measuring 1 (Tails).
-
-#### 2. What Happens When You Measure?
-* Measuring the qubit is like **slapping your hand down on the spinning coin**.
-* The coin is forced to land flat — it instantly collapses to either **0** (50% chance) or **1** (50% chance). Once measured, the superposition is gone.
-
-#### 3. What Happens If You Apply H Again? (Reversibility)
-* If you apply a second Hadamard gate before measuring ($H^2 = I$), the quantum waves interfere constructively and destructively.
-* This brings the qubit **right back to where it started (|0⟩) with 100% certainty!**
-
-**Key Takeaway**: The Hadamard gate is the quantum master switch that turns a definite 0 or 1 into an equal 50/50 quantum superposition.`,
+        reply: replyText,
         classification: "concept_explanation",
+        qiskit_code: activeTopic.circuit_example || null,
         sources: [
           {
-            name: "IBM Quantum Learning",
-            title: "Single-Qubit Superposition & Hadamard",
-            url: "https://learning.quantum.ibm.com/course/basics-of-quantum-information/single-systems"
+            name: activeTopic.source_name || "IBM Quantum Learning",
+            title: activeTopic.topic_name,
+            url: activeTopic.source_url || "https://learning.quantum.ibm.com/",
+            source_type: "platform"
           }
         ],
         is_verified: true
       };
     }
 
-    // Context: Superposition
-    if (prevContextText.includes('superposition') || prevContextText.includes('amplitudes')) {
+    // Follow-up: Explain Simply
+    if (isExplainSimply) {
+      let replyText = `### Explaining ${name} Simply (Beginner Friendly)\n\n`;
+      replyText += `${activeTopic.simple_explanation || activeTopic.beginner_explanation}\n\n`;
+      if (we.length > 0) {
+        replyText += `#### Intuitive Real-World Scenario: ${we[0].title}\n${we[0].content}\n\n`;
+      }
+      if (apps.length > 0) {
+        replyText += `**Where you encounter this:** ${apps.slice(0, 2).join('; ')}.`;
+      }
+
       return {
-        reply: `### Superposition Explained Simply
-
-Let's clear up the biggest misconception in quantum computing!
-
-#### 1. What Superposition Is NOT:
-* A qubit is **NOT** "0 and 1 at the same time".
-* A qubit is **NOT** "in two places at once".
-
-#### 2. What Superposition ACTUALLY Is:
-* Imagine a guitar string. You can pluck note A (state |0⟩), or you can pluck note B (state |1⟩).
-* If you pluck both, the string vibrates in a **single harmonious chord**! It is a single, well-defined physical vibration that contains both musical frequencies.
-* That chord is **superposition**: the qubit is in **one definite quantum state**, but its state has mathematical amplitudes ($\\alpha$ and $\\beta$) that dictate the probabilities of measuring 0 or 1.
-
-#### 3. The Conservation Rule:
-* The sum of all probabilities always equals 100% ($|\\alpha|^2 + |\\beta|^2 = 1$). If measuring |0⟩ is 50%, measuring |1⟩ is 50%.`,
+        reply: replyText,
         classification: "concept_explanation",
         sources: [
           {
-            name: "IBM Quantum Learning",
-            title: "Superposition and Born's Rule",
-            url: "https://learning.quantum.ibm.com/"
+            name: activeTopic.source_name || "IBM Quantum Learning",
+            title: activeTopic.topic_name,
+            url: activeTopic.source_url || "https://learning.quantum.ibm.com/",
+            source_type: "platform"
           }
         ],
         is_verified: true
       };
     }
 
-    // Context: Entanglement
-    if (prevContextText.includes('entanglement') || prevContextText.includes('bell state') || prevContextText.includes('cnot')) {
+    // Follow-up: Explain Mathematically
+    if (isExplainMath) {
+      let replyText = `### Rigorous Mathematical Formulation: ${name}\n\n`;
+      if (activeTopic.formula) {
+        replyText += `**Governing Equation**:\n$$${activeTopic.formula}$$\n\n`;
+      }
+      replyText += `${activeTopic.mathematical_explanation || 'Unitary transformations govern statevector evolution in complex Hilbert space.'}\n\n`;
+      if (we.length >= 3) {
+        replyText += `#### Mathematical Scenario: ${we[2].title}\n${we[2].content}`;
+      } else if (we.length > 0) {
+        replyText += `#### Worked Calculation:\n${we[0].content}`;
+      }
+
       return {
-        reply: `### Quantum Entanglement: The "Magic Dice" Analogy
-
-Entanglement is often called "spooky action at a distance", but we can understand it with a simple analogy:
-
-#### 1. The Analogy: Two Linked Dice
-* Imagine you and your friend each hold a normal die. If you roll yours in New York, you get a random number (1 to 6). Your friend rolls theirs in Tokyo, and gets an independent random number.
-* Now imagine two **entangled quantum dice**.
-* When you roll your die, it lands on **6** at random.
-* Instantly, without sending any radio signal or message, your friend rolls their die — and it is **guaranteed to land on 6!**
-
-#### 2. How Circuits Create Entanglement:
-* You place a **Hadamard (H)** gate on qubit 0 to put it into superposition, then connect qubit 0 to qubit 1 with a **CNOT** gate.
-* The two qubits now share a single joint quantum state ($|00⟩ + |11⟩$)/√2. Measuring one instantly tells you the state of the other!`,
+        reply: replyText,
         classification: "concept_explanation",
         sources: [
           {
-            name: "Nature Quantum Physics",
-            title: "Quantum Entanglement & Non-Locality",
-            url: "https://www.nature.com/articles/s41586-023-06927-3"
+            name: activeTopic.source_name || "IBM Quantum Learning",
+            title: `${activeTopic.topic_name} - Mathematical Formulation`,
+            url: activeTopic.source_url || "https://learning.quantum.ibm.com/",
+            source_type: "platform"
           }
         ],
         is_verified: true
       };
     }
 
-    // Context: Pauli-X / Bit Flip
-    if (prevContextText.includes('pauli') || prevContextText.includes('x gate') || prevContextText.includes('not gate')) {
+    // Follow-up: Circuit Example & Qiskit
+    if (isCircuitReq) {
+      const circEx = we.find(e => e.type === 'circuit') || (we.length >= 2 ? we[1] : we[0]);
+      let replyText = `### Quantum Circuit Implementation: ${name}\n\n`;
+      if (circEx?.circuit_ascii) {
+        replyText += `**Circuit Diagram:**\n\`\`\`text\n${circEx.circuit_ascii}\n\`\`\`\n\n`;
+      }
+      if (activeTopic.circuit_example) {
+        replyText += `#### Qiskit Python Code:\n\`\`\`python\n${activeTopic.circuit_example}\n\`\`\`\n\n`;
+      }
+      if (circEx) {
+        replyText += `#### Step-by-Step Gate Execution:\n${circEx.content}`;
+      }
+
       return {
-        reply: `### The Pauli-X Gate Explained Simply
+        reply: replyText,
+        classification: "code_request",
+        qiskit_code: activeTopic.circuit_example || null,
+        qiskit_verified: true,
+        sources: [
+          {
+            name: "Qiskit Documentation",
+            title: `${activeTopic.topic_name} Circuit Construction`,
+            url: "https://docs.quantum.ibm.com/"
+          }
+        ],
+        is_verified: true
+      };
+    }
 
-The **Pauli-X gate** is simply the quantum equivalent of a standard light switch:
+    // Follow-up: Analogy
+    if (isAnalogyReq) {
+      let replyText = `### Intuitive Analogy: ${name}\n\n`;
+      replyText += `${activeTopic.simple_explanation || activeTopic.beginner_explanation}\n\n`;
+      replyText += `> 💡 *Note: Analogies build conceptual intuition. In real quantum processors, physical state evolution is governed by unitary operations in complex Hilbert space.*`;
 
-* If your qubit is in state **|0⟩** (light switch OFF), applying **X** flips it to **|1⟩** (light switch ON).
-* If your qubit is in state **|1⟩**, applying **X** flips it back to **|0⟩**.
-* On the Bloch Sphere (the 3D visualization of a qubit), applying an X gate is a **180° rotation around the X-axis**, moving the pointer from the North Pole (|0⟩) straight to the South Pole (|1⟩).
-
-It is a completely deterministic, reversible quantum bit-flip!`,
+      return {
+        reply: replyText,
         classification: "concept_explanation",
         sources: [
           {
-            name: "IBM Quantum Learning",
-            title: "Pauli Operators and Single-Qubit Gates",
-            url: "https://learning.quantum.ibm.com/"
+            name: activeTopic.source_name || "IBM Quantum Learning",
+            title: activeTopic.topic_name,
+            url: activeTopic.source_url || "https://learning.quantum.ibm.com/",
+            source_type: "platform"
           }
         ],
         is_verified: true
@@ -1156,42 +1306,48 @@ It is a completely deterministic, reversible quantum bit-flip!`,
     }
   }
 
-  // 6. Concept Questions: search 22-topic catalog
-  const searchKey = lower
-    .replace(/^(what\s+is\s+(a\s+|an\s+|the\s+)?|how\s+does\s+(a\s+|the\s+)?|tell\s+me\s+about\s+(a\s+|the\s+)?|explain\s+(a\s+|the\s+)?|why\s+does\s+(a\s+|the\s+)?)/i, '')
-    .replace(/(\bwith\s+an?\s+example\b|\bexample\b|\bmean\b|\bwork\b)/g, '')
-    .trim();
-
-  let matched = QUANTUM_TOPICS_CATALOG.find(t => 
-    t.slug.toLowerCase() === searchKey || 
-    t.topic_name.toLowerCase() === searchKey ||
-    t.aliases?.some(a => a.toLowerCase() === searchKey)
+  // 6. Direct Concept Inquiry from Knowledge Base (All 55 Topics)
+  const matched = activeTopic || QUANTUM_TOPICS_CATALOG.find(t =>
+    t.topic_name.toLowerCase().includes(lower) ||
+    t.slug.toLowerCase().includes(lower) ||
+    t.aliases?.some(a => a.toLowerCase().includes(lower)) ||
+    t.keywords?.some(k => lower.includes(k.toLowerCase()))
   );
 
-  if (!matched) {
-    matched = QUANTUM_TOPICS_CATALOG.find(t =>
-      t.topic_name.toLowerCase().includes(searchKey) ||
-      t.slug.toLowerCase().includes(searchKey) ||
-      t.aliases?.some(a => a.toLowerCase().includes(searchKey)) ||
-      t.keywords?.some(k => k.toLowerCase().includes(searchKey)) ||
-      lower.includes(t.topic_name.toLowerCase()) ||
-      lower.includes(t.slug.toLowerCase())
-    );
-  }
-
   if (matched) {
-    const mathBlock = matched.mathematical_explanation ? `\n\n### Mathematical Representation\n${matched.mathematical_explanation}` : (matched.formula ? `\n\n**Mathematical Formula**: $$${matched.formula}$$` : '');
-    const exBlock = matched.example ? `\n\n### Concrete Example\n${matched.example}` : '';
-    const mistakesBlock = matched.common_mistakes && matched.common_mistakes.length > 0 ? `\n\n> 💡 **Scientific Distinction**: ${matched.common_mistakes[0]}` : '';
+    const mathBlock = matched.mathematical_explanation
+      ? `\n\n### Mathematical Formulation\n${matched.mathematical_explanation}` + (matched.formula ? `\n\n**Governing Formula**: $$${matched.formula}$$` : '')
+      : (matched.formula ? `\n\n**Governing Formula**: $$${matched.formula}$$` : '');
+
+    const workedExamplesBlock = matched.worked_examples && matched.worked_examples.length > 0
+      ? `\n\n### Worked Example: ${matched.worked_examples[0].title}\n${matched.worked_examples[0].content}` +
+        (matched.worked_examples[0].circuit_ascii ? `\n\n\`\`\`text\n${matched.worked_examples[0].circuit_ascii}\n\`\`\`` : '')
+      : (matched.example ? `\n\n### Concrete Example\n${matched.example}` : '');
+
+    const applicationsBlock = matched.applications && matched.applications.length > 0
+      ? `\n\n### Real-World Applications\n` + matched.applications.map(a => `- ${a}`).join('\n')
+      : '';
+
+    const limitationsBlock = matched.limitations && matched.limitations.length > 0
+      ? `\n\n### Physical & NISQ Limitations\n` + matched.limitations.map(l => `- ⚠️ ${l}`).join('\n')
+      : '';
+
+    const mistakesBlock = matched.common_mistakes && matched.common_mistakes.length > 0
+      ? `\n\n> 💡 **Scientific Distinction**: ${matched.common_mistakes[0]}`
+      : '';
 
     return {
       reply: `### ${matched.topic_name}
 
 **Definition**: ${matched.short_definition}
 
-${matched.beginner_explanation}
+${matched.simple_explanation || matched.beginner_explanation}
+
+${matched.detailed_explanation}
 ${mathBlock}
-${exBlock}
+${workedExamplesBlock}
+${applicationsBlock}
+${limitationsBlock}
 ${mistakesBlock}`,
       classification: "concept_explanation",
       qiskit_code: matched.circuit_example || null,
@@ -1262,6 +1418,24 @@ export interface CanonicalCircuit {
   gates: SimulateGate[];
 }
 
+export interface WorkedExample {
+  id: string;
+  type: 'conceptual' | 'circuit' | 'scenario' | 'mathematical';
+  title: string;
+  content: string;
+  circuit_ascii?: string;
+}
+
+export interface AlgorithmDetails {
+  problem_statement: string;
+  classical_approach: string;
+  quantum_approach: string;
+  steps: string[];
+  complexity_quantum: string;
+  complexity_classical: string;
+  theoretical_vs_practical: string;
+}
+
 export interface QuantumTopic {
   id: string;
   topic_name: string;
@@ -1286,6 +1460,11 @@ export interface QuantumTopic {
   verification_status: string;
   created_at?: string | null;
   updated_at?: string | null;
+  simple_explanation?: string;
+  worked_examples?: WorkedExample[];
+  applications?: string[];
+  limitations?: string[];
+  algorithm_details?: AlgorithmDetails;
   [key: string]: any;
 }
 

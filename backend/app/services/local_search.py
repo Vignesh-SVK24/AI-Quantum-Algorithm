@@ -44,6 +44,11 @@ class TopicRecord(TypedDict):
     source_url: Optional[str]
     additional_sources: List[SourceItem]
     verification_status: str
+    simple_explanation: Optional[str]
+    worked_examples: Optional[List[Dict[str, Any]]]
+    applications: Optional[List[str]]
+    limitations: Optional[List[str]]
+    algorithm_details: Optional[Dict[str, Any]]
 
 class QuantumTopicSearchResponse(TypedDict):
     query: str
@@ -116,7 +121,7 @@ def load_all_topics() -> tuple[List[Dict[str, Any]], str]:
                 topics = []
                 for r in rows:
                     d = dict(r)
-                    for list_field in ["related_topics", "common_mistakes", "aliases", "keywords", "tags", "additional_sources", "canonical_circuit"]:
+                    for list_field in ["related_topics", "common_mistakes", "aliases", "keywords", "tags", "additional_sources", "canonical_circuit", "worked_examples", "applications", "limitations", "algorithm_details"]:
                         if isinstance(d.get(list_field), str) and d[list_field]:
                             try:
                                 d[list_field] = json.loads(d[list_field])

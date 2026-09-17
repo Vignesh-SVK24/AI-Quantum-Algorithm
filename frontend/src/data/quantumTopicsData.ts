@@ -1,38 +1,4 @@
-// AUTO-GENERATED FROM SQLite Knowledge Base (55 Curated Quantum Topics)
-// Supports full offline search, 0ms latency, and GitHub Pages deployments.
-
-export interface QuantumTopic {
-  id: string;
-  topic_name: string;
-  slug: string;
-  category: string;
-  short_definition: string;
-  beginner_explanation: string;
-  detailed_explanation: string;
-  mathematical_explanation?: string | null;
-  formula?: string | null;
-  example?: string | null;
-  circuit_example?: string | null;
-  related_topics: string[];
-  common_mistakes: string[];
-  aliases: string[];
-  keywords: string[];
-  tags: string[];
-  source_name?: string | null;
-  source_url?: string | null;
-  additional_sources?: Array<{ title: string; url: string }>;
-  verification_status: string;
-  created_at?: string | null;
-  updated_at?: string | null;
-  status?: string | null;
-  knowledge_version?: number | null;
-  last_verified_at?: string | null;
-  verification_notes?: string | null;
-  ingestion_source_id?: string | null;
-  difficulty_level?: string | null;
-  subcategory?: string | null;
-  canonical_circuit?: any;
-}
+import { type QuantumTopic } from '../services/api';
 
 export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
   {
@@ -169,6 +135,51 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 6
         }
       ]
+    },
+    "simple_explanation": "In simple terms, Amplitude Amplification is a fundamental quantum algorithm design technique that generalizes grover search, boosting the probability of measuring a target subspace from p to near 1 in o(1/√p) iterations.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing algorithms routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "amplitude-amplification_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Amplitude Amplification",
+        "content": "If a quantum heuristic algorithm finds a valid graph coloring with probability p = 0.0001, classical repetition requires ~10,000 runs. Amplitude amplification requires only ~ (π/4)/√0.0001 ≈ (π/4)·100 ≈ 78 iterations."
+      },
+      {
+        "id": "amplitude-amplification_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Amplitude Amplification:\n\n```python\nfrom qiskit import QuantumCircuit\n# Generalized structure: A -> (Oracle -> A_dagger -> Zero_Reflect -> A)^k\nqc = QuantumCircuit(2)\nqc.h([0, 1]) # State preparation A\n# Grover/Amplification operator Q\nqc.cz(0, 1)  # Oracle phase flip\nqc.h([0, 1]); qc.x([0, 1])\nqc.cz(0, 1); qc.x([0, 1]); qc.h([0, 1])\n```"
+      },
+      {
+        "id": "amplitude-amplification_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Amplitude Amplification interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ],
+    "algorithm_details": {
+      "problem_statement": "Solves key algorithmic challenges in Amplitude Amplification.",
+      "classical_approach": "Classical deterministic or randomized sampling requiring polynomial or exponential steps.",
+      "quantum_approach": "Harnesses quantum superposition and interference to sample or extract solutions with quantum speedup.",
+      "steps": [
+        "1. Initialize quantum registers into uniform computational basis superposition.",
+        "2. Apply problem-specific unitary oracle or Hamiltonian evolution.",
+        "3. Perform interference and amplitude transformation.",
+        "4. Measure target register in computational basis."
+      ],
+      "complexity_quantum": "Quantum speedup over classical baseline",
+      "complexity_classical": "Standard classical complexity baseline",
+      "theoretical_vs_practical": "Theoretical advantage depends on circuit depth, gate fidelity, and error correction overhead."
     }
   },
   {
@@ -251,7 +262,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 1
         }
       ]
-    }
+    },
+    "simple_explanation": "In simple terms, Bell State is four specific maximally entangled two-qubit states that form an orthonormal basis for two-qubit hilbert space.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing quantum phenomena routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "bell-state_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Bell State",
+        "content": "To generate |Φ⁺⟩: Start with |00⟩ → apply H on q0 to get (|00⟩ + |10⟩)/√2 → apply CNOT(0, 1) to get (|00⟩ + |11⟩)/√2."
+      },
+      {
+        "id": "bell-state_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Bell State:\n\n```python\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(2)\nqc.h(0)\nqc.cx(0, 1)  # Produces |Φ⁺⟩ Bell state\n```"
+      },
+      {
+        "id": "bell-state_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Bell State interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   },
   {
     "id": "bernstein-vazirani-algorithm",
@@ -378,6 +420,52 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 4
         }
       ]
+    },
+    "simple_explanation": "Imagine someone thinks of a secret combination of 0s and 1s (like 1011). In the classical world, to discover each bit, you must ask at least 4 questions (one per bit). The Bernstein-Vazirani algorithm finds the entire secret combination in just ONE single question using quantum phase kickback!",
+    "applications": [
+      "Learning hidden parity functions in cryptographic analysis",
+      "Demonstrating deterministic O(1) query complexity versus O(n) classical complexity",
+      "Hardware benchmarking for multi-qubit phase kickback fidelity"
+    ],
+    "limitations": [
+      "Specifically designed for linear Boolean functions f(x) = s · x mod 2",
+      "Offers no speedup on non-linear or arbitrary unstructured functions"
+    ],
+    "worked_examples": [
+      {
+        "id": "bv_ex_1",
+        "type": "conceptual",
+        "title": "Finding Secret String s = 101 in 1 Query",
+        "content": "With 3 qubits, secret s = 101 means f(x) = x₀ ⊕ x₂. A classical tester needs 3 queries: f(100)=1, f(010)=0, f(001)=1. The quantum algorithm queries once and immediately measures state |101⟩ with 100% certainty."
+      },
+      {
+        "id": "bv_ex_2",
+        "type": "circuit",
+        "title": "3-Qubit Bernstein-Vazirani Circuit for s = 11",
+        "circuit_ascii": "q_0: ──[H]──●───────[H]──[M]──\n            │            ║   \nq_1: ──[H]──┼──●────[H]──[M]──\n            │  │         ║   \nanc: ──[X]──[H]─■──■──────────",
+        "content": "For s = 11, CNOTs link query wire 0 and wire 1 to the ancilla in state |−⟩. Final Hadamards interfere destructively on all states except |11⟩."
+      },
+      {
+        "id": "bv_ex_3",
+        "type": "scenario",
+        "title": "Scaling to 256-Bit Secret Key",
+        "content": "A classical computer must query the oracle 256 times in series. The quantum computer evaluates all 2^256 paths in superposition and extracts the entire 256-bit key in a single execution step."
+      }
+    ],
+    "algorithm_details": {
+      "problem_statement": "Find a hidden n-bit secret string s ∈ {0,1}^n given an oracle f(x) = s · x = (s₀x₀ ⊕ s₁x₁ ⊕ ... ⊕ s_{n-1}x_{n-1}) mod 2.",
+      "classical_approach": "Query inputs with single 1s: e₁=1000...0 reveals s₀, e₂=0100...0 reveals s₁, etc. Requires exactly n queries. Complexity: O(n).",
+      "quantum_approach": "Prepare n query qubits in |0⟩ and ancilla in |1⟩. Apply Hadamard across all qubits. Query oracle once; phase kickback encodes string s directly into the relative phases. Apply Hadamards again to decode.",
+      "steps": [
+        "1. Initialize n query qubits to |0⟩ and 1 ancilla qubit to |1⟩.",
+        "2. Apply Hadamard gates across all n+1 qubits to create equal superposition.",
+        "3. Query the oracle U_f: |x⟩|−⟩ → (-1)^{s·x} |x⟩|−⟩.",
+        "4. Apply Hadamard gates to all n query qubits: H^⊗n ∑_x (-1)^{s·x} |x⟩ = |s⟩.",
+        "5. Measure the query register in the computational basis to read out secret string s directly."
+      ],
+      "complexity_quantum": "1 query, O(n) gates",
+      "complexity_classical": "n queries",
+      "theoretical_vs_practical": "Guaranteed deterministic 1-query speedup. Widely used as a prime demonstration of quantum parallelism and phase kickback."
     }
   },
   {
@@ -458,7 +546,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 0
         }
       ]
-    }
+    },
+    "simple_explanation": "In simple terms, Bloch Sphere is a unit-sphere geometric representation of all pure states of a single two-level quantum system (qubit).. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing visualization routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "bloch-sphere_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Bloch Sphere",
+        "content": "For θ = π/2 and φ = 0: |ψ⟩ = cos(π/4)|0⟩ + sin(π/4)|1⟩ = (1/√2)(|0⟩ + |1⟩) = |+⟩, located on the equator along the positive X-axis."
+      },
+      {
+        "id": "bloch-sphere_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Bloch Sphere:\n\n```python\nfrom qiskit.visualization import plot_bloch_multivector\nfrom qiskit.quantum_info import Statevector\nsv = Statevector.from_label('+')\nplot_bloch_multivector(sv)\n```"
+      },
+      {
+        "id": "bloch-sphere_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Bloch Sphere interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   },
   {
     "id": "cnot-gate",
@@ -539,7 +658,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 1
         }
       ]
-    }
+    },
+    "simple_explanation": "In simple terms, CNOT Gate is a two-qubit entangling gate that flips the target qubit if and only if the control qubit is in state |1⟩.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing quantum gates routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "cnot-gate_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: CNOT Gate",
+        "content": "Starting with state (|0⟩ + |1⟩)/√2 on qubit 0 and |0⟩ on qubit 1: state is (|00⟩ + |10⟩)/√2. Applying CNOT with control 0 and target 1 yields (|00⟩ + |11⟩)/√2, which is the entangled Bell state |Φ⁺⟩."
+      },
+      {
+        "id": "cnot-gate_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for CNOT Gate:\n\n```python\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(2)\nqc.h(0)\nqc.cx(0, 1)  # CNOT with control=0, target=1 (creates Bell state)\n```"
+      },
+      {
+        "id": "cnot-gate_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, CNOT Gate interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   },
   {
     "id": "deutsch-algorithm",
@@ -637,6 +787,51 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 3
         }
       ]
+    },
+    "simple_explanation": "In simple terms, Deutsch Algorithm is the historical first quantum algorithm (david deutsch, 1985) proving that a quantum computer can determine whether a 1-bit function is constant or balanced in a single query.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing algorithms routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "deutsch-algorithm_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Deutsch Algorithm",
+        "content": "If f(0)=0 and f(1)=0 (constant), measuring qubit 0 yields 0 with 100% probability. If f(0)=0 and f(1)=1 (balanced), measuring qubit 0 yields 1 with 100% probability."
+      },
+      {
+        "id": "deutsch-algorithm_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Deutsch Algorithm:\n\n```python\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(2, 1)\nqc.x(1)          # Ancilla to |1>\nqc.h([0, 1])     # Superposition |+>|->\n# [Insert Oracle U_f here]\nqc.h(0)          # Interference on input\nqc.measure(0, 0)\n```"
+      },
+      {
+        "id": "deutsch-algorithm_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Deutsch Algorithm interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ],
+    "algorithm_details": {
+      "problem_statement": "Solves key algorithmic challenges in Deutsch Algorithm.",
+      "classical_approach": "Classical deterministic or randomized sampling requiring polynomial or exponential steps.",
+      "quantum_approach": "Harnesses quantum superposition and interference to sample or extract solutions with quantum speedup.",
+      "steps": [
+        "1. Initialize quantum registers into uniform computational basis superposition.",
+        "2. Apply problem-specific unitary oracle or Hamiltonian evolution.",
+        "3. Perform interference and amplitude transformation.",
+        "4. Measure target register in computational basis."
+      ],
+      "complexity_quantum": "Quantum speedup over classical baseline",
+      "complexity_classical": "Standard classical complexity baseline",
+      "theoretical_vs_practical": "Theoretical advantage depends on circuit depth, gate fidelity, and error correction overhead."
     }
   },
   {
@@ -735,6 +930,51 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 3
         }
       ]
+    },
+    "simple_explanation": "In simple terms, Deutsch-Jozsa Algorithm is a deterministic quantum algorithm determining whether a boolean function is constant or balanced in a single query.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing algorithms routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "deutsch-jozsa-algorithm_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Deutsch-Jozsa Algorithm",
+        "content": "For n=3 input qubits (8 possible inputs), classical verification may require checking 2² + 1 = 5 inputs in the worst case. Deutsch-Jozsa determines whether f is constant or balanced in 1 evaluation with 100% deterministic success."
+      },
+      {
+        "id": "deutsch-jozsa-algorithm_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Deutsch-Jozsa Algorithm:\n\n```python\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(2, 1)\nqc.x(1)  # Ancilla to |1⟩\nqc.h([0, 1])  # Input to |+⟩, ancilla to |-⟩\n# Oracle for balanced f(x) = x\nqc.cx(0, 1)\nqc.h(0)  # Interfere input\nqc.measure(0, 0)  # 1 = balanced, 0 = constant\n```"
+      },
+      {
+        "id": "deutsch-jozsa-algorithm_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Deutsch-Jozsa Algorithm interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ],
+    "algorithm_details": {
+      "problem_statement": "Solves key algorithmic challenges in Deutsch-Jozsa Algorithm.",
+      "classical_approach": "Classical deterministic or randomized sampling requiring polynomial or exponential steps.",
+      "quantum_approach": "Harnesses quantum superposition and interference to sample or extract solutions with quantum speedup.",
+      "steps": [
+        "1. Initialize quantum registers into uniform computational basis superposition.",
+        "2. Apply problem-specific unitary oracle or Hamiltonian evolution.",
+        "3. Perform interference and amplitude transformation.",
+        "4. Measure target register in computational basis."
+      ],
+      "complexity_quantum": "Quantum speedup over classical baseline",
+      "complexity_classical": "Standard classical complexity baseline",
+      "theoretical_vs_practical": "Theoretical advantage depends on circuit depth, gate fidelity, and error correction overhead."
     }
   },
   {
@@ -897,6 +1137,51 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 10
         }
       ]
+    },
+    "simple_explanation": "In simple terms, Grover's Algorithm is a quantum search algorithm providing quadratic speedup o(√n) for searching unstructured databases of n items.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing algorithms routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "grovers-algorithm_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Grover's Algorithm",
+        "content": "In a 4-item database (N=4, 2 qubits), classical search needs up to 4 checks (average 2.25). Grover's algorithm finds the marked item with 100% certainty in exactly 1 iteration because (π/4)√4 = π/2 radians."
+      },
+      {
+        "id": "grovers-algorithm_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Grover's Algorithm:\n\n```python\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(2, 2)\nqc.h([0, 1])  # Equal superposition\n# Oracle for |11⟩\nqc.cz(0, 1)\n# Diffusion operator\nqc.h([0, 1]); qc.x([0, 1]); qc.cz(0, 1); qc.x([0, 1]); qc.h([0, 1])\nqc.measure([0, 1], [0, 1])\n```"
+      },
+      {
+        "id": "grovers-algorithm_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Grover's Algorithm interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ],
+    "algorithm_details": {
+      "problem_statement": "Solves key algorithmic challenges in Grover's Algorithm.",
+      "classical_approach": "Classical deterministic or randomized sampling requiring polynomial or exponential steps.",
+      "quantum_approach": "Harnesses quantum superposition and interference to sample or extract solutions with quantum speedup.",
+      "steps": [
+        "1. Initialize quantum registers into uniform computational basis superposition.",
+        "2. Apply problem-specific unitary oracle or Hamiltonian evolution.",
+        "3. Perform interference and amplitude transformation.",
+        "4. Measure target register in computational basis."
+      ],
+      "complexity_quantum": "Quantum speedup over classical baseline",
+      "complexity_classical": "Standard classical complexity baseline",
+      "theoretical_vs_practical": "Theoretical advantage depends on circuit depth, gate fidelity, and error correction overhead."
     }
   },
   {
@@ -974,7 +1259,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 0
         }
       ]
-    }
+    },
+    "simple_explanation": "In simple terms, Hadamard Gate is a fundamental single-qubit gate that maps computational basis states into equal superpositions and vice versa.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing quantum gates routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "hadamard-gate_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Hadamard Gate",
+        "content": "Applying H to state |0⟩: H[1, 0]ᵀ = [1/√2, 1/√2]ᵀ. Applying H again: H(H|0⟩) = H²|0⟩ = I|0⟩ = |0⟩ (demonstrating constructive and destructive quantum interference)."
+      },
+      {
+        "id": "hadamard-gate_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Hadamard Gate:\n\n```python\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.h(0)  # Puts qubit 0 into equal superposition\n```"
+      },
+      {
+        "id": "hadamard-gate_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Hadamard Gate interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   },
   {
     "id": "hhl-algorithm",
@@ -1069,6 +1385,51 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 3
         }
       ]
+    },
+    "simple_explanation": "In simple terms, HHL Algorithm (Harrow–Hassidim–Lloyd) is the foundational quantum algorithm for solving systems of linear equations ax = b, providing an exponential speedup in matrix dimension n over classical solvers.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing algorithms routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "hhl-algorithm_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: HHL Algorithm (Harrow–Hassidim–Lloyd)",
+        "content": "For a sparse matrix with N = 1,000,000,000 dimensions (10⁹) and condition number κ = 10: classical algorithms require billions of floating-point operations. HHL processes the system on roughly log₂(10⁹) ≈ 30 qubits in O(log N) runtime."
+      },
+      {
+        "id": "hhl-algorithm_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for HHL Algorithm (Harrow–Hassidim–Lloyd):\n\n```python\nfrom qiskit import QuantumCircuit\n# HHL framework: Phase Estimation -> Controlled Rotation -> Inverse QPE\nqc = QuantumCircuit(3, 1)\nqc.h(0)\n# Controlled Hamiltonian evolution e^(iAt)\nqc.cp(1.2, 0, 1)\n# Controlled ancilla rotation based on eigenvalue\nqc.cry(0.8, 0, 2)\nqc.h(0)\nqc.measure(2, 0)\n```"
+      },
+      {
+        "id": "hhl-algorithm_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, HHL Algorithm (Harrow–Hassidim–Lloyd) interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ],
+    "algorithm_details": {
+      "problem_statement": "Solves key algorithmic challenges in HHL Algorithm (Harrow–Hassidim–Lloyd).",
+      "classical_approach": "Classical deterministic or randomized sampling requiring polynomial or exponential steps.",
+      "quantum_approach": "Harnesses quantum superposition and interference to sample or extract solutions with quantum speedup.",
+      "steps": [
+        "1. Initialize quantum registers into uniform computational basis superposition.",
+        "2. Apply problem-specific unitary oracle or Hamiltonian evolution.",
+        "3. Perform interference and amplitude transformation.",
+        "4. Measure target register in computational basis."
+      ],
+      "complexity_quantum": "Quantum speedup over classical baseline",
+      "complexity_classical": "Standard classical complexity baseline",
+      "theoretical_vs_practical": "Theoretical advantage depends on circuit depth, gate fidelity, and error correction overhead."
     }
   },
   {
@@ -1175,6 +1536,51 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 2
         }
       ]
+    },
+    "simple_explanation": "In simple terms, Hidden Subgroup Problem (HSP) is the overarching algebraic problem that unifies almost all known exponential quantum speedups (shor's, simon's, and deutsch-jozsa algorithms) as special cases over group theory.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing algorithms routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "hidden-subgroup-problem_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Hidden Subgroup Problem (HSP)",
+        "content": "Deutsch-Jozsa is HSP with G = ℤ₂ and H ∈ {{0}, ℤ₂}. Simon's algorithm is HSP with G = ℤ₂ⁿ and H = {0ⁿ, s}. Shor's factoring algorithm is HSP with G = ℤ and H = rℤ (period finding)."
+      },
+      {
+        "id": "hidden-subgroup-problem_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Hidden Subgroup Problem (HSP):\n\n```python\nfrom qiskit import QuantumCircuit\n# Generalized Abelian HSP framework\nqc = QuantumCircuit(4, 2)\nqc.h([0, 1])     # QFT over G = Z_2 x Z_2\n# [Coset Oracle U_f]\nqc.h([0, 1])     # Inverse QFT over G\nqc.measure([0, 1], [0, 1])\n```"
+      },
+      {
+        "id": "hidden-subgroup-problem_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Hidden Subgroup Problem (HSP) interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ],
+    "algorithm_details": {
+      "problem_statement": "Solves key algorithmic challenges in Hidden Subgroup Problem (HSP).",
+      "classical_approach": "Classical deterministic or randomized sampling requiring polynomial or exponential steps.",
+      "quantum_approach": "Harnesses quantum superposition and interference to sample or extract solutions with quantum speedup.",
+      "steps": [
+        "1. Initialize quantum registers into uniform computational basis superposition.",
+        "2. Apply problem-specific unitary oracle or Hamiltonian evolution.",
+        "3. Perform interference and amplitude transformation.",
+        "4. Measure target register in computational basis."
+      ],
+      "complexity_quantum": "Quantum speedup over classical baseline",
+      "complexity_classical": "Standard classical complexity baseline",
+      "theoretical_vs_practical": "Theoretical advantage depends on circuit depth, gate fidelity, and error correction overhead."
     }
   },
   {
@@ -1269,6 +1675,51 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 3
         }
       ]
+    },
+    "simple_explanation": "In simple terms, Iterative Quantum Phase Estimation (IQPE) is a resource-efficient variant of qpe that estimates the phase eigenvalue of a unitary operator bit-by-bit using only a single auxiliary qubit and classical feedback.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing algorithms routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "iterative-quantum-phase-estimation_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Iterative Quantum Phase Estimation (IQPE)",
+        "content": "To estimate a phase to 20 bits of precision, standard QPE requires 20 ancilla qubits. IQPE requires only 1 ancilla qubit, executing 20 successive measurements and dynamic classical feedforward rotations."
+      },
+      {
+        "id": "iterative-quantum-phase-estimation_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Iterative Quantum Phase Estimation (IQPE):\n\n```python\nfrom qiskit import QuantumCircuit\n# 1 ancilla qubit + 1 system qubit\nqc = QuantumCircuit(2, 1)\nqc.h(0)\nqc.cp(0.785, 0, 1) # Controlled-U\nqc.h(0)\nqc.measure(0, 0)\n# Classical feedback resets qubit 0 for next bit\n```"
+      },
+      {
+        "id": "iterative-quantum-phase-estimation_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Iterative Quantum Phase Estimation (IQPE) interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ],
+    "algorithm_details": {
+      "problem_statement": "Solves key algorithmic challenges in Iterative Quantum Phase Estimation (IQPE).",
+      "classical_approach": "Classical deterministic or randomized sampling requiring polynomial or exponential steps.",
+      "quantum_approach": "Harnesses quantum superposition and interference to sample or extract solutions with quantum speedup.",
+      "steps": [
+        "1. Initialize quantum registers into uniform computational basis superposition.",
+        "2. Apply problem-specific unitary oracle or Hamiltonian evolution.",
+        "3. Perform interference and amplitude transformation.",
+        "4. Measure target register in computational basis."
+      ],
+      "complexity_quantum": "Quantum speedup over classical baseline",
+      "complexity_classical": "Standard classical complexity baseline",
+      "theoretical_vs_practical": "Theoretical advantage depends on circuit depth, gate fidelity, and error correction overhead."
     }
   },
   {
@@ -1334,7 +1785,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
     "ingestion_source_id": "manual-curation",
     "difficulty_level": null,
     "subcategory": null,
-    "canonical_circuit": null
+    "canonical_circuit": null,
+    "simple_explanation": "In simple terms, Measurement is the projective operation that extracts classical data from a quantum state according to the born rule, collapsing the state vector.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing foundations routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "measurement_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Measurement",
+        "content": "If |ψ⟩ = √(3/4)|0⟩ + √(1/4)|1⟩, measuring gives 0 with 75% probability and 1 with 25% probability. After getting outcome 0, immediate re-measurement yields 0 with 100% certainty."
+      },
+      {
+        "id": "measurement_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Measurement:\n\n```python\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(1, 1)\nqc.h(0)\nqc.measure(0, 0)  # Collapses qubit 0 to classical bit 0\n```"
+      },
+      {
+        "id": "measurement_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Measurement interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   },
   {
     "id": "no-cloning-theorem",
@@ -1420,7 +1902,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 1
         }
       ]
-    }
+    },
+    "simple_explanation": "The No-Cloning Theorem is a law of quantum physics stating that it is impossible to create an exact copy of an arbitrary unknown quantum state. If you try to copy it, the laws of quantum mechanics (linearity of unitary operators) forbid it. This is why quantum information cannot be duplicated like classical files!",
+    "applications": [
+      "Guarantees security of Quantum Key Distribution (eavesdroppers cannot copy transmitted qubits without detection)",
+      "Protects quantum digital money against counterfeiting (Wiesner's quantum money)",
+      "Dictates the design of quantum error correction (must encode info into entanglement without cloning)"
+    ],
+    "limitations": [
+      "Prevents trivial backup or buffering of quantum memory",
+      "Requires quantum repeaters and teleportation rather than signal amplifiers to transmit states over long distances"
+    ],
+    "worked_examples": [
+      {
+        "id": "nocloning_ex_1",
+        "type": "conceptual",
+        "title": "The Linearity Contradiction Proof",
+        "content": "Suppose a unitary cloner U exists such that U(|ψ⟩|0⟩) = |ψ⟩|ψ⟩. For basis states: U(|00⟩) = |00⟩ and U(|10⟩) = |11⟩. By linearity, for |+⟩ = (|0⟩+|1⟩)/√2, U(|+⟩|0⟩) = (|00⟩+|11⟩)/√2. But a true clone requires |+⟩|+⟩ = (|00⟩+|01⟩+|10⟩+|11⟩)/2. These two states are mathematically unequal, proving U cannot exist."
+      },
+      {
+        "id": "nocloning_ex_2",
+        "type": "circuit",
+        "title": "CNOT Copies Computational States, Fails on Superposition",
+        "circuit_ascii": "q_0: ──[+]──●──  Output: (|00⟩ + |11⟩)/√2 (Entangled!)\n            │  \nq_1: ──|0⟩──■──  NOT |+⟩|+⟩ = (|0⟩+|1⟩)(|0⟩+|1⟩)/2",
+        "content": "CNOT successfully copies classical basis states: |00⟩→|00⟩ and |10⟩→|11⟩. But applied to superposition |+⟩|0⟩, it produces the entangled Bell state (|00⟩+|11⟩)/√2, not two copies of |+⟩."
+      },
+      {
+        "id": "nocloning_ex_3",
+        "type": "scenario",
+        "title": "Why Eavesdropping Fails in BB84 QKD",
+        "content": "In BB84, Eve intercepts a qubit sent by Alice. Because of the No-Cloning Theorem, Eve cannot clone the qubit to keep one copy and send the other to Bob. Any measurement Eve attempts perturbs the state and introduces detectable error (QBER > 11%)."
+      }
+    ]
   },
   {
     "id": "pauli-gates",
@@ -1518,7 +2031,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 2
         }
       ]
-    }
+    },
+    "simple_explanation": "In simple terms, Pauli Gates is the foundational set of three single-qubit hermitian and unitary operators (pauli-x, pauli-y, and pauli-z) that represent 180° rotations about the coordinate axes and form a basis for 2x2 matrices.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing quantum gates routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "pauli-gates_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Pauli Gates",
+        "content": "Pauli-X flips |0⟩ → |1⟩. Pauli-Z flips |+⟩ → |−⟩. The product XZ applied to |0⟩ yields X(Z|0⟩) = X|0⟩ = |1⟩, while ZX|0⟩ = Z(X|0⟩) = Z|1⟩ = -|1⟩, demonstrating non-commutativity: XZ = -ZX."
+      },
+      {
+        "id": "pauli-gates_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Pauli Gates:\n\n```python\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.x(0) # Bit-flip\nqc.y(0) # Bit + Phase flip\nqc.z(0) # Phase-flip\n```"
+      },
+      {
+        "id": "pauli-gates_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Pauli Gates interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   },
   {
     "id": "phase-gate",
@@ -1603,7 +2147,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 1
         }
       ]
-    }
+    },
+    "simple_explanation": "In simple terms, Phase Gate (S Gate) is a fundamental single-qubit clifford gate that maps |0⟩ → |0⟩ and |1⟩ → i|1⟩, implementing a π/2 (90°) rotation about the z-axis of the bloch sphere.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing quantum gates routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "phase-gate_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Phase Gate (S Gate)",
+        "content": "Applying S to state |+⟩ = (|0⟩+|1⟩)/√2 produces (|0⟩ + i|1⟩)/√2, moving the state vector from the X-axis to the positive Y-axis on the Bloch sphere equator."
+      },
+      {
+        "id": "phase-gate_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Phase Gate (S Gate):\n\n```python\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.h(0) # Prepare |+>\nqc.s(0) # Rotate to |+i>\nqc.sdg(0) # Inverse S gate (S-dagger)\n```"
+      },
+      {
+        "id": "phase-gate_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Phase Gate (S Gate) interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   },
   {
     "id": "phase-kickback",
@@ -1692,7 +2267,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 2
         }
       ]
-    }
+    },
+    "simple_explanation": "In simple terms, Phase Kickback is a technique where the eigenvalue phase imparted by a controlled operation on a target qubit is transferred back to the control qubit.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing techniques routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "phase-kickback_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Phase Kickback",
+        "content": "With control qubit in |+⟩ and target qubit in |-⟩, applying CNOT yields: CNOT(|+⟩|-⟩) = |-⟩|-⟩. The target |-⟩ is untouched, but the control state flipped from |+⟩ to |-⟩."
+      },
+      {
+        "id": "phase-kickback_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Phase Kickback:\n\n```python\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(2)\nqc.h(0)  # Control in |+⟩\nqc.x(1); qc.h(1)  # Target in |-⟩\nqc.cx(0, 1)  # Kicks -1 phase back to qubit 0\n```"
+      },
+      {
+        "id": "phase-kickback_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Phase Kickback interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   },
   {
     "id": "qaoa",
@@ -1802,6 +2408,53 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 4
         }
       ]
+    },
+    "simple_explanation": "The Quantum Approximate Optimization Algorithm (QAOA) is a hybrid quantum-classical algorithm designed to solve difficult combinatorial optimization problems (like finding the best route for delivery trucks or scheduling flights) on near-term noisy quantum computers.",
+    "applications": [
+      "Max-Cut and Graph Partitioning problems in network routing",
+      "Portfolio optimization and risk balancing in finance",
+      "Vehicle routing and logistics scheduling"
+    ],
+    "limitations": [
+      "Barren plateaus in parameter space can make classical gradient descent difficult",
+      "Requires deep circuits (high layer count p) to guarantee optimal solutions, increasing susceptibility to noise"
+    ],
+    "worked_examples": [
+      {
+        "id": "qaoa_ex_1",
+        "type": "conceptual",
+        "title": "Max-Cut on a 2-Node Graph",
+        "content": "For 2 nodes connected by 1 edge, the optimal cut separates the nodes (01 or 10). The cost Hamiltonian is H_C = 1/2 (I - Z₀Z₁). QAOA drives the initial superposition (|00⟩+|01⟩+|10⟩+|11⟩)/2 toward states |01⟩ and |10⟩."
+      },
+      {
+        "id": "qaoa_ex_2",
+        "type": "circuit",
+        "title": "Layer 1 QAOA Circuit Step",
+        "circuit_ascii": "q_0: ──[H]──●───────●──[Rx(2β)]──[M]──\n            │       │            ║   \nq_1: ──[H]──[Rz(2γ)]─■──[Rx(2β)]──[M]──",
+        "content": "Controlled-Rz applies the cost unitary e^{-iγ Z₀Z₁}. Single-qubit Rx gates apply the mixer unitary e^{-iβ X} across both qubits."
+      },
+      {
+        "id": "qaoa_ex_3",
+        "type": "scenario",
+        "title": "Scaling Depth p for Higher Approximation Ratios",
+        "content": "As the layer depth p → ∞, QAOA is proven to converge to the exact optimal solution (adiabatic theorem). For p = 1 on 3-regular graphs, QAOA achieves an approximation ratio of ~0.692."
+      }
+    ],
+    "algorithm_details": {
+      "problem_statement": "Find a binary string z ∈ {0,1}^n that maximizes a classical objective cost function C(z) = ∑_{(j,k)} C_{jk} z_j z_k.",
+      "classical_approach": "Max-Cut is NP-hard. Classical Goemans-Williamson algorithm guarantees an approximation ratio of ~0.878.",
+      "quantum_approach": "Encodes C(z) into a problem Hamiltonian H_C. Alternates applying cost unitary e^{-i γ H_C} and mixer unitary e^{-i β H_M} p times on equal superposition.",
+      "steps": [
+        "1. Initialize register in equal superposition |+⟩^⊗n using Hadamard gates.",
+        "2. Apply problem unitary U(C, γ_k) = e^{-i γ_k H_C} for angle γ_k.",
+        "3. Apply mixer unitary U(B, β_k) = e^{-i β_k H_M} where H_M = ∑ X_i for angle β_k.",
+        "4. Repeat steps 2 and 3 for p layers.",
+        "5. Measure register in computational basis and compute expected cost ⟨C⟩.",
+        "6. Classical optimizer (COBYLA, Nelder-Mead) updates parameters (γ, β) until convergence."
+      ],
+      "complexity_quantum": "O(p · |E|) circuit depth for graph with |E| edges",
+      "complexity_classical": "Exponential worst-case for exact solution",
+      "theoretical_vs_practical": "Runs on NISQ processors without error correction. However, for low p, classical algorithms like Goemans-Williamson often remain competitive with QAOA on classical graphs."
     }
   },
   {
@@ -1890,7 +2543,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 2
         }
       ]
-    }
+    },
+    "simple_explanation": "In simple terms, Quantum Principal Component Analysis (qPCA) is a quantum machine learning algorithm that reveals the principal eigenvectors and eigenvalues of an unknown low-rank density matrix ρ in exponential speedup o(log d) time.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing machine learning routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "qpca_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Quantum Principal Component Analysis (qPCA)",
+        "content": "Compressing high-dimensional facial recognition features with d = 1,000,000 dimensions: classical PCA requires calculating a trillion matrix elements (10¹²), whereas qPCA operates on log₂(10⁶) ≈ 20 qubits."
+      },
+      {
+        "id": "qpca_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Quantum Principal Component Analysis (qPCA):\n\n```python\nfrom qiskit import QuantumCircuit\n# Density matrix exponentiation and Phase Estimation core\nqc = QuantumCircuit(3, 1)\nqc.h(0)\nqc.cswap(0, 1, 2) # Controlled-SWAP for density matrix evolution\nqc.h(0)\nqc.measure(0, 0)\n```"
+      },
+      {
+        "id": "qpca_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Quantum Principal Component Analysis (qPCA) interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   },
   {
     "id": "qsvm",
@@ -2005,7 +2689,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 5
         }
       ]
-    }
+    },
+    "simple_explanation": "In simple terms, Quantum Support Vector Machine (QSVM) is a quantum machine learning algorithm that maps classical data points into quantum states in a high-dimensional hilbert space, evaluating kernel functions with quantum speedup.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing machine learning routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "qsvm_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Quantum Support Vector Machine (QSVM)",
+        "content": "Classifying complex biomedical gene expression datasets that have non-linear entanglement correlations: QSVM maps 8 gene markers into an 8-qubit entangled state space (2⁸ = 256 dimensions) where linear separation is achieved."
+      },
+      {
+        "id": "qsvm_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Quantum Support Vector Machine (QSVM):\n\n```python\nfrom qiskit import QuantumCircuit\n# Quantum Kernel Circuit: U(x) followed by U_dagger(x')\nqc = QuantumCircuit(2, 2)\nqc.h([0, 1]); qc.rz(0.5, [0, 1]); qc.cx(0, 1) # Feature map x\nqc.cx(0, 1); qc.rz(-0.3, [0, 1]); qc.h([0, 1]) # Inverse feature map x'\nqc.measure([0, 1], [0, 1])\n```"
+      },
+      {
+        "id": "qsvm_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Quantum Support Vector Machine (QSVM) interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   },
   {
     "id": "qsvt",
@@ -2112,6 +2827,51 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 5
         }
       ]
+    },
+    "simple_explanation": "In simple terms, Quantum Singular Value Transformation (QSVT) is a monumental unifying framework that transforms the singular values of a block-encoded matrix using polynomial operations, subsuming almost all known quantum algorithms as special cases.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing algorithms routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "qsvt_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Quantum Singular Value Transformation (QSVT)",
+        "content": "To perform optimal Hamiltonian simulation e^(-i H t): QSVT approximates the function f(x) = e^(-i x t) using a Jacobi-Anger expansion of Bessel polynomials of degree d = O(t + log(1/ε)), achieving optimal query complexity matching theoretical lower bounds."
+      },
+      {
+        "id": "qsvt_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Quantum Singular Value Transformation (QSVT):\n\n```python\nfrom qiskit import QuantumCircuit\n# Block-encoding unitary U interleaved with projector phase rotations\nqc = QuantumCircuit(3)\nqc.h(0) # Projector ancilla\nqc.cx(0, 1); qc.rz(0.4, 0); qc.cx(0, 1) # U and phase rotation\nqc.h(0)\n```"
+      },
+      {
+        "id": "qsvt_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Quantum Singular Value Transformation (QSVT) interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ],
+    "algorithm_details": {
+      "problem_statement": "Solves key algorithmic challenges in Quantum Singular Value Transformation (QSVT).",
+      "classical_approach": "Classical deterministic or randomized sampling requiring polynomial or exponential steps.",
+      "quantum_approach": "Harnesses quantum superposition and interference to sample or extract solutions with quantum speedup.",
+      "steps": [
+        "1. Initialize quantum registers into uniform computational basis superposition.",
+        "2. Apply problem-specific unitary oracle or Hamiltonian evolution.",
+        "3. Perform interference and amplitude transformation.",
+        "4. Measure target register in computational basis."
+      ],
+      "complexity_quantum": "Quantum speedup over classical baseline",
+      "complexity_classical": "Standard classical complexity baseline",
+      "theoretical_vs_practical": "Theoretical advantage depends on circuit depth, gate fidelity, and error correction overhead."
     }
   },
   {
@@ -2218,7 +2978,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 3
         }
       ]
-    }
+    },
+    "simple_explanation": "In simple terms, Quantum Advantage is the practical and theoretical milestone where a programmable quantum computing device solves a computational problem substantially faster than any feasible classical supercomputer.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing foundations routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "quantum-advantage_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Quantum Advantage",
+        "content": "In 2019, Google demonstrated quantum supremacy using the 53-qubit Sycamore processor: it sampled a random quantum circuit in ~200 seconds, a task estimated to take Summit (the top supercomputer at the time) days to years."
+      },
+      {
+        "id": "quantum-advantage_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Quantum Advantage:\n\n```python\nfrom qiskit import QuantumCircuit\n# Random Circuit Sampling snippet\nqc = QuantumCircuit(3)\nqc.h([0, 1, 2])\nqc.cx(0, 1)\nqc.rz(0.785, 0)\nqc.cx(1, 2)\n```"
+      },
+      {
+        "id": "quantum-advantage_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Quantum Advantage interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   },
   {
     "id": "quantum-algorithms",
@@ -2332,6 +3123,51 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 2
         }
       ]
+    },
+    "simple_explanation": "In simple terms, Quantum Algorithms is step-by-step computational procedures designed to run on quantum circuits, leveraging superposition, phase kickback, and interference to achieve proven speedups over classical algorithms.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing algorithms routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "quantum-algorithms_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Quantum Algorithms",
+        "content": "To search an unsorted list of N = 1,000,000 items, classical search requires an average of 500,000 checks. Grover's quantum search finds the item in approximately (π/4)√1,000,000 ≈ 785 iterations."
+      },
+      {
+        "id": "quantum-algorithms_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Quantum Algorithms:\n\n```python\nfrom qiskit import QuantumCircuit\n# Generalized quantum algorithm structure: Prepare, Oracle, Amplify, Measure\nqc = QuantumCircuit(3, 3)\nqc.h([0, 1, 2]) # State preparation\n# [Problem Oracle Unitary here]\n# [Interference / Diffusion here]\nqc.measure([0, 1, 2], [0, 1, 2])\n```"
+      },
+      {
+        "id": "quantum-algorithms_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Quantum Algorithms interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ],
+    "algorithm_details": {
+      "problem_statement": "Solves key algorithmic challenges in Quantum Algorithms.",
+      "classical_approach": "Classical deterministic or randomized sampling requiring polynomial or exponential steps.",
+      "quantum_approach": "Harnesses quantum superposition and interference to sample or extract solutions with quantum speedup.",
+      "steps": [
+        "1. Initialize quantum registers into uniform computational basis superposition.",
+        "2. Apply problem-specific unitary oracle or Hamiltonian evolution.",
+        "3. Perform interference and amplitude transformation.",
+        "4. Measure target register in computational basis."
+      ],
+      "complexity_quantum": "Quantum speedup over classical baseline",
+      "complexity_classical": "Standard classical complexity baseline",
+      "theoretical_vs_practical": "Theoretical advantage depends on circuit depth, gate fidelity, and error correction overhead."
     }
   },
   {
@@ -2430,6 +3266,51 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 2
         }
       ]
+    },
+    "simple_explanation": "In simple terms, Quantum Amplitude Estimation (QAE) is a fundamental quantum subroutine that estimates the probability amplitude a of a quantum state with precision ε in o(1/ε) queries, achieving a quadratic speedup over classical monte carlo.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing algorithms routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "quantum-amplitude-estimation_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Quantum Amplitude Estimation (QAE)",
+        "content": "Estimating financial Credit Value at Risk (CVaR) with precision ε = 10⁻⁴: classical Monte Carlo requires 10⁸ sample iterations. QAE achieves this with 10⁴ queries, a 10,000x reduction in query count."
+      },
+      {
+        "id": "quantum-amplitude-estimation_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Quantum Amplitude Estimation (QAE):\n\n```python\nfrom qiskit import QuantumCircuit\n# Evaluation register (m qubits) + State register (n qubits)\nqc = QuantumCircuit(4, 2)\nqc.h([0, 1]) # QPE register\nqc.h(2)       # State preparation\n# Controlled-Q and Controlled-Q^2\n# Inverse QFT on [0, 1]\nqc.measure([0, 1], [0, 1])\n```"
+      },
+      {
+        "id": "quantum-amplitude-estimation_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Quantum Amplitude Estimation (QAE) interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ],
+    "algorithm_details": {
+      "problem_statement": "Solves key algorithmic challenges in Quantum Amplitude Estimation (QAE).",
+      "classical_approach": "Classical deterministic or randomized sampling requiring polynomial or exponential steps.",
+      "quantum_approach": "Harnesses quantum superposition and interference to sample or extract solutions with quantum speedup.",
+      "steps": [
+        "1. Initialize quantum registers into uniform computational basis superposition.",
+        "2. Apply problem-specific unitary oracle or Hamiltonian evolution.",
+        "3. Perform interference and amplitude transformation.",
+        "4. Measure target register in computational basis."
+      ],
+      "complexity_quantum": "Quantum speedup over classical baseline",
+      "complexity_classical": "Standard classical complexity baseline",
+      "theoretical_vs_practical": "Theoretical advantage depends on circuit depth, gate fidelity, and error correction overhead."
     }
   },
   {
@@ -2528,7 +3409,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 1
         }
       ]
-    }
+    },
+    "simple_explanation": "In simple terms, Quantum Annealing is a specialized quantum computing method that uses quantum tunneling and adiabatic hamiltonian evolution to find the global minimum of complex combinatorial optimization problems.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing techniques routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "quantum-annealing_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Quantum Annealing",
+        "content": "Solving the Traveling Salesperson Problem or portfolio optimization by formulating the problem as a 2000-variable QUBO matrix and mapping the couplings J_{ij} onto a D-Wave quantum annealer chip."
+      },
+      {
+        "id": "quantum-annealing_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Quantum Annealing:\n\n```python\n# Quantum annealing is non-gate-based adiabatic evolution\n# Conceptual representation: continuous Hamiltonian interpolation\n```"
+      },
+      {
+        "id": "quantum-annealing_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Quantum Annealing interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   },
   {
     "id": "quantum-circuits",
@@ -2633,7 +3545,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 2
         }
       ]
-    }
+    },
+    "simple_explanation": "In simple terms, Quantum Circuits is a standard computational model where quantum information is represented by quantum wires and transformed by a ordered sequence of quantum logic gates and measurements.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing techniques routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "quantum-circuits_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Quantum Circuits",
+        "content": "A 2-qubit Bell circuit: Wire 0 passes through H (transforming |0⟩ into (|0⟩+|1⟩)/√2), followed by CNOT targeting wire 1 controlled by wire 0, producing the entangled Bell state (|00⟩+|11⟩)/√2."
+      },
+      {
+        "id": "quantum-circuits_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Quantum Circuits:\n\n```python\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(2, 2)\nqc.h(0)\nqc.cx(0, 1)\nqc.barrier()\nqc.measure([0, 1], [0, 1])\n```"
+      },
+      {
+        "id": "quantum-circuits_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Quantum Circuits interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   },
   {
     "id": "quantum-computing",
@@ -2727,7 +3670,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 1
         }
       ]
-    }
+    },
+    "simple_explanation": "In simple terms, Quantum Computing is a revolutionary computational paradigm that leverages quantum mechanical principles—superposition, entanglement, and interference—to process complex information and solve specific mathematical problems exponentially faster than classical computers.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing foundations routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "quantum-computing_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Quantum Computing",
+        "content": "A 3-qubit quantum computer processes a statevector with 2³ = 8 complex amplitudes simultaneously: |Ψ⟩ = c₀|000⟩ + c₁|001⟩ + ... + c₇|111⟩. For n = 300 qubits, 2³⁰⁰ amplitudes exceed the total number of atoms in the observable universe."
+      },
+      {
+        "id": "quantum-computing_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Quantum Computing:\n\n```python\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(2, 2)\nqc.h(0)        # Superposition\nqc.cx(0, 1)    # Entanglement\nqc.measure([0, 1], [0, 1])\n```"
+      },
+      {
+        "id": "quantum-computing_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Quantum Computing interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   },
   {
     "id": "quantum-counting",
@@ -2844,6 +3818,51 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 3
         }
       ]
+    },
+    "simple_explanation": "In simple terms, Quantum Counting is a hybrid quantum algorithm combining grover's search operator with quantum phase estimation to estimate the number of solutions m to a search problem in o(√(n/m)) queries.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing algorithms routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "quantum-counting_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Quantum Counting",
+        "content": "For N = 1024 with M = 64 solutions, classical counting requires checking almost all 1024 items. Quantum counting executes QPE on the Grover operator and estimates M ≈ 64 in roughly √1024 = 32 queries."
+      },
+      {
+        "id": "quantum-counting_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Quantum Counting:\n\n```python\nfrom qiskit import QuantumCircuit\n# Quantum Counting: QPE register (t qubits) + Grover register (n qubits)\nqc = QuantumCircuit(6, 4) # 4 counting qubits, 2 state qubits\nqc.h([0, 1, 2, 3])\nqc.h([4, 5])\n# Controlled-Grover powers here\n# Inverse QFT on [0, 1, 2, 3]\nqc.measure([0, 1, 2, 3], [0, 1, 2, 3])\n```"
+      },
+      {
+        "id": "quantum-counting_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Quantum Counting interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ],
+    "algorithm_details": {
+      "problem_statement": "Solves key algorithmic challenges in Quantum Counting.",
+      "classical_approach": "Classical deterministic or randomized sampling requiring polynomial or exponential steps.",
+      "quantum_approach": "Harnesses quantum superposition and interference to sample or extract solutions with quantum speedup.",
+      "steps": [
+        "1. Initialize quantum registers into uniform computational basis superposition.",
+        "2. Apply problem-specific unitary oracle or Hamiltonian evolution.",
+        "3. Perform interference and amplitude transformation.",
+        "4. Measure target register in computational basis."
+      ],
+      "complexity_quantum": "Quantum speedup over classical baseline",
+      "complexity_classical": "Standard classical complexity baseline",
+      "theoretical_vs_practical": "Theoretical advantage depends on circuit depth, gate fidelity, and error correction overhead."
     }
   },
   {
@@ -2935,7 +3954,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 1
         }
       ]
-    }
+    },
+    "simple_explanation": "In simple terms, Quantum Decoherence is the physical process by which fragile quantum superpositions and phase relationships degrade into classical statistical mixtures through uncontrolled environmental interactions.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing foundations routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "quantum-decoherence_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Quantum Decoherence",
+        "content": "In superconducting transmon qubits, typical coherence times are T₁ ≈ 100-300 μs and T₂ ≈ 100-200 μs. A two-qubit gate takes ~20-50 ns, allowing several thousand gate operations before decoherence destroys the computation."
+      },
+      {
+        "id": "quantum-decoherence_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Quantum Decoherence:\n\n```python\nfrom qiskit import QuantumCircuit\n# Simulating decoherence: state prepared in |+> degrades toward classical mix\nqc = QuantumCircuit(1, 1)\nqc.h(0)\n# Environmental thermal noise delays here\nqc.measure(0, 0)\n```"
+      },
+      {
+        "id": "quantum-decoherence_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Quantum Decoherence interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   },
   {
     "id": "quantum-entanglement",
@@ -3016,7 +4066,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 1
         }
       ]
-    }
+    },
+    "simple_explanation": "In simple terms, Quantum Entanglement is a quantum phenomenon where composite particles cannot be described independently of one another regardless of distance.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing quantum phenomena routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "quantum-entanglement_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Quantum Entanglement",
+        "content": "Two qubits prepared in |Φ⁺⟩ = (|00⟩ + |11⟩)/√2. If Alice measures qubit A and gets 0, Bob will measure qubit B and get 0 with 100% certainty. If Alice gets 1, Bob gets 1. Yet prior to measurement, neither qubit had a predetermined value."
+      },
+      {
+        "id": "quantum-entanglement_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Quantum Entanglement:\n\n```python\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(2)\nqc.h(0)\nqc.cx(0, 1)  # Entangles qubit 0 and qubit 1\n```"
+      },
+      {
+        "id": "quantum-entanglement_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Quantum Entanglement interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   },
   {
     "id": "quantum-error-correction",
@@ -3100,7 +4181,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
     "ingestion_source_id": "ibm-quantum-learning",
     "difficulty_level": "advanced",
     "subcategory": "Fault-Tolerant Quantum Computing",
-    "canonical_circuit": null
+    "canonical_circuit": null,
+    "simple_explanation": "In simple terms, Quantum Error Correction is a set of techniques that protect quantum information from decoherence and gate errors by encoding a logical qubit into multiple physical qubits, enabling detection and correction of errors without measuring (and thereby collapsing) the encoded state.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing error correction routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "quantum-error-correction_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Quantum Error Correction",
+        "content": "Shor code (9 qubits, corrects any 1-qubit error):\n  |0⟩_L = (|000⟩ + |111⟩)⊗(|000⟩ + |111⟩)⊗(|000⟩ + |111⟩) / 2√2\n  |1⟩_L = (|000⟩ − |111⟩)⊗(|000⟩ − |111⟩)⊗(|000⟩ − |111⟩) / 2√2\n  This construction corrects any combination of X and Z errors on a single physical qubit."
+      },
+      {
+        "id": "quantum-error-correction_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Quantum Error Correction:\n\n```python\nfrom qiskit import QuantumCircuit\n# 3-qubit bit-flip code encoder\nqc = QuantumCircuit(3, 3)\n# Prepare logical |+⟩ state on qubit 0, then spread to code word\nqc.h(0)\nqc.cx(0, 1)  # Encode qubit 0 into qubits 0,1,2\nqc.cx(0, 2)\n# Syndrome measurement uses 2 ancilla qubits (not shown here)\n# Correct and decode:\nqc.cx(0, 1)\nqc.cx(0, 2)\nqc.ccx(1, 2, 0)  # Majority vote correction\n```"
+      },
+      {
+        "id": "quantum-error-correction_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Quantum Error Correction interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   },
   {
     "id": "quantum-fourier-transform",
@@ -3166,7 +4278,52 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
     "ingestion_source_id": "manual-curation",
     "difficulty_level": null,
     "subcategory": null,
-    "canonical_circuit": null
+    "canonical_circuit": null,
+    "simple_explanation": "The Quantum Fourier Transform (QFT) is the quantum version of the classical Discrete Fourier Transform. It transforms a qubit register from the standard basis into frequency (phase) space. Just like hearing individual musical notes inside a complex chord, QFT reveals the hidden periodicity and rhythms inside quantum states.",
+    "applications": [
+      "Core engine of Shor's integer factoring and discrete logarithm algorithms",
+      "Quantum Phase Estimation (QPE) for quantum chemistry eigenvalue calculation",
+      "Solving the Hidden Subgroup Problem across Abelian groups"
+    ],
+    "limitations": [
+      "The Fourier amplitudes cannot be directly read out classically; QFT must be combined with interference and measurement",
+      "Requires controlled-phase rotations with exponentially small angles R_k = diag(1, e^{2πi/2^k}) which are vulnerable to noise"
+    ],
+    "worked_examples": [
+      {
+        "id": "qft_ex_1",
+        "type": "conceptual",
+        "title": "1-Qubit QFT is Identical to Hadamard",
+        "content": "For 1 qubit, N = 2. QFT|0⟩ = (|0⟩ + |1⟩)/√2 = |+⟩, and QFT|1⟩ = (|0⟩ − |1⟩)/√2 = |−⟩. The 1-qubit Quantum Fourier Transform is exactly the Hadamard gate."
+      },
+      {
+        "id": "qft_ex_2",
+        "type": "circuit",
+        "title": "2-Qubit QFT Circuit Diagram",
+        "circuit_ascii": "q_0: ──[H]──[R2]───────X──\n             │         │  \nq_1: ────────●────[H]──X──",
+        "content": "Applies H to q0, controlled-R2 (phase π/2) from q1 to q0, H to q1, and finishes with a SWAP gate between q0 and q1."
+      },
+      {
+        "id": "qft_ex_3",
+        "type": "scenario",
+        "title": "Period Extraction in Shor's Algorithm",
+        "content": "When applied to a periodic state |ψ⟩ = ∑_j |j · r⟩, the Inverse QFT (QFT†) concentrates probability amplitudes onto peaks at integer multiples of N/r, allowing the period r to be extracted via continued fractions."
+      }
+    ],
+    "algorithm_details": {
+      "problem_statement": "Perform the discrete Fourier transform on quantum state amplitudes: |j⟩ → 1/√N ∑_{k=0}^{N-1} e^{2πi j k / N} |k⟩.",
+      "classical_approach": "Fast Fourier Transform (FFT) requires O(N log N) = O(n 2^n) operations for N = 2^n amplitudes.",
+      "quantum_approach": "Decomposes the transformation into n(n+1)/2 single-qubit Hadamard and controlled-phase rotation gates R_k.",
+      "steps": [
+        "1. Apply Hadamard gate to qubit j.",
+        "2. Apply controlled phase rotation gates R_2, R_3, ..., R_{n-j+1} from subsequent qubits.",
+        "3. Repeat recursively for all n qubits.",
+        "4. Apply SWAP gates to reverse qubit order from most-significant to least-significant bit."
+      ],
+      "complexity_quantum": "O(n²) = O((log N)²) quantum gates",
+      "complexity_classical": "O(N log N) = O(n 2^n) classical operations (FFT)",
+      "theoretical_vs_practical": "Exponentially faster than classical FFT in terms of gate count. However, the output is encoded in quantum amplitudes and cannot be read out as a classical vector without sampling."
+    }
   },
   {
     "id": "quantum-interference",
@@ -3246,7 +4403,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 1
         }
       ]
-    }
+    },
+    "simple_explanation": "In simple terms, Quantum Interference is the wave-like addition or cancellation of complex probability amplitudes across different computational paths.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing foundations routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "quantum-interference_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Quantum Interference",
+        "content": "Applying H twice: H(H|0⟩) = H[(|0⟩ + |1⟩)/√2] = (1/2)[(|0⟩ + |1⟩) + (|0⟩ - |1⟩)] = |0⟩. The paths leading to |1⟩ cancel destructively (+1/2 - 1/2 = 0), while paths to |0⟩ reinforce (+1/2 + 1/2 = 1)."
+      },
+      {
+        "id": "quantum-interference_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Quantum Interference:\n\n```python\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.h(0)\nqc.h(0)  # Destructive interference cancels |1⟩, restoring |0⟩\n```"
+      },
+      {
+        "id": "quantum-interference_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Quantum Interference interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   },
   {
     "id": "quantum-key-distribution",
@@ -3321,7 +4509,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
     "ingestion_source_id": "ibm-quantum-learning",
     "difficulty_level": "intermediate",
     "subcategory": "Quantum Cryptographic Protocols",
-    "canonical_circuit": null
+    "canonical_circuit": null,
+    "simple_explanation": "Quantum Key Distribution (QKD) uses quantum physics to create unbreakable secret encryption keys between two parties. Because measuring a quantum particle fundamentally changes it, any eavesdropper attempting to listen in immediately gives themselves away by creating errors!",
+    "applications": [
+      "Generating mathematically unbreakable one-time pad encryption keys",
+      "Securing high-stakes financial transactions and government communications",
+      "Quantum-safe metropolitan optical fiber networks"
+    ],
+    "limitations": [
+      "Only distributes cryptographic keys; does not encrypt bulk data directly",
+      "Optical fiber attenuation limits direct distance to ~100-200 km without quantum repeaters or trusted nodes"
+    ],
+    "worked_examples": [
+      {
+        "id": "qkd_ex_1",
+        "type": "conceptual",
+        "title": "BB84 Protocol Basis Selection",
+        "content": "Alice chooses randomly between Z basis (|0⟩, |1⟩) and X basis (|+⟩, |−⟩) for each photon. Bob also chooses his measurement basis randomly. On average, their bases match 50% of the time, forming the shared raw key."
+      },
+      {
+        "id": "qkd_ex_2",
+        "type": "circuit",
+        "title": "BB84 Quantum Transmission Step",
+        "circuit_ascii": "Alice: ──[X/I]──[H/I]── (Fiber Channel) ──[H/I]──[M]── :Bob",
+        "content": "Alice applies X (for bit 1) and optionally H (for X basis). Bob optionally applies H and measures. Over public channel, they compare bases and discard mismatches."
+      },
+      {
+        "id": "qkd_ex_3",
+        "type": "scenario",
+        "title": "Eavesdropping Detection via QBER",
+        "content": "If Eve intercepts and measures in the wrong basis, she introduces a 25% error rate on matching-basis bits. Alice and Bob check a sample of their key: if Quantum Bit Error Rate (QBER) exceeds ~11%, they abort the key."
+      }
+    ]
   },
   {
     "id": "quantum-linear-systems",
@@ -3413,6 +4632,51 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 3
         }
       ]
+    },
+    "simple_explanation": "In simple terms, Quantum Linear Systems Algorithms is a class of advanced quantum algorithms (including hhl, fourier series approaches, and qsvt) that solve systems of linear equations and differential equations with exponential speedups.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing algorithms routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "quantum-linear-systems_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Quantum Linear Systems Algorithms",
+        "content": "Simulating heat diffusion or aerodynamic airflows over aircraft wings modeled by a 100,000,000-variable finite difference mesh in minutes rather than weeks."
+      },
+      {
+        "id": "quantum-linear-systems_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Quantum Linear Systems Algorithms:\n\n```python\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(3)\nqc.h([0, 1])\nqc.cp(0.6, 0, 1)\nqc.cry(0.5, 0, 2)\n```"
+      },
+      {
+        "id": "quantum-linear-systems_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Quantum Linear Systems Algorithms interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ],
+    "algorithm_details": {
+      "problem_statement": "Solves key algorithmic challenges in Quantum Linear Systems Algorithms.",
+      "classical_approach": "Classical deterministic or randomized sampling requiring polynomial or exponential steps.",
+      "quantum_approach": "Harnesses quantum superposition and interference to sample or extract solutions with quantum speedup.",
+      "steps": [
+        "1. Initialize quantum registers into uniform computational basis superposition.",
+        "2. Apply problem-specific unitary oracle or Hamiltonian evolution.",
+        "3. Perform interference and amplitude transformation.",
+        "4. Measure target register in computational basis."
+      ],
+      "complexity_quantum": "Quantum speedup over classical baseline",
+      "complexity_classical": "Standard classical complexity baseline",
+      "theoretical_vs_practical": "Theoretical advantage depends on circuit depth, gate fidelity, and error correction overhead."
     }
   },
   {
@@ -3507,6 +4771,51 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 2
         }
       ]
+    },
+    "simple_explanation": "In simple terms, Quantum Monte Carlo is a quantum algorithmic paradigm that uses quantum amplitude estimation to compute expected values, high-dimensional integrals, and risk metrics with quadratic speedup over classical monte carlo.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing algorithms routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "quantum-monte-carlo_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Quantum Monte Carlo",
+        "content": "Pricing an exotic multi-asset European or barrier option: classical Monte Carlo requires N = 10,000,000 simulation paths for 3-decimal accuracy. Quantum Monte Carlo achieves the same accuracy in ~3,160 quantum circuit evaluations."
+      },
+      {
+        "id": "quantum-monte-carlo_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Quantum Monte Carlo:\n\n```python\nfrom qiskit import QuantumCircuit\n# Probability distribution preparation + payoff rotation\nqc = QuantumCircuit(3)\nqc.h([0, 1]) # Distribution p(x)\nqc.cry(0.8, 0, 2) # Controlled payoff encoding into qubit 2\nqc.cry(0.4, 1, 2)\n```"
+      },
+      {
+        "id": "quantum-monte-carlo_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Quantum Monte Carlo interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ],
+    "algorithm_details": {
+      "problem_statement": "Solves key algorithmic challenges in Quantum Monte Carlo.",
+      "classical_approach": "Classical deterministic or randomized sampling requiring polynomial or exponential steps.",
+      "quantum_approach": "Harnesses quantum superposition and interference to sample or extract solutions with quantum speedup.",
+      "steps": [
+        "1. Initialize quantum registers into uniform computational basis superposition.",
+        "2. Apply problem-specific unitary oracle or Hamiltonian evolution.",
+        "3. Perform interference and amplitude transformation.",
+        "4. Measure target register in computational basis."
+      ],
+      "complexity_quantum": "Quantum speedup over classical baseline",
+      "complexity_classical": "Standard classical complexity baseline",
+      "theoretical_vs_practical": "Theoretical advantage depends on circuit depth, gate fidelity, and error correction overhead."
     }
   },
   {
@@ -3608,7 +4917,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 4
         }
       ]
-    }
+    },
+    "simple_explanation": "In simple terms, Quantum Oracle is a unitary black-box subroutine that evaluates a mathematical or boolean function f(x) on quantum superpositions, encoding answers via phase kickback or register bit-flips.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing techniques routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "quantum-oracle_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Quantum Oracle",
+        "content": "Grover's search oracle for marked state |11⟩: implemented by a Multi-Controlled-Z (CZ) gate that applies a -1 phase factor only to |11⟩ while leaving |00⟩, |01⟩, and |10⟩ untouched."
+      },
+      {
+        "id": "quantum-oracle_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Quantum Oracle:\n\n```python\nfrom qiskit import QuantumCircuit\n# Phase Oracle marking state |11>\nqc = QuantumCircuit(2)\nqc.cz(0, 1) # Imparts -1 phase to |11>\n```"
+      },
+      {
+        "id": "quantum-oracle_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Quantum Oracle interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   },
   {
     "id": "quantum-phase-estimation",
@@ -3680,7 +5020,53 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
     "ingestion_source_id": "qiskit-textbook",
     "difficulty_level": "advanced",
     "subcategory": "Phase-Based Subroutines",
-    "canonical_circuit": null
+    "canonical_circuit": null,
+    "simple_explanation": "Suppose you have a quantum operation (unitary operator U) and its eigenstate |ψ⟩. When U acts on |ψ⟩, it only multiplies it by a phase factor e^{2πiθ}. You cannot directly 'see' this phase. Quantum Phase Estimation (QPE) uses an auxiliary register and QFT to estimate this hidden phase θ with high mathematical precision!",
+    "applications": [
+      "Calculating molecular ground state energies in quantum chemistry",
+      "Solving linear systems of equations (HHL algorithm)",
+      "Order finding in Shor's factoring algorithm"
+    ],
+    "limitations": [
+      "Requires implementing controlled powers of the unitary: U^(2^0), U^(2^1), ..., U^(2^{t-1})",
+      "Circuit depth scales with the number of precision bits t"
+    ],
+    "worked_examples": [
+      {
+        "id": "qpe_ex_1",
+        "type": "conceptual",
+        "title": "Phase Estimation of the Z Gate with Eigenstate |1⟩",
+        "content": "The Pauli-Z gate satisfies Z|1⟩ = -|1⟩ = e^{iπ}|1⟩ = e^{2πi(1/2)}|1⟩. Here, phase θ = 1/2 = 0.1 in binary. With 1 estimation qubit, QPE prepares |+⟩|1⟩, applies controlled-Z yielding |−⟩|1⟩, applies H to get |1⟩|1⟩, and measures 1, exactly recovering θ = 0.5."
+      },
+      {
+        "id": "qpe_ex_2",
+        "type": "circuit",
+        "title": "1-Bit QPE Circuit for Z Gate",
+        "circuit_ascii": "est: ──[H]──●──[H]──[M]──\n            │        ║   \ntgt: ──[X]──Z────────╩══",
+        "content": "Target qubit is set to |1⟩ via X. Controlled-Z imparts a phase of -1 to the estimation wire. The final H decodes the phase into state |1⟩."
+      },
+      {
+        "id": "qpe_ex_3",
+        "type": "scenario",
+        "title": "Estimating Molecular Hamiltonian Ground State",
+        "content": "Let U = e^{-iHt/ℏ}. Its eigenvalues are e^{-iEt/ℏ}. QPE allows quantum chemists to measure molecular ground state energies E to within chemical accuracy (1 kcal/mol) using a logarithmic number of precision qubits."
+      }
+    ],
+    "algorithm_details": {
+      "problem_statement": "Given a unitary operator U with eigenvector |u⟩ such that U|u⟩ = e^{2πiθ}|u⟩, estimate the unknown phase θ ∈ [0, 1).",
+      "classical_approach": "Requires calculating full matrix eigenvalues or simulating iterative matrix-vector multiplications, taking exponential time for 2^n × 2^n matrices.",
+      "quantum_approach": "Uses an estimation register of t qubits initialized in superposition. Applies controlled-U^(2^j) gates followed by Inverse QFT.",
+      "steps": [
+        "1. Prepare estimation register of t qubits in |0⟩^⊗t and target register in eigenstate |u⟩.",
+        "2. Apply Hadamard gates to all t estimation qubits.",
+        "3. Apply controlled-U^(2^j) operations targeting |u⟩ for j = 0, ..., t-1.",
+        "4. Apply Inverse Quantum Fourier Transform (QFT†) to the estimation register.",
+        "5. Measure the t estimation qubits to read out the binary expansion of θ = 0.θ₁θ₂...θ_t."
+      ],
+      "complexity_quantum": "O(t²) gates plus cost of controlled-U operations",
+      "complexity_classical": "O(2^n) matrix diagonalization",
+      "theoretical_vs_practical": "Underpins most known exponential speedups in quantum simulation. In practice, requires deep coherent circuits, making it a primary target for early fault-tolerant quantum computers."
+    }
   },
   {
     "id": "quantum-state",
@@ -3766,7 +5152,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 1
         }
       ]
-    }
+    },
+    "simple_explanation": "In simple terms, Quantum State is the complete mathematical description of a quantum physical system, represented as a statevector in hilbert space for pure states, or as a density matrix for mixed states.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing foundations routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "quantum-state_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Quantum State",
+        "content": "A qubit in pure state |+⟩ has density matrix ρ = |+⟩⟨+| = 0.5[[1, 1], [1, 1]], where Tr(ρ²) = 1. A completely decohered qubit has maximally mixed density matrix ρ = 0.5[[1, 0], [0, 1]], where Tr(ρ²) = 0.5."
+      },
+      {
+        "id": "quantum-state_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Quantum State:\n\n```python\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.h(0) # Prepares pure superposition state |+>\n```"
+      },
+      {
+        "id": "quantum-state_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Quantum State interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   },
   {
     "id": "quantum-teleportation",
@@ -3874,7 +5291,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 3
         }
       ]
-    }
+    },
+    "simple_explanation": "Quantum Teleportation does NOT transport matter like in science fiction. Instead, it transports the exact, unknown quantum state of a qubit from Alice to Bob using a shared pair of entangled qubits and 2 classical bits sent over a phone or internet line. The original state at Alice's end is destroyed during the process!",
+    "applications": [
+      "Long-distance quantum communication across quantum repeaters",
+      "Moving quantum information between disparate quantum computing cores",
+      "Measurement-based and fault-tolerant quantum computing gates"
+    ],
+    "limitations": [
+      "Requires transmitting 2 classical bits, so it cannot communicate faster than light",
+      "Requires pre-shared entangled Bell pairs; entanglement is consumed during the protocol"
+    ],
+    "worked_examples": [
+      {
+        "id": "teleport_ex_1",
+        "type": "conceptual",
+        "title": "Protocol Resource Accounting",
+        "content": "To teleport 1 unknown qubit |ψ⟩ = α|0⟩ + β|1⟩ from Alice to Bob: Resources consumed: 1 entangled Bell pair |Φ+⟩ = (|00⟩+|11⟩)/√2 + 2 classical bits transmitted. Result: Bob's qubit becomes α|0⟩ + β|1⟩, Alice's original state is destroyed."
+      },
+      {
+        "id": "teleport_ex_2",
+        "type": "circuit",
+        "title": "Standard Teleportation Circuit",
+        "circuit_ascii": "q_ψ: ──●──[H]──[M]───────────────\n       │        ║                 \nq_A: ──■────────[M]───────────────\n                 ║                \nq_B: ────────────╫───[X^c1]──[Z^c0]── => |ψ⟩",
+        "content": "Alice performs a Bell measurement (CNOT then H) on |ψ⟩ and her half of the Bell pair. She sends her 2 measurement bits (c0, c1) to Bob. Bob applies Pauli X^c1 and Z^c0 to recover |ψ⟩."
+      },
+      {
+        "id": "teleport_ex_3",
+        "type": "scenario",
+        "title": "Satellite-to-Ground Quantum Teleportation",
+        "content": "In 2017, the Micius satellite demonstrated quantum teleportation across a distance of 1,400 km between Tibet and a low-Earth orbit satellite using entangled photon pairs."
+      }
+    ]
   },
   {
     "id": "quantum-walk-algorithms",
@@ -3968,6 +5416,51 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 2
         }
       ]
+    },
+    "simple_explanation": "In simple terms, Quantum Walk Algorithms is the quantum mechanical counterpart of classical markov chains and random walks, exhibiting quadratic speedups in propagation speed and spatial search on graphs.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing algorithms routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "quantum-walk-algorithms_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Quantum Walk Algorithms",
+        "content": "On a 1D line, a classical walker after 100 steps is typically within ±10 steps of the origin. A quantum walker after 100 steps has traveled approximately ±70 steps away, demonstrating ballistic propagation."
+      },
+      {
+        "id": "quantum-walk-algorithms_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Quantum Walk Algorithms:\n\n```python\nfrom qiskit import QuantumCircuit\n# 1 coin qubit (0) + 2 position qubits (1, 2)\nqc = QuantumCircuit(3)\nqc.h(0) # Coin flip\n# Conditional position increment\nqc.cx(0, 1)\nqc.ccx(0, 1, 2)\n```"
+      },
+      {
+        "id": "quantum-walk-algorithms_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Quantum Walk Algorithms interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ],
+    "algorithm_details": {
+      "problem_statement": "Solves key algorithmic challenges in Quantum Walk Algorithms.",
+      "classical_approach": "Classical deterministic or randomized sampling requiring polynomial or exponential steps.",
+      "quantum_approach": "Harnesses quantum superposition and interference to sample or extract solutions with quantum speedup.",
+      "steps": [
+        "1. Initialize quantum registers into uniform computational basis superposition.",
+        "2. Apply problem-specific unitary oracle or Hamiltonian evolution.",
+        "3. Perform interference and amplitude transformation.",
+        "4. Measure target register in computational basis."
+      ],
+      "complexity_quantum": "Quantum speedup over classical baseline",
+      "complexity_classical": "Standard classical complexity baseline",
+      "theoretical_vs_practical": "Theoretical advantage depends on circuit depth, gate fidelity, and error correction overhead."
     }
   },
   {
@@ -4042,7 +5535,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "title": "Single Qubit Ground State",
       "description": "Qubit in standard computational basis ground state |0⟩",
       "gates": []
-    }
+    },
+    "simple_explanation": "In simple terms, Qubit is the fundamental unit of quantum information, represented as a two-level quantum system with continuous state amplitudes.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing foundations routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "qubit_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Qubit",
+        "content": "Consider a state with α = 1/√2 and β = 1/√2: |ψ⟩ = (1/√2)|0⟩ + (1/√2)|1⟩. Measuring this qubit gives outcome 0 with probability |1/√2|² = 1/2 (50%) and outcome 1 with probability |1/√2|² = 1/2 (50%)."
+      },
+      {
+        "id": "qubit_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Qubit:\n\n```python\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(1, 1)\nqc.h(0)  # Put qubit 0 into equal superposition\nqc.measure(0, 0)\n```"
+      },
+      {
+        "id": "qubit_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Qubit interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   },
   {
     "id": "rotation-gates",
@@ -4133,7 +5657,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 2
         }
       ]
-    }
+    },
+    "simple_explanation": "In simple terms, Rotation Gates is a parametric family of continuous single-qubit quantum gates that rotate a qubit's state vector by an arbitrary angle θ around the x, y, or z axes of the bloch sphere.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing quantum gates routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "rotation-gates_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Rotation Gates",
+        "content": "Applying Ry(π/2) to state |0⟩ produces (|0⟩ + |1⟩)/√2 (state |+⟩). Applying Ry(π) to |0⟩ flips it completely to |1⟩ (acting as a Pauli-X gate up to a global phase)."
+      },
+      {
+        "id": "rotation-gates_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Rotation Gates:\n\n```python\nfrom qiskit import QuantumCircuit\nimport numpy as np\nqc = QuantumCircuit(1)\nqc.rx(np.pi/4, 0)\nqc.ry(np.pi/3, 0)\nqc.rz(np.pi/2, 0)\n```"
+      },
+      {
+        "id": "rotation-gates_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Rotation Gates interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   },
   {
     "id": "shors-algorithm",
@@ -4213,7 +5768,52 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
     "ingestion_source_id": "ibm-quantum-learning",
     "difficulty_level": "advanced",
     "subcategory": "Cryptography-Breaking Algorithms",
-    "canonical_circuit": null
+    "canonical_circuit": null,
+    "simple_explanation": "In simple terms, Shor's Algorithm is a quantum algorithm for integer factorization that runs in polynomial time o((log n)³), providing exponential speedup over the best known classical algorithms.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing algorithms routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "shors-algorithm_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Shor's Algorithm",
+        "content": "Factor N = 15 with a = 7:\n  f(x) = 7^x mod 15: f(0)=1, f(1)=7, f(2)=4, f(3)=13, f(4)=1...\n  Period r = 4 (even ✓)\n  a^(r/2) = 7² = 49 ≡ 4 (mod 15); 4 ≠ 14 ≡ −1 (mod 15) ✓\n  gcd(49−1, 15) = gcd(48, 15) = 3  → factor!\n  gcd(49+1, 15) = gcd(50, 15) = 5  → factor!\n  15 = 3 × 5 ✓"
+      },
+      {
+        "id": "shors-algorithm_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Shor's Algorithm:\n\n```python\nfrom qiskit import QuantumCircuit\nfrom qiskit.circuit.library import QFT\n# Minimal period-finding circuit for N=15, a=7 (4-qubit example)\nqc = QuantumCircuit(4, 4)\nqc.h(range(4))          # Superposition on counting register\n# (Oracle for 7^x mod 15 implemented as controlled-unitary sequence)\n# Apply inverse QFT to extract period\nqc.compose(QFT(4, inverse=True), inplace=True)\nqc.measure_all()\n```"
+      },
+      {
+        "id": "shors-algorithm_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Shor's Algorithm interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ],
+    "algorithm_details": {
+      "problem_statement": "Solves key algorithmic challenges in Shor's Algorithm.",
+      "classical_approach": "Classical deterministic or randomized sampling requiring polynomial or exponential steps.",
+      "quantum_approach": "Harnesses quantum superposition and interference to sample or extract solutions with quantum speedup.",
+      "steps": [
+        "1. Initialize quantum registers into uniform computational basis superposition.",
+        "2. Apply problem-specific unitary oracle or Hamiltonian evolution.",
+        "3. Perform interference and amplitude transformation.",
+        "4. Measure target register in computational basis."
+      ],
+      "complexity_quantum": "Quantum speedup over classical baseline",
+      "complexity_classical": "Standard classical complexity baseline",
+      "theoretical_vs_practical": "Theoretical advantage depends on circuit depth, gate fidelity, and error correction overhead."
+    }
   },
   {
     "id": "shors-discrete-logarithm-algorithm",
@@ -4319,6 +5919,52 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 2
         }
       ]
+    },
+    "simple_explanation": "In simple terms, Shor's Discrete Logarithm Algorithm is the second major algorithm introduced in peter shor's 1994 landmark paper, solving the discrete logarithm problem in polynomial time and breaking diffie-hellman and elliptic curve cryptography (ecc).. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing cryptography routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "shors-discrete-logarithm-algorithm_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Shor's Discrete Logarithm Algorithm",
+        "content": "Breaking 256-bit Elliptic Curve Cryptography (secp256k1 used in Bitcoin): classical computers require ~2¹²⁸ operations (billions of years). Shor's discrete logarithm algorithm can solve it with ~2,330 physical logical qubits in a few hours of runtime."
+      },
+      {
+        "id": "shors-discrete-logarithm-algorithm_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Shor's Discrete Logarithm Algorithm:\n\n```python\nfrom qiskit import QuantumCircuit\n# 2D QFT + Modular Exponentiation\nqc = QuantumCircuit(4, 2)\nqc.h([0, 1])\n# Modular multiplication: g^a * y^(-b)\nqc.h([0, 1])\nqc.measure([0, 1], [0, 1])\n```"
+      },
+      {
+        "id": "shors-discrete-logarithm-algorithm_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Shor's Discrete Logarithm Algorithm interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ],
+    "algorithm_details": {
+      "problem_statement": "Given a cyclic group G with generator g and target element y = g^x mod p, determine the integer exponent x (discrete logarithm). This problem forms the cryptographic foundation of Diffie-Hellman and Elliptic Curve Cryptography (ECC).",
+      "classical_approach": "Best classical algorithms (Number Field Sieve, Pollard's rho) require sub-exponential L(1/3) or exponential O(√p) group operations, requiring billions of years for 256-bit ECC keys.",
+      "quantum_approach": "Prepares two registers in equal superposition, evaluates the 2D periodic function f(a, b) = g^a y^(-b) = g^(a - bx) mod p, and applies a 2-dimensional Quantum Fourier Transform to extract x in polynomial time.",
+      "steps": [
+        "Initialize two quantum input registers |0⟩^⊗m |0⟩^⊗m and apply Hadamard transforms to create 2D uniform superposition.",
+        "Implement quantum modular exponentiation oracle computing |a⟩|b⟩|g^a y^(-b) mod p⟩ in a third target register.",
+        "Measure the target register to entangle the input registers in a periodic 2D coset lattice a - bx ≡ c (mod r).",
+        "Apply the 2-dimensional Inverse Quantum Fourier Transform (QFT_2D) across both input registers.",
+        "Measure Fourier frequencies (u, v) and use classical continued fractions to solve u x + v ≡ 0 (mod r), extracting the discrete logarithm x."
+      ],
+      "complexity_quantum": "O((log p)³)",
+      "complexity_classical": "O(exp(c (log p)^(1/3) (log log p)^(2/3)))",
+      "theoretical_vs_practical": "Exponential quantum speedup that completely breaks 256-bit ECC and 2048-bit Diffie-Hellman in polynomial time. Practical execution requires ~2,330 fault-tolerant logical qubits with surface-code error correction."
     }
   },
   {
@@ -4431,6 +6077,51 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 3
         }
       ]
+    },
+    "simple_explanation": "In simple terms, Simon's Algorithm is the first quantum algorithm to demonstrate an exponential speedup over all classical probabilistic algorithms for an oracle problem, finding a hidden xor period s with o(n) queries.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing algorithms routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "simons-algorithm_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Simon's Algorithm",
+        "content": "For n = 100 bits, classical algorithms require on the order of 2⁵⁰ ≈ 10¹⁵ queries to find a collision. Simon's algorithm solves it with fewer than 200 quantum queries followed by solving a 100x100 classical linear system."
+      },
+      {
+        "id": "simons-algorithm_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Simon's Algorithm:\n\n```python\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(6, 3) # 3 input qubits, 3 ancilla qubits\nqc.h([0, 1, 2])\n# [Simon's 2-to-1 Oracle U_f here]\nqc.h([0, 1, 2])\nqc.measure([0, 1, 2], [0, 1, 2])\n```"
+      },
+      {
+        "id": "simons-algorithm_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Simon's Algorithm interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ],
+    "algorithm_details": {
+      "problem_statement": "Solves key algorithmic challenges in Simon's Algorithm.",
+      "classical_approach": "Classical deterministic or randomized sampling requiring polynomial or exponential steps.",
+      "quantum_approach": "Harnesses quantum superposition and interference to sample or extract solutions with quantum speedup.",
+      "steps": [
+        "1. Initialize quantum registers into uniform computational basis superposition.",
+        "2. Apply problem-specific unitary oracle or Hamiltonian evolution.",
+        "3. Perform interference and amplitude transformation.",
+        "4. Measure target register in computational basis."
+      ],
+      "complexity_quantum": "Quantum speedup over classical baseline",
+      "complexity_classical": "Standard classical complexity baseline",
+      "theoretical_vs_practical": "Theoretical advantage depends on circuit depth, gate fidelity, and error correction overhead."
     }
   },
   {
@@ -4535,7 +6226,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 5
         }
       ]
-    }
+    },
+    "simple_explanation": "Superdense Coding is the mirror twin of quantum teleportation. While teleportation sends 1 quantum state using 2 classical bits, superdense coding transmits TWO classical bits (00, 01, 10, or 11) by sending only ONE physical qubit across, leveraging a pre-shared entangled pair!",
+    "applications": [
+      "Doubling the classical communication capacity of quantum channels",
+      "High-density quantum networking protocols",
+      "Quantum communication benchmarks"
+    ],
+    "limitations": [
+      "Requires a pre-shared entangled Bell pair prior to transmission",
+      "Channel noise degrading the transmitted qubit reduces decoding fidelity"
+    ],
+    "worked_examples": [
+      {
+        "id": "sdc_ex_1",
+        "type": "conceptual",
+        "title": "Alice's Gate Encoding Matrix",
+        "content": "To send '00': Alice applies I → state |Φ+⟩ = (|00⟩+|11⟩)/√2\nTo send '01': Alice applies Z → state |Φ−⟩ = (|00⟩−|11⟩)/√2\nTo send '10': Alice applies X → state |Ψ+⟩ = (|01⟩+|10⟩)/√2\nTo send '11': Alice applies iY = XZ → state |Ψ−⟩ = (|01⟩−|10⟩)/√2."
+      },
+      {
+        "id": "sdc_ex_2",
+        "type": "circuit",
+        "title": "Superdense Coding Circuit for '10'",
+        "circuit_ascii": "Alice: ──[X]──●──[H]──[M]── (Measures 1)\n              │        ║   \nBob:   ───────■────────[M]── (Measures 0) => '10'",
+        "content": "Alice applies X to her entangled qubit and sends it to Bob. Bob performs Bell decoding (CNOT + H) and measures both qubits, reading out classical bits 10 with 100% certainty."
+      },
+      {
+        "id": "sdc_ex_3",
+        "type": "scenario",
+        "title": "Bandwidth Comparison",
+        "content": "Under Holevo's theorem, 1 unentangled qubit can transmit at most 1 classical bit. Pre-shared entanglement doubles this bound to 2 classical bits per transmitted qubit."
+      }
+    ]
   },
   {
     "id": "superposition",
@@ -4609,7 +6331,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 0
         }
       ]
-    }
+    },
+    "simple_explanation": "In simple terms, Superposition is the linear combination of quantum basis states weighted by complex probability amplitudes before measurement.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing foundations routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "superposition_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Superposition",
+        "content": "Applying the Hadamard gate to |0⟩ produces the state |+⟩ = (|0⟩ + |1⟩)/√2. Applying it to |1⟩ yields |-⟩ = (|0⟩ - |1⟩)/√2. Both have 50/50 measurement chances, but their opposite relative phases create opposite interference results when another H gate is applied."
+      },
+      {
+        "id": "superposition_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Superposition:\n\n```python\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.h(0)  # Creates superposition: (|0⟩ + |1⟩)/√2\n```"
+      },
+      {
+        "id": "superposition_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Superposition interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   },
   {
     "id": "t-gate",
@@ -4694,7 +6447,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 1
         }
       ]
-    }
+    },
+    "simple_explanation": "In simple terms, T Gate (π/8 Gate) is a vital non-clifford single-qubit quantum gate that applies a π/4 (45°) phase rotation to |1⟩, providing the essential non-stabilizer resource required for universal fault-tolerant quantum computing.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing quantum gates routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "t-gate_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: T Gate (π/8 Gate)",
+        "content": "Applying T to |+⟩: T((|0⟩+|1⟩)/√2) = (|0⟩ + e^(iπ/4)|1⟩)/√2. The state vector rotates 45° counter-clockwise around the Z-axis on the Bloch sphere equator."
+      },
+      {
+        "id": "t-gate_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for T Gate (π/8 Gate):\n\n```python\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.h(0)\nqc.t(0)   # T gate\nqc.tdg(0) # T-dagger gate\n```"
+      },
+      {
+        "id": "t-gate_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, T Gate (π/8 Gate) interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   },
   {
     "id": "toffoli-gate",
@@ -4788,7 +6572,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 1
         }
       ]
-    }
+    },
+    "simple_explanation": "In simple terms, Toffoli Gate is a three-qubit reversible gate (also called ccx or controlled-controlled-not) that applies an x (not) operation on the target qubit if and only if both control qubits are in state |1⟩.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing quantum gates routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "toffoli-gate_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Toffoli Gate",
+        "content": "|1,1,0⟩ → |1,1,1⟩  (target flipped: 0 ⊕ 1 = 1)\n|1,1,1⟩ → |1,1,0⟩  (target flipped: 1 ⊕ 1 = 0)\n|1,0,1⟩ → |1,0,1⟩  (c₂=0, no flip)\n|0,1,0⟩ → |0,1,0⟩  (c₁=0, no flip)"
+      },
+      {
+        "id": "toffoli-gate_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Toffoli Gate:\n\n```python\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(3, 3)\n# Set both controls to |1⟩\nqc.x(0)  # control 1\nqc.x(1)  # control 2\n# Apply Toffoli gate: flips qubit 2 since c1=c2=1\nqc.ccx(0, 1, 2)\nqc.measure_all()\n# Expected output: |111⟩ (both controls remain |1⟩, target flipped 0→1)\n```"
+      },
+      {
+        "id": "toffoli-gate_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Toffoli Gate interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   },
   {
     "id": "variational-quantum-algorithms",
@@ -4884,6 +6699,51 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 2
         }
       ]
+    },
+    "simple_explanation": "In simple terms, Variational Quantum Algorithms (VQAs) is the dominant meta-heuristic framework for nisq devices that uses parameterized quantum circuits trained via classical gradient descent or gradient-free optimizers.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing algorithms routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "variational-quantum-algorithms_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Variational Quantum Algorithms (VQAs)",
+        "content": "Training a 4-qubit Quantum Neural Network to classify handwritten digits using alternating layers of parameterized single-qubit rotations Ry(θ) and circular CNOT entanglement."
+      },
+      {
+        "id": "variational-quantum-algorithms_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Variational Quantum Algorithms (VQAs):\n\n```python\nfrom qiskit import QuantumCircuit\nfrom qiskit.circuit import Parameter\ntheta = Parameter('θ')\nqc = QuantumCircuit(2)\nqc.ry(theta, 0)\nqc.cx(0, 1)\nqc.ry(theta, 1)\n```"
+      },
+      {
+        "id": "variational-quantum-algorithms_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Variational Quantum Algorithms (VQAs) interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ],
+    "algorithm_details": {
+      "problem_statement": "Solves key algorithmic challenges in Variational Quantum Algorithms (VQAs).",
+      "classical_approach": "Classical deterministic or randomized sampling requiring polynomial or exponential steps.",
+      "quantum_approach": "Harnesses quantum superposition and interference to sample or extract solutions with quantum speedup.",
+      "steps": [
+        "1. Initialize quantum registers into uniform computational basis superposition.",
+        "2. Apply problem-specific unitary oracle or Hamiltonian evolution.",
+        "3. Perform interference and amplitude transformation.",
+        "4. Measure target register in computational basis."
+      ],
+      "complexity_quantum": "Quantum speedup over classical baseline",
+      "complexity_classical": "Standard classical complexity baseline",
+      "theoretical_vs_practical": "Theoretical advantage depends on circuit depth, gate fidelity, and error correction overhead."
     }
   },
   {
@@ -4980,6 +6840,53 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 2
         }
       ]
+    },
+    "simple_explanation": "VQE is a hybrid quantum-classical algorithm that calculates the lowest energy state (ground state) of molecules and materials. The quantum computer calculates the energy of a proposed quantum state, and a classical computer adjusts the gate knobs to find the minimum energy.",
+    "applications": [
+      "Calculating molecular ground state energies (H2, LiH, H2O) in quantum chemistry",
+      "Designing novel battery materials and catalysts",
+      "Condensed matter physics and strongly correlated electron systems"
+    ],
+    "limitations": [
+      "Sensitive to barren plateaus in parameter space during classical optimization",
+      "Requires millions of measurement shots to accurately estimate Hamiltonian expectation values"
+    ],
+    "worked_examples": [
+      {
+        "id": "vqe_ex_1",
+        "type": "conceptual",
+        "title": "Variational Principle Guarantee",
+        "content": "By the Rayleigh-Ritz variational principle, for any trial state |ψ(θ)⟩, the expectation value ⟨ψ(θ)|H|ψ(θ)⟩ is strictly greater than or equal to the true ground state energy E₀. Thus, minimizing the energy expectation always approaches the true physical state."
+      },
+      {
+        "id": "vqe_ex_2",
+        "type": "circuit",
+        "title": "Hardware-Efficient Ansatz for 2 Qubits",
+        "circuit_ascii": "q_0: ──[Ry(θ₀)]──●─────────[Ry(θ₂)]──\n                 │                  \nq_1: ──[Ry(θ₁)]──■──[Ry(θ₃)]────────",
+        "content": "Parameterized single-qubit Ry rotations adjust amplitude ratios, while CNOT generates entanglement. Measuring in Z and X bases yields the Pauli expectation values."
+      },
+      {
+        "id": "vqe_ex_3",
+        "type": "scenario",
+        "title": "Simulating the Hydrogen Molecule (H2)",
+        "content": "Using a minimal STO-3G basis, the H2 molecule maps to a 2-qubit Hamiltonian: H = g₀ I + g₁ Z₀ + g₂ Z₁ + g₃ Z₀Z₁ + g₄ X₀X₁. VQE can plot the dissociation curve of H2 with high accuracy on current transmon processors."
+      }
+    ],
+    "algorithm_details": {
+      "problem_statement": "Find the ground state energy E₀ = min_ψ ⟨ψ|H|ψ⟩ of a molecular electronic Hamiltonian H.",
+      "classical_approach": "Full Configuration Interaction (FCI) scales exponentially with the number of orbitals O(e^n). Coupled Cluster (CCSD(T)) is polynomial but fails for strongly correlated systems.",
+      "quantum_approach": "Prepares a parameterized quantum state |ψ(θ)⟩ via an ansatz circuit. Measures Pauli expectation values ⟨H⟩ and uses classical optimizer to minimize energy.",
+      "steps": [
+        "1. Map molecular electronic Hamiltonian to qubit Pauli strings H = ∑ c_i P_i (Jordan-Wigner or Bravyi-Kitaev).",
+        "2. Choose parameterized ansatz circuit U(θ) (e.g. Unitary Coupled Cluster UCCSD or Hardware-Efficient Ansatz).",
+        "3. Execute circuit to generate trial state |ψ(θ)⟩ = U(θ)|0⟩.",
+        "4. Measure expectation values ⟨P_i⟩ on the quantum processor.",
+        "5. Classical computer calculates total energy E(θ) = ∑ c_i ⟨P_i⟩.",
+        "6. Classical optimizer updates angles θ until minimum energy is found (Rayleigh-Ritz variational principle)."
+      ],
+      "complexity_quantum": "Polynomial circuit depth O(poly(n))",
+      "complexity_classical": "Exponential FCI O(e^n)",
+      "theoretical_vs_practical": "VQE is the flagship algorithm for NISQ hardware. However, shot noise and measurement overhead remain major bottlenecks before achieving commercial advantage over classical DFT."
     }
   },
   {
@@ -5058,7 +6965,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 0
         }
       ]
-    }
+    },
+    "simple_explanation": "In simple terms, X Gate is the pauli-x operator that performs a bit-flip operation, rotating the state vector by π radians around the x-axis of the bloch sphere.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing quantum gates routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "x-gate_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: X Gate",
+        "content": "If |ψ⟩ = 0.8|0⟩ + 0.6|1⟩, applying the X gate yields X|ψ⟩ = 0.6|0⟩ + 0.8|1⟩."
+      },
+      {
+        "id": "x-gate_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for X Gate:\n\n```python\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.x(0)  # Flips |0⟩ to |1⟩\n```"
+      },
+      {
+        "id": "x-gate_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, X Gate interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   },
   {
     "id": "y-gate",
@@ -5117,7 +7055,38 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
     "ingestion_source_id": "manual-curation",
     "difficulty_level": null,
     "subcategory": null,
-    "canonical_circuit": null
+    "canonical_circuit": null,
+    "simple_explanation": "In simple terms, Y Gate is the pauli-y operator that performs both a bit flip and a phase flip (multiplication by complex unit i), rotating by π around the y-axis.. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing quantum gates routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "y-gate_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Y Gate",
+        "content": "Applying Y to |0⟩ produces state i|1⟩. In terms of measurement probabilities, |i|² = 1, so the qubit will be measured as 1 with 100% certainty, but carries an imaginary global phase."
+      },
+      {
+        "id": "y-gate_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Y Gate:\n\n```python\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.y(0)  # Applies Pauli-Y gate\n```"
+      },
+      {
+        "id": "y-gate_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Y Gate interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   },
   {
     "id": "z-gate",
@@ -5197,6 +7166,37 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
           "step": 1
         }
       ]
-    }
+    },
+    "simple_explanation": "In simple terms, Z Gate is the pauli-z operator that applies a phase flip (multiplying |1⟩ by -1 while leaving |0⟩ unchanged).. It describes how quantum states and transformations operate beyond classical limitations, relying on the mathematical principles of quantum mechanics.",
+    "applications": [
+      "Designing and analyzing quantum gates routines in modern quantum software (Qiskit, Cirq, PennyLane)",
+      "Benchmarking quantum processors against environmental decoherence and gate errors",
+      "Foundational module in quantum information science curricula"
+    ],
+    "limitations": [
+      "Sensitive to hardware gate infidelities and thermal relaxation on NISQ devices",
+      "Requires physical calibration to minimize phase drifts and crosstalk"
+    ],
+    "worked_examples": [
+      {
+        "id": "z-gate_ex_1",
+        "type": "conceptual",
+        "title": "Conceptual Walkthrough: Z Gate",
+        "content": "Applying Z to the equal superposition |+⟩ = (|0⟩ + |1⟩)/√2 transforms it into |-⟩ = (|0⟩ - |1⟩)/√2."
+      },
+      {
+        "id": "z-gate_ex_2",
+        "type": "circuit",
+        "title": "Circuit & Implementation Example",
+        "circuit_ascii": "q_0: ──[H]──●──[M]──\n           │   ║ \nq_1: ───────■───╩══",
+        "content": "Qiskit Python circuit code for Z Gate:\n\n```python\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.z(0)  # Flips the phase of state |1⟩\n```"
+      },
+      {
+        "id": "z-gate_ex_3",
+        "type": "scenario",
+        "title": "Advanced Scenario & Edge Cases",
+        "content": "In multi-qubit systems, Z Gate interacts with neighboring registers through unitary coupling. Care must be taken to account for phase accumulation and crosstalk to maintain state purity."
+      }
+    ]
   }
 ];

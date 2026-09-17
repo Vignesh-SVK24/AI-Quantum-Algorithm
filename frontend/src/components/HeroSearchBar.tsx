@@ -17,7 +17,9 @@ import {
   Code2,
   AlertTriangle,
   Layers,
-  Globe2
+  Globe2,
+  Lightbulb,
+  Cpu
 } from 'lucide-react';
 import { searchQuantum, simulateCircuit, type QuantumTopicSearchResponse } from '../services/api';
 import type { QuantumVisualizationData } from './visualization3d';
@@ -33,6 +35,9 @@ export const HeroSearchBar: React.FC = () => {
   const [hasSearched, setHasSearched] = useState(false);
   const [isDetailsExpanded, setIsDetailsExpanded] = useState(false);
   const [is3DExpanded, setIs3DExpanded] = useState(false);
+  const [isAlgorithmExpanded, setIsAlgorithmExpanded] = useState(false);
+  const [isAppsExpanded, setIsAppsExpanded] = useState(false);
+  const [activeExampleTab, setActiveExampleTab] = useState(0);
   const [canonicalSimData, setCanonicalSimData] = useState<QuantumVisualizationData | null>(null);
   const [isSimulating3D, setIsSimulating3D] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -50,6 +55,9 @@ export const HeroSearchBar: React.FC = () => {
     setHasSearched(true);
     setIsDetailsExpanded(false);
     setIs3DExpanded(false);
+    setIsAlgorithmExpanded(false);
+    setIsAppsExpanded(false);
+    setActiveExampleTab(0);
     setCanonicalSimData(null);
 
     try {
@@ -77,6 +85,9 @@ export const HeroSearchBar: React.FC = () => {
     setHasSearched(false);
     setIsDetailsExpanded(false);
     setIs3DExpanded(false);
+    setIsAlgorithmExpanded(false);
+    setIsAppsExpanded(false);
+    setActiveExampleTab(0);
     setCanonicalSimData(null);
     inputRef.current?.focus();
   };
@@ -130,6 +141,27 @@ export const HeroSearchBar: React.FC = () => {
       state: {
         initialQuestion: `Can you explain more about ${result.topic.topic_name}?`,
         initialAnswer: result.topic.short_definition,
+        sources: [
+          {
+            name: result.topic.source_name || 'IBM Quantum Learning',
+            title: result.topic.topic_name,
+            url: result.topic.source_url,
+            source_type: 'platform'
+          }
+        ]
+      }
+    });
+  };
+
+  const handleOpenTutorWithPrompt = (promptText: string) => {
+    if (!result?.topic) {
+      navigate('/tutor');
+      return;
+    }
+    navigate('/tutor', {
+      state: {
+        initialQuestion: promptText,
+        autoSend: true,
         sources: [
           {
             name: result.topic.source_name || 'IBM Quantum Learning',
@@ -318,8 +350,99 @@ export const HeroSearchBar: React.FC = () => {
                 </div>
               )}
 
-              {/* Worked Example Block (if available) */}
-              {result.topic.example && (
+              {/* Worked Examples Section (Multi-Tab if enriched) */}
+              {result.topic.worked_examples && result.topic.worked_examples.length > 0 ? (
+                <div className="p-4 rounded-2xl bg-warm-ivory border border-soft-sand space-y-3">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-black-olive flex items-center gap-1.5">
+                      <Lightbulb className="w-3.5 h-3.5 text-warm-gold" />
+                      <span>Worked Examples ({result.topic.worked_examples.length} Distinct Cases)</span>
+                    </div>
+                    {/* Tab Switcher */}
+                    <div className="flex items-center gap-1 bg-soft-sand/60 p-1 rounded-xl">
+                      {result.topic.worked_examples.map((ex, exIdx) => (
+                        <button
+                          key={`ex-tab-${exIdx}`}
+                          type="button"
+                          onClick={() => setActiveExampleTab(exIdx)}
+                          className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all ${
+                            activeExampleTab === exIdx
+                              ? 'bg-deep-olive text-floral-white shadow-sm'
+                              : 'text-black-olive hover:bg-soft-sand'
+                          }`}
+                        >
+                          Ex {exIdx + 1}: {ex.type.toUpperCase()}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Active Example Display */}
+                  {(() => {
+                    const curEx = result.topic.worked_examples[activeExampleTab] || result.topic.worked_examples[0];
+                    return (
+                      <div className="space-y-2 pt-1 animate-in fade-in duration-200">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-black-olive">
+                            {curEx.title}
+                          </span>
+                          <span className="text-[9px] font-mono uppercase px-2 py-0.5 rounded-full bg-soft-sand text-deep-olive font-semibold">
+                            {curEx.type}
+                          </span>
+                        </div>
+                        <p className="text-xs text-black-olive/85 leading-relaxed">
+                          {curEx.content}
+                        </p>
+                        {curEx.circuit_ascii && (
+                          <div className="mt-2 space-y-1">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-olive-mist">
+                              Circuit ASCII Diagram
+                            </span>
+                            <pre className="p-3 rounded-xl bg-cocoa-noir text-floral-white text-[11px] font-mono overflow-x-auto leading-snug">
+                              {curEx.circuit_ascii}
+                            </pre>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
+
+                  {/* Quick Follow-up Chips for AI Tutor */}
+                  <div className="pt-2 border-t border-soft-sand flex flex-wrap items-center gap-1.5 text-[11px]">
+                    <span className="font-semibold text-olive-mist text-[10px] uppercase tracking-wider mr-1">
+                      Ask Tutor:
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleOpenTutorWithPrompt(`Give me another example of ${result.topic?.topic_name}`)}
+                      className="px-2.5 py-1 rounded-full bg-[#FFFDF7] border border-soft-sand hover:border-black-olive/40 text-black-olive text-[11px] font-medium transition-all flex items-center gap-1 shadow-sm"
+                    >
+                      <span>💡 Another Example</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleOpenTutorWithPrompt(`Explain ${result.topic?.topic_name} mathematically`)}
+                      className="px-2.5 py-1 rounded-full bg-[#FFFDF7] border border-soft-sand hover:border-black-olive/40 text-black-olive text-[11px] font-medium transition-all flex items-center gap-1 shadow-sm"
+                    >
+                      <span>📐 Math breakdown</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleOpenTutorWithPrompt(`Show me a quantum circuit example for ${result.topic?.topic_name}`)}
+                      className="px-2.5 py-1 rounded-full bg-[#FFFDF7] border border-soft-sand hover:border-black-olive/40 text-black-olive text-[11px] font-medium transition-all flex items-center gap-1 shadow-sm"
+                    >
+                      <span>⚡ Circuit code</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleOpenTutorWithPrompt(`Explain ${result.topic?.topic_name} simply like I'm a beginner`)}
+                      className="px-2.5 py-1 rounded-full bg-[#FFFDF7] border border-soft-sand hover:border-black-olive/40 text-black-olive text-[11px] font-medium transition-all flex items-center gap-1 shadow-sm"
+                    >
+                      <span>🧸 Explain simply</span>
+                    </button>
+                  </div>
+                </div>
+              ) : result.topic.example ? (
                 <div className="p-3.5 rounded-2xl bg-black-olive/5 border border-black-olive/5 space-y-1">
                   <div className="text-[10px] font-bold uppercase tracking-wider text-black-olive/80">
                     💡 Worked Example
@@ -327,6 +450,141 @@ export const HeroSearchBar: React.FC = () => {
                   <p className="text-xs text-black-olive/85 leading-relaxed">
                     {result.topic.example}
                   </p>
+                </div>
+              ) : null}
+
+              {/* Algorithm Deep Dive (Classical vs Quantum Complexity) */}
+              {result.topic.algorithm_details && (
+                <div className="pt-1 border-t border-black-olive/10">
+                  <button
+                    type="button"
+                    onClick={() => setIsAlgorithmExpanded(!isAlgorithmExpanded)}
+                    className="w-full flex items-center justify-between py-2 px-3 rounded-xl bg-floral-white shadow-neu-sm-raised hover:shadow-neu-sm-pressed text-xs font-bold text-slate-gray transition-all"
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <Cpu className="w-3.5 h-3.5 text-warm-gold" />
+                      {isAlgorithmExpanded ? 'Hide Algorithm Deep Dive' : 'Algorithm Deep Dive: Classical vs Quantum Complexity'}
+                    </span>
+                    {isAlgorithmExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  </button>
+
+                  {isAlgorithmExpanded && (
+                    <div className="mt-3 space-y-3.5 p-4 rounded-2xl bg-floral-white shadow-neu-pressed border border-black-olive/5 animate-in fade-in duration-200">
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-gray">
+                          Problem Statement
+                        </span>
+                        <p className="text-xs text-black-olive/90 leading-relaxed font-medium">
+                          {result.topic.algorithm_details.problem_statement}
+                        </p>
+                      </div>
+
+                      {/* Complexity Comparison Table */}
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-xs text-left border-collapse">
+                          <thead>
+                            <tr className="border-b border-black-olive/10 text-[10px] uppercase font-bold text-slate-gray">
+                              <th className="py-1.5 pr-3">Approach</th>
+                              <th className="py-1.5 px-3">Complexity</th>
+                              <th className="py-1.5 pl-3">Mechanism</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-black-olive/5 font-mono text-[11px]">
+                            <tr>
+                              <td className="py-1.5 pr-3 font-sans font-semibold text-black-olive">Classical</td>
+                              <td className="py-1.5 px-3 text-[#A34B24] font-bold">{result.topic.algorithm_details.complexity_classical}</td>
+                              <td className="py-1.5 pl-3 font-sans text-black-olive/75">{result.topic.algorithm_details.classical_approach || 'Sequential evaluation / brute-force'}</td>
+                            </tr>
+                            <tr>
+                              <td className="py-1.5 pr-3 font-sans font-semibold text-black-olive">Quantum</td>
+                              <td className="py-1.5 px-3 text-deep-olive font-bold">{result.topic.algorithm_details.complexity_quantum}</td>
+                              <td className="py-1.5 pl-3 font-sans text-black-olive/75">{result.topic.algorithm_details.quantum_approach || 'Quantum superposition & interference'}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Key Execution Steps */}
+                      {result.topic.algorithm_details.steps && result.topic.algorithm_details.steps.length > 0 && (
+                        <div className="space-y-1 pt-1">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-gray">
+                            Execution Steps
+                          </span>
+                          <ol className="list-decimal pl-4 space-y-1 text-xs text-black-olive/85">
+                            {result.topic.algorithm_details.steps.map((step: string, sIdx: number) => (
+                              <li key={`step-${sIdx}`}>{step}</li>
+                            ))}
+                          </ol>
+                        </div>
+                      )}
+
+                      {/* Speedup details */}
+                      {result.topic.algorithm_details.theoretical_vs_practical && (
+                        <div className="p-2.5 rounded-xl bg-warm-ivory border border-soft-sand space-y-1 text-xs">
+                          <div>
+                            <span className="font-bold text-black-olive">Theoretical vs Practical Reality: </span>
+                            <span className="text-deep-olive font-semibold">{result.topic.algorithm_details.theoretical_vs_practical}</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Applications & Limitations Grid */}
+              {((result.topic.applications && result.topic.applications.length > 0) ||
+                (result.topic.limitations && result.topic.limitations.length > 0)) && (
+                <div className="pt-1 border-t border-black-olive/10">
+                  <button
+                    type="button"
+                    onClick={() => setIsAppsExpanded(!isAppsExpanded)}
+                    className="w-full flex items-center justify-between py-2 px-3 rounded-xl bg-floral-white shadow-neu-sm-raised hover:shadow-neu-sm-pressed text-xs font-bold text-slate-gray transition-all"
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <Globe2 className="w-3.5 h-3.5 text-muted-sage" />
+                      {isAppsExpanded ? 'Hide Real-World Applications & Limitations' : 'Real-World Applications & NISQ Limitations'}
+                    </span>
+                    {isAppsExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  </button>
+
+                  {isAppsExpanded && (
+                    <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3 p-4 rounded-2xl bg-floral-white shadow-neu-pressed border border-black-olive/5 animate-in fade-in duration-200">
+                      {/* Applications */}
+                      {result.topic.applications && result.topic.applications.length > 0 && (
+                        <div className="space-y-1.5">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-deep-olive flex items-center gap-1">
+                            🚀 Real-World Applications
+                          </span>
+                          <ul className="space-y-1 text-xs text-black-olive/85">
+                            {result.topic.applications.map((app, aIdx) => (
+                              <li key={`app-${aIdx}`} className="flex items-start gap-1.5">
+                                <span className="text-muted-sage font-bold">•</span>
+                                <span>{app}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* Limitations */}
+                      {result.topic.limitations && result.topic.limitations.length > 0 && (
+                        <div className="space-y-1.5">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-[#A34B24] flex items-center gap-1">
+                            ⚠️ Physical &amp; NISQ Constraints
+                          </span>
+                          <ul className="space-y-1 text-xs text-black-olive/85">
+                            {result.topic.limitations.map((lim, lIdx) => (
+                              <li key={`lim-${lIdx}`} className="flex items-start gap-1.5">
+                                <span className="text-[#A34B24] font-bold">•</span>
+                                <span>{lim}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
 

@@ -214,7 +214,7 @@ OFF_TOPIC_PATTERNS = [
     r"\b(stock|crypto|bitcoin|trading|forex|invest)\b"
 ]
 
-def classify_question(query: str, circuit_context: dict | None = None) -> str:
+def classify_question(query: str, circuit_context: dict | None = None, history: list[dict] | None = None) -> str:
     """Classifies question into one of 7 standardized interaction intents."""
     q_lower = query.lower().strip()
     words = set(re.findall(r'\b[a-z0-9_\-\+]+\b', q_lower))
@@ -236,10 +236,22 @@ def classify_question(query: str, circuit_context: dict | None = None) -> str:
     is_quantum = bool(words & QUANTUM_KEYWORDS) or any(k in q_lower for k in QUANTUM_KEYWORDS)
     is_greeting = bool(words & greetings) and len(words) <= 6
 
+    followup_patterns = [
+        r"\b(another|different|more|next)\s+example\b",
+        r"\bgive\s+me\s+(another|a\s+different)\s+example\b",
+        r"\bshow\s+(another|more)\s+example\b",
+        r"\b(explain|breakdown|clarify|detail|simply|clearly|mathematically)\b",
+        r"\b(why|how|what\s+about|tell\s+me\s+more)\b",
+        r"\b(give\s+me\s+an?\s+example|show\s+an?\s+example|example)\b"
+    ]
+    is_followup = any(re.search(pat, q_lower) for pat in followup_patterns)
+
     if not is_quantum and not is_greeting and circuit_context is None:
-        if len(words) > 2 and not any(w in ("what", "how", "why", "explain", "is", "a", "the") for w in words):
+        if is_followup:
+            pass  # Valid conversational follow-up
+        elif len(words) > 2 and not any(w in ("what", "how", "why", "explain", "is", "a", "the", "example", "another", "more", "next") for w in words):
             return "off_topic"
-        if any(w in words for w in ("cat", "dog", "car", "travel", "flight", "hotel", "game", "song", "music")):
+        elif any(w in words for w in ("cat", "dog", "car", "travel", "flight", "hotel", "game", "song", "music")):
             return "off_topic"
 
     # Practice / Quiz request
@@ -816,6 +828,77 @@ def invoke_gemini(system_prompt: str, user_message: str) -> str:
 # 10B. DYNAMIC GROUNDED REASONING & RESPONSE SYNTHESIZER
 # =========================================================================
 
+def resolve_active_topic(query: str, history: list[dict] | None = None) -> dict | None:
+    """Resolves active topic from current query or conversation history."""
+    try:
+        from app.services.local_search import load_all_topics
+        topics, _ = load_all_topics()
+        if not topics:
+            return None
+        q_lower = query.lower()
+
+        # Sort topics by topic_name length descending to prioritize specific topics over generic words like 'qubit' or 'gate'
+        sorted_topics = sorted(topics, key=lambda x: len(x.get("topic_name", "")), reverse=True)
+
+        # 1. Direct match in query
+        for t in sorted_topics:
+            name = t.get("topic_name", "").lower()
+            tid = t.get("id", "").lower()
+            slug = t.get("slug", "").lower()
+            if name and name in q_lower:
+                return t
+            if tid and tid in q_lower:
+                return t
+            if slug and slug in q_lower:
+                return t
+            for a in t.get("aliases", []):
+                if a.lower() and a.lower() in q_lower:
+                    return t
+
+        # 2. Check conversation history: prioritize user messages first!
+        if history:
+            # Pass 2a: Check user queries for explicit topic names
+            for msg in reversed(history):
+                role = msg.get("role") or msg.get("sender") or ""
+                if role == "user":
+                    txt = (msg.get("text") or msg.get("content") or "").lower()
+                    for t in sorted_topics:
+                        name = t.get("topic_name", "").lower()
+                        tid = t.get("id", "").lower()
+                        slug = t.get("slug", "").lower()
+                        if (name and name in txt) or (tid and tid in txt) or (slug and slug in txt):
+                            return t
+                        for a in t.get("aliases", []):
+                            if a.lower() and a.lower() in txt:
+                                return t
+
+            # Pass 2b: Fallback to all messages
+            for msg in reversed(history):
+                txt = (msg.get("text") or msg.get("content") or "").lower()
+                for t in sorted_topics:
+                    name = t.get("topic_name", "").lower()
+                    tid = t.get("id", "").lower()
+                    slug = t.get("slug", "").lower()
+                    if (name and name in txt) or (tid and tid in txt) or (slug and slug in txt):
+                        return t
+                    for a in t.get("aliases", []):
+                        if a.lower() and a.lower() in txt:
+                            return t
+
+        # 3. Fallback search_quantum_db
+        try:
+            from app.services.local_search import search_quantum_db
+            res = search_quantum_db(query)
+            if res.get("matched") and res.get("topic"):
+                return res["topic"]
+        except Exception:
+            pass
+
+        return None
+    except Exception as e:
+        logger.warning(f"Error resolving active topic: {e}")
+        return None
+
 def synthesize_grounded_tutor_response(
     query: str,
     mode: str = "beginner",
@@ -852,6 +935,110 @@ def synthesize_grounded_tutor_response(
             "- *\"How does Grover's search algorithm work?\"*\n"
             "- *\"What is a Bell state and how is it created?\"*"
         )
+
+    # 1.5. Dynamic Worked Examples & Explanation-Level Handlers
+    is_another_example = bool(re.search(r"\b(another\s+example|more\s+examples?|different\s+example|next\s+example|second\s+example|third\s+example)\b", lower))
+    is_example_req = bool(re.search(r"\b(give\s+me\s+(an?\s+)?example|show\s+(me\s+)?(an?\s+)?example|an?\s+example\s+of)\b", lower))
+    if is_example_req:
+        is_another_example = True
+    is_explain_clearly = bool(re.search(r"\bexplain\b.*\bclearly\b", lower) or re.search(r"\b(structured\s+explanation|complete\s+breakdown)\b", lower))
+    is_explain_simply = bool(re.search(r"\bexplain\b.*(like\s+i('m|\s+am)\s+new|simply|easy|for\s+beginners?)", lower) or "simple explanation" in lower)
+    is_explain_math = bool(re.search(r"\b(mathematical\s+explanation|explain\s+mathematically|math\s+behind|formal\s+math|equations?)\b", lower) or (re.search(r"\bexplain\b", lower) and "math" in lower))
+    is_circuit_req = bool(re.search(r"\b(circuit\s+example|show\s+circuit|circuit\s+walkthrough|code\s+example|qiskit\s+code)\b", lower))
+    is_analogy_req = bool(re.search(r"\b(analogy|metaphor|intuitive\s+model)\b", lower))
+
+    if is_another_example or is_explain_clearly or is_explain_simply or is_explain_math or is_circuit_req or is_analogy_req:
+        topic = resolve_active_topic(query, history)
+        if topic:
+            name = topic.get("topic_name", "Quantum Topic")
+            we = topic.get("worked_examples", [])
+            apps = topic.get("applications", [])
+            limits = topic.get("limitations", [])
+
+            if is_another_example:
+                shown_count = 0
+                if history:
+                    hist_text = " ".join([(h.get("text") or h.get("content") or "") for h in history]).lower()
+                    for ex in we:
+                        t_clean = ex.get("title", "").lower()
+                        s_clean = ex.get("content", "")[:35].lower()
+                        if (t_clean and t_clean in hist_text) or (s_clean and s_clean in hist_text):
+                            shown_count += 1
+                target_idx = min(shown_count, len(we) - 1) if we else 0
+                if "second" in lower and len(we) >= 2: target_idx = 1
+                elif "third" in lower and len(we) >= 3: target_idx = 2
+
+                if we and target_idx < len(we):
+                    ex = we[target_idx]
+                    res_text = f"### Example {target_idx + 1}: {ex.get('title')} ({ex.get('type', 'Scenario').capitalize()})\n\n"
+                    res_text += f"Here is a distinct worked example for **{name}**:\n\n"
+                    res_text += f"{ex.get('content')}\n\n"
+                    if ex.get("circuit_ascii"):
+                        res_text += f"```text\n{ex['circuit_ascii']}\n```\n\n"
+                    res_text += f"*(Ask for another example to explore {name} in a different scenario!)*"
+                    return res_text
+
+                if we and target_idx < len(we):
+                    ex = we[target_idx]
+                    res_text = f"### Example {target_idx + 1}: {ex.get('title')} ({ex.get('type', 'Scenario').capitalize()})\n\n"
+                    res_text += f"Here is a distinct worked example for **{name}**:\n\n"
+                    res_text += f"{ex.get('content')}\n\n"
+                    if ex.get("circuit_ascii"):
+                        res_text += f"```text\n{ex['circuit_ascii']}\n```\n\n"
+                    res_text += f"*(Ask for another example to explore {name} in a different scenario!)*"
+                    return res_text
+
+            if is_explain_clearly:
+                res_text = f"### {name}: Complete Structured Explanation\n\n"
+                res_text += f"#### 1. What Is It?\n{topic.get('short_definition', '')}\n\n"
+                res_text += f"#### 2. Simple Intuition\n{topic.get('simple_explanation', topic.get('beginner_explanation', ''))}\n\n"
+                res_text += f"#### 3. How It Works\n{topic.get('detailed_explanation', '')}\n\n"
+                if topic.get('mathematical_explanation'):
+                    res_text += f"#### 4. Mathematical Idea\n{topic.get('mathematical_explanation')}\n\n"
+                    if topic.get('formula'):
+                        res_text += f"**Governing Formula**: `{topic['formula']}`\n\n"
+                if we:
+                    res_text += f"#### 5. Worked Example: {we[0].get('title', 'Basic Example')}\n{we[0].get('content', '')}\n\n"
+                if apps:
+                    res_text += "#### 6. Where It's Useful (Applications)\n" + "\n".join([f"- {a}" for a in apps]) + "\n\n"
+                if topic.get('common_mistakes'):
+                    res_text += "#### 7. Common Misconception\n" + "\n".join([f"- ⚠️ {m}" for m in topic['common_mistakes']]) + "\n\n"
+                if topic.get('related_topics'):
+                    res_text += "#### 8. Related Concepts\n" + ", ".join(topic['related_topics'])
+                return res_text
+
+            if is_explain_simply:
+                res_text = f"### Explaining {name} (Beginner Friendly)\n\n"
+                res_text += f"{topic.get('simple_explanation', topic.get('beginner_explanation', ''))}\n\n"
+                if we:
+                    res_text += f"#### Intuitive Example:\n{we[0].get('content')}"
+                return res_text
+
+            if is_explain_math:
+                res_text = f"### Rigorous Mathematical Formulation: {name}\n\n"
+                if topic.get('formula'):
+                    res_text += f"**Governing Formula**:\n$$\n{topic['formula']}\n$$\n\n"
+                res_text += f"{topic.get('mathematical_explanation', 'State amplitudes evolve under unitary transformations U†U = I.')}\n\n"
+                if we and len(we) >= 3:
+                    res_text += f"#### Mathematical Scenario: {we[2].get('title')}\n{we[2].get('content')}"
+                return res_text
+
+            if is_circuit_req:
+                res_text = f"### Quantum Circuit Implementation: {name}\n\n"
+                circ_ex = we[1] if len(we) >= 2 else None
+                if circ_ex and circ_ex.get('circuit_ascii'):
+                    res_text += f"```text\n{circ_ex['circuit_ascii']}\n```\n\n"
+                if topic.get('circuit_example'):
+                    res_text += f"#### Qiskit Python Code:\n```python\n{topic['circuit_example']}\n```\n\n"
+                if circ_ex:
+                    res_text += f"#### Circuit Step Analysis:\n{circ_ex.get('content')}"
+                return res_text
+
+            if is_analogy_req:
+                res_text = f"### Intuitive Analogy: {name}\n\n"
+                res_text += f"{topic.get('simple_explanation', topic.get('beginner_explanation', ''))}\n\n"
+                res_text += f"*Note: Physical analogies illustrate quantum principles for conceptual learning and should not be confused with literal microscopic physics.*"
+                return res_text
 
     # 2. Circuit Breakdown & State Analysis
     is_circuit_query = any(w in lower for w in ["circuit", "my circuit", "gates on", "current state", "measurement odds", "probabilities unequal"])
@@ -1165,7 +1352,7 @@ def process_tutor_chat(
     - Mathematical verification & hallucination self-check
     """
     clean_msg = validate_and_sanitize_message(message)
-    classification = classify_question(clean_msg, circuit_context)
+    classification = classify_question(clean_msg, circuit_context, history)
 
     # 1. Out-of-Scope Protection (Part 2)
     if classification == "off_topic":
