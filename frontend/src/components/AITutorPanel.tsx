@@ -54,10 +54,27 @@ export const AITutorPanel: React.FC<AITutorPanelProps> = ({ context, compact = f
     }
   ]);
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const lastMessageRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (!chatContainerRef.current) return;
+    const lastMsg = messages[messages.length - 1];
+    if (lastMsg?.sender === 'tutor' && lastMessageRef.current) {
+      const container = chatContainerRef.current;
+      const elem = lastMessageRef.current;
+      const targetTop = Math.max(0, elem.offsetTop - 12);
+      container.scrollTo({
+        top: targetTop,
+        behavior: 'smooth'
+      });
+    } else {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
   }, [messages, loading]);
 
   const handleSend = async (questionText?: string) => {
@@ -105,6 +122,7 @@ export const AITutorPanel: React.FC<AITutorPanelProps> = ({ context, compact = f
       setMessages(prev => [...prev, errorMsg]);
     } finally {
       setLoading(false);
+      setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 100);
     }
   };
 
@@ -182,12 +200,15 @@ export const AITutorPanel: React.FC<AITutorPanelProps> = ({ context, compact = f
           </div>
 
           {/* Messages Container */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3.5 text-xs bg-deep-slate/95">
-            {messages.map((m) => (
-              <div
-                key={m.id}
-                className={`flex gap-2.5 ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
+          <div ref={chatContainerRef} className="relative flex-1 overflow-y-auto p-4 space-y-3.5 text-xs bg-deep-slate/95">
+            {messages.map((m, idx) => {
+              const isLast = idx === messages.length - 1;
+              return (
+                <div
+                  key={m.id}
+                  ref={isLast ? lastMessageRef : null}
+                  className={`flex gap-2.5 ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
                 {m.sender === 'tutor' && (
                   <div className="w-6 h-6 rounded-lg bg-slate-glow border border-soft-cyan/40 flex items-center justify-center text-soft-cyan flex-shrink-0 mt-0.5 shadow-sm">
                     <Sparkles className="w-3.5 h-3.5 text-soft-cyan" />
@@ -225,14 +246,14 @@ export const AITutorPanel: React.FC<AITutorPanelProps> = ({ context, compact = f
                   </span>
                 </div>
               </div>
-            ))}
+            );
+            })}
 
             {loading && (
               <div className="py-2">
                 <ResearchIndicator isSearching={true} />
               </div>
             )}
-            <div ref={messagesEndRef} />
           </div>
 
           {/* Quick Question Chips */}
@@ -263,6 +284,7 @@ export const AITutorPanel: React.FC<AITutorPanelProps> = ({ context, compact = f
             className="p-3 bg-deep-slate border-t border-soft-slate/40 flex items-center gap-2"
           >
             <input
+              ref={inputRef}
               type="text"
               value={inputQuestion}
               onChange={(e) => setInputQuestion(e.target.value)}

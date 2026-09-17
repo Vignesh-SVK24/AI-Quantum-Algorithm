@@ -108,15 +108,27 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const lastMessageRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   useEffect(() => {
-    scrollToBottom();
+    if (!chatContainerRef.current) return;
+    const lastMsg = messages[messages.length - 1];
+    if (lastMsg?.sender === 'tutor' && lastMessageRef.current) {
+      const container = chatContainerRef.current;
+      const elem = lastMessageRef.current;
+      const targetTop = Math.max(0, elem.offsetTop - 16);
+      container.scrollTo({
+        top: targetTop,
+        behavior: 'smooth'
+      });
+    } else {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
   }, [messages, loading]);
 
   useEffect(() => {
@@ -221,7 +233,7 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
       setErrorMessage(displayError);
     } finally {
       setLoading(false);
-      setTimeout(() => inputRef.current?.focus(), 100);
+      setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 100);
     }
   };
 
@@ -376,12 +388,14 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
       )}
 
       {/* Messages Scroll Area (Deep Slate Canvas) */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-5 text-xs sm:text-sm bg-deep-slate/95">
-        {messages.map((m) => {
+      <div ref={chatContainerRef} className="relative flex-1 overflow-y-auto p-6 space-y-5 text-xs sm:text-sm bg-deep-slate/95">
+        {messages.map((m, idx) => {
           const isUser = m.sender === 'user';
+          const isLast = idx === messages.length - 1;
           return (
             <div
               key={m.id}
+              ref={isLast ? lastMessageRef : null}
               className={`flex gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}
             >
               {!isUser && (
@@ -598,8 +612,6 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
             <ResearchIndicator isSearching={true} />
           </div>
         )}
-
-        <div ref={messagesEndRef} />
       </div>
 
       {/* Suggested Starter & Follow-up Chips */}
