@@ -11,19 +11,35 @@ import {
   Sparkles, 
   RotateCcw,
   ExternalLink,
-  Award
+  Award,
+  Lock,
+  Compass,
+  ArrowRight,
+  ShieldCheck,
+  Zap,
+  FileCheck
 } from 'lucide-react';
-import { getProgress, saveProgress, type PlatformProgress } from '../services/progress';
+import { 
+  getProgress, 
+  saveProgress, 
+  getPracticeProgress, 
+  type PlatformProgress, 
+  type PracticeProgress 
+} from '../services/progress';
+import { CertificateModal } from '../components/CertificateModal';
 
 export const Dashboard: React.FC = () => {
   const [progress, setProgress] = useState<PlatformProgress>(getProgress());
+  const [practiceProgress, setPracticeProgress] = useState<PracticeProgress>(getPracticeProgress());
+  const [isCertificateOpen, setIsCertificateOpen] = useState(false);
 
   useEffect(() => {
     setProgress(getProgress());
+    setPracticeProgress(getPracticeProgress());
   }, []);
 
   const handleResetProgress = () => {
-    if (window.confirm('Reset all progress data in your local session?')) {
+    if (window.confirm('Reset all curriculum progress data in your local session?')) {
       const reset = saveProgress({
         basics: 0,
         gates: 0,
@@ -33,6 +49,7 @@ export const Dashboard: React.FC = () => {
         quizCorrect: 0
       });
       setProgress(reset);
+      setPracticeProgress(getPracticeProgress());
     }
   };
 
@@ -70,8 +87,123 @@ export const Dashboard: React.FC = () => {
       title: 'Quantum Algorithms',
       desc: 'Deutsch-Jozsa phase kickback and Grover amplitude amplification',
       pct: progress.algorithms,
-      link: '/algorithms',
+      link: '/playground',
       icon: Cpu
+    }
+  ];
+
+  // Derive dynamic personalized recommendations
+  const recommendations = React.useMemo(() => {
+    const list: Array<{
+      id: string;
+      title: string;
+      reason: string;
+      type: 'weak_topic' | 'curriculum' | 'playground' | 'foundations';
+      actionLabel: string;
+      actionPath: string;
+      tag: string;
+    }> = [];
+
+    // 1. Weak Topics from actual student practice
+    if (practiceProgress.weakTopics.length > 0) {
+      practiceProgress.weakTopics.slice(0, 2).forEach((topicSlug) => {
+        const readable = topicSlug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        list.push({
+          id: `weak-${topicSlug}`,
+          title: `Focus Review: ${readable}`,
+          reason: 'Accuracy in practice was below 60%. Reinforce foundational concepts.',
+          type: 'weak_topic',
+          actionLabel: 'Review in Encyclopedia',
+          actionPath: '/home',
+          tag: 'Needs Reinforcement'
+        });
+      });
+    }
+
+    // 2. Progressive Practice Pathway
+    const completedBeg = practiceProgress.completedLevels.includes('beginner');
+    const completedInt = practiceProgress.completedLevels.includes('intermediate');
+    const completedAdv = practiceProgress.completedLevels.includes('advanced');
+
+    if (!completedBeg) {
+      list.push({
+        id: 'rec-beginner',
+        title: 'Master Single-Qubit Foundations',
+        reason: 'Complete Beginner Round 1 to unlock your first verified badge.',
+        type: 'curriculum',
+        actionLabel: 'Take Beginner Practice',
+        actionPath: '/practice',
+        tag: 'Next Milestone'
+      });
+    } else if (!completedInt) {
+      list.push({
+        id: 'rec-intermediate',
+        title: 'Advance to 2-Qubit Entanglement & Circuits',
+        reason: 'You unlocked Intermediate! Tackle Bell States and CNOT operations.',
+        type: 'curriculum',
+        actionLabel: 'Enter Intermediate Practice',
+        actionPath: '/practice',
+        tag: 'Level Unlocked'
+      });
+    } else if (!completedAdv) {
+      list.push({
+        id: 'rec-advanced',
+        title: 'Master Quantum Oracles & Algorithms',
+        reason: 'Final frontier: Deutsch-Jozsa, Grover Search, and Quantum Error Correction.',
+        type: 'curriculum',
+        actionLabel: 'Enter Advanced Practice',
+        actionPath: '/practice',
+        tag: 'Final Milestone'
+      });
+    }
+
+    // 3. 3D Algorithm Stepper recommendation
+    list.push({
+      id: 'rec-playground-grover',
+      title: "Explore Grover's Search in 3D",
+      reason: 'Observe how quantum diffusion reflects probability amplitudes about the mean.',
+      type: 'playground',
+      actionLabel: 'Open 3D Playground',
+      actionPath: '/playground/grover',
+      tag: '3D Simulation'
+    });
+
+    return list;
+  }, [practiceProgress]);
+
+  // Badges status
+  const badges = [
+    {
+      id: 'foundations',
+      title: 'Quantum Foundations',
+      description: 'Mastered qubit states, superposition, and measurement in Beginner practice',
+      unlocked: practiceProgress.completedLevels.includes('beginner') || (progress.basics >= 70 && progress.gates >= 60),
+      tier: 'Beginner',
+      icon: BookOpen
+    },
+    {
+      id: 'entanglement',
+      title: 'Entanglement Architect',
+      description: 'Created 2-qubit Bell states, controlled gates, and phase kickback',
+      unlocked: practiceProgress.completedLevels.includes('intermediate') || progress.circuits >= 70,
+      tier: 'Intermediate',
+      icon: Layers
+    },
+    {
+      id: 'vanguard',
+      title: 'Algorithm Vanguard',
+      description: 'Mastered quantum oracles, amplitude amplification, and Deutsch-Jozsa interference',
+      unlocked: practiceProgress.completedLevels.includes('advanced') || progress.algorithms >= 70,
+      tier: 'Advanced',
+      icon: Zap
+    },
+    {
+      id: 'grandmaster',
+      title: 'Grand Quantum Master',
+      description: '100% comprehensive platform mastery with verified credential',
+      unlocked: practiceProgress.completedLevels.length >= 3 || overallAverage >= 85,
+      tier: 'Mastery',
+      icon: Award
     }
   ];
 
@@ -94,12 +226,18 @@ export const Dashboard: React.FC = () => {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-black-olive tracking-tight">Student Learning Dashboard</h1>
-                <p className="text-xs text-olive-mist">Curriculum mastery, live simulated circuits, and practice achievements</p>
+                <p className="text-xs text-olive-mist">Curriculum mastery, personalized recommendations, and verified badges</p>
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsCertificateOpen(true)}
+              className="px-4 py-2 rounded-xl bg-warm-gold text-[#151D29] text-xs font-bold shadow-sm hover:brightness-105 transition-all flex items-center gap-1.5"
+            >
+              <FileCheck className="w-3.5 h-3.5" /> View Certificate
+            </button>
             <button
               onClick={handleResetProgress}
               className="px-4 py-2 rounded-xl bg-warm-ivory border border-soft-sand text-xs font-semibold text-olive-mist hover:text-black-olive hover:bg-soft-sand transition-all flex items-center gap-1.5"
@@ -178,6 +316,136 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
 
+        {/* ========================================================================= */}
+        {/* PERSONALIZED RECOMMENDATIONS (ACTIONABLE FOR USER) */}
+        {/* ========================================================================= */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-2">
+                <Compass className="w-4 h-4 text-[#C5A86A]" />
+                <h2 className="text-lg font-bold text-black-olive">Recommended for You</h2>
+              </div>
+              <p className="text-xs text-olive-mist mt-0.5">
+                Intelligent learning steps based on your quiz performance and curriculum progression
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {recommendations.map((rec) => (
+              <div
+                key={rec.id}
+                className="p-5 rounded-3xl bg-[#FFFDF7] border border-soft-sand shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4 group"
+              >
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono uppercase tracking-wider ${
+                      rec.type === 'weak_topic'
+                        ? 'bg-rose-100 text-rose-800 border border-rose-200'
+                        : rec.type === 'curriculum'
+                        ? 'bg-amber-100 text-amber-900 border border-amber-200'
+                        : 'bg-emerald-100 text-emerald-900 border border-emerald-200'
+                    }`}>
+                      {rec.tag}
+                    </span>
+                  </div>
+                  <h3 className="text-sm font-bold text-black-olive group-hover:text-deep-olive transition-colors">
+                    {rec.title}
+                  </h3>
+                  <p className="text-xs text-black-olive/70 leading-relaxed font-sans">
+                    {rec.reason}
+                  </p>
+                </div>
+
+                <Link
+                  to={rec.actionPath}
+                  className="px-4 py-2 rounded-xl bg-warm-ivory border border-soft-sand text-xs font-bold text-black-olive group-hover:bg-black-olive group-hover:text-floral-white transition-all flex items-center justify-between shadow-xs"
+                >
+                  <span>{rec.actionLabel}</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-warm-gold group-hover:translate-x-0.5 transition-transform" />
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ========================================================================= */}
+        {/* PRACTICE BADGES & ACHIEVEMENTS SHOWCASE */}
+        {/* ========================================================================= */}
+        <div className="p-6 sm:p-8 rounded-3xl bg-[#FFFDF7] border border-soft-sand shadow-sm space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <Award className="w-4 h-4 text-warm-gold" />
+                <h2 className="text-lg font-bold text-black-olive">Practice Badges & Milestones</h2>
+              </div>
+              <p className="text-xs text-olive-mist mt-0.5">
+                Earned by achieving a 70% passing threshold in our 3-tier Adaptive Practice Arena
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsCertificateOpen(true)}
+              className="self-start sm:self-auto px-3.5 py-1.5 rounded-xl bg-warm-ivory border border-soft-sand text-xs font-semibold text-black-olive hover:bg-soft-sand transition-all flex items-center gap-1.5"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Certificate Preview</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {badges.map((badge) => {
+              const Icon = badge.icon;
+              return (
+                <div
+                  key={badge.id}
+                  className={`p-4 rounded-2xl border transition-all flex flex-col justify-between space-y-3 ${
+                    badge.unlocked
+                      ? 'bg-warm-ivory/60 border-soft-sand shadow-xs'
+                      : 'bg-black-olive/5 border-dashed border-black-olive/15 opacity-70'
+                  }`}
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
+                        badge.unlocked
+                          ? 'bg-black-olive text-warm-gold shadow-xs'
+                          : 'bg-black-olive/20 text-black-olive/40'
+                      }`}>
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-olive-mist">
+                        {badge.tier}
+                      </span>
+                    </div>
+
+                    <h3 className="text-xs font-bold text-black-olive">
+                      {badge.title}
+                    </h3>
+                    <p className="text-[11px] text-black-olive/70 leading-relaxed">
+                      {badge.description}
+                    </p>
+                  </div>
+
+                  <div className="pt-2 border-t border-soft-sand/60 flex items-center justify-between text-[10px] font-mono">
+                    {badge.unlocked ? (
+                      <span className="text-emerald-700 font-bold flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3" /> Unlocked
+                      </span>
+                    ) : (
+                      <span className="text-black-olive/40 flex items-center gap-1">
+                        <Lock className="w-3 h-3" /> Locked
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Modules Progress List (Light Cards) */}
         <div className="p-6 sm:p-8 rounded-3xl bg-[#FFFDF7] border border-soft-sand shadow-sm space-y-6">
           <div>
@@ -248,6 +516,13 @@ export const Dashboard: React.FC = () => {
         </div>
 
       </div>
+
+      {/* Completion Certificate Modal */}
+      <CertificateModal
+        isOpen={isCertificateOpen}
+        onClose={() => setIsCertificateOpen(false)}
+        scorePercentage={progress.quizScore || overallAverage}
+      />
     </div>
   );
 };

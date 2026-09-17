@@ -30,6 +30,7 @@ import {
   getQuestionsForRound, 
   type PracticeQuestion 
 } from '../data/practiceQuestionsData';
+import { CertificateModal } from '../components/CertificateModal';
 
 const PASSING_THRESHOLD_PCT = 70; // 70% required to advance (7/10)
 
@@ -98,6 +99,7 @@ export const Practice: React.FC = () => {
     newRoundUnlocked: number | null;
     newLevelUnlocked: PracticeLevel | null;
   } | null>(null);
+  const [isCertModalOpen, setIsCertModalOpen] = useState<boolean>(false);
 
   // Network / Loading state
   const [isLoadingQuestions, setIsLoadingQuestions] = useState<boolean>(false);
@@ -890,6 +892,14 @@ export const Practice: React.FC = () => {
                 </button>
               )}
 
+              <button
+                type="button"
+                onClick={() => setIsCertModalOpen(true)}
+                className="px-6 py-3 rounded-2xl bg-warm-gold text-deep-olive font-bold text-xs shadow-gold-glow hover:brightness-105 transition-all flex items-center gap-2"
+              >
+                <Award className="w-4 h-4" /> View Verified Certificate
+              </button>
+
               <Link
                 to="/dashboard"
                 className="px-6 py-3 rounded-2xl bg-floral-white text-slate-gray font-semibold text-xs shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-2"
@@ -901,6 +911,13 @@ export const Practice: React.FC = () => {
         )}
 
       </div>
+
+      <CertificateModal
+        isOpen={isCertModalOpen}
+        onClose={() => setIsCertModalOpen(false)}
+        completedTier={`${selectedLevel.toUpperCase()} Quantum Track`}
+        scorePercentage={levelStats.pct}
+      />
     </div>
   );
 };

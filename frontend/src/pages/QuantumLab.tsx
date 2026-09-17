@@ -17,7 +17,11 @@ import {
   Columns,
   Cpu,
   Layers,
-  ArrowRight
+  ArrowRight,
+  Share2,
+  Copy,
+  Check,
+  X
 } from 'lucide-react';
 import { simulateCircuit, type SimulateResponse } from '../services/api';
 import { BlochSphereWidget } from '../components/BlochSphereWidget';
@@ -87,10 +91,102 @@ export const QuantumLab: React.FC = () => {
   const [activeTool, setActiveTool] = useState<GateType | 'ERASER' | 'CURSOR'>('CURSOR');
   const [pendingCNOT, setPendingCNOT] = useState<{ control: number; step: number } | null>(null);
   const [simResult, setSimResult] = useState<SimulateResponse | null>(null);
+  const [activeTab, setActiveTab] = useState<'all' | 'before-after' | 'bloch' | 'histogram' | '3d'>('all');
   const [simError, setSimError] = useState<string | null>(null);
   const [isSimulating, setIsSimulating] = useState(false);
-  const [activeTab, setActiveTab] = useState<'all' | 'before-after' | 'bloch' | 'histogram' | '3d'>('all');
   const [isExplainModalOpen, setIsExplainModalOpen] = useState<boolean>(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
+  const [copiedLink, setCopiedLink] = useState<boolean>(false);
+
+  // Auto-load circuit from URL parameter on initial mount (Zero credentials, purely mathematical)
+  useEffect(() => {
+    try {
+      const hash = window.location.hash;
+      const search = window.location.search;
+      let paramValue: string | null = null;
+
+      if (hash.includes('?')) {
+        const hashQuery = hash.split('?')[1];
+        const params = new URLSearchParams(hashQuery);
+        paramValue = params.get('c') || params.get('circuit');
+      } else if (search) {
+        const params = new URLSearchParams(search);
+        paramValue = params.get('c') || params.get('circuit');
+      }
+
+      if (paramValue) {
+        const decodedStr = atob(decodeURIComponent(paramValue));
+        const parsed = JSON.parse(decodedStr);
+        if (parsed && typeof parsed.q === 'number' && Array.isArray(parsed.g)) {
+          const qCount = Math.max(1, Math.min(3, parsed.q));
+          setNumQubits(qCount);
+          const loadedGates: PlacedGate[] = [];
+          for (let i = 0; i < parsed.g.length; i++) {
+            const [type, target, step, control] = parsed.g[i];
+            if (['H', 'X', 'Z', 'CNOT'].includes(type) && target < qCount && step < NUM_STEPS) {
+              loadedGates.push({
+                id: `shared_${Date.now()}_${i}`,
+                type,
+                target,
+                step,
+                control: control >= 0 ? control : undefined
+              });
+            }
+          }
+          if (loadedGates.length > 0) {
+            setCircuit(loadedGates);
+            simulateCircuit({
+              gates: loadedGates.map(g => ({
+                id: g.id,
+                type: g.type,
+                target: g.target,
+                step: g.step,
+                control: g.control
+              })),
+              num_qubits: qCount,
+              shots: 1024
+            }).then(res => setSimResult(res)).catch(() => {});
+          }
+        }
+      }
+    } catch (e) {
+      console.warn("Failed to decode circuit share link:", e);
+    }
+  }, []);
+
+  const generateShareUrl = () => {
+    try {
+      const payload = {
+        q: numQubits,
+        g: circuit.map(g => [g.type, g.target, g.step, g.control ?? -1])
+      };
+      const encoded = encodeURIComponent(btoa(JSON.stringify(payload)));
+      const base = `${window.location.origin}${window.location.pathname}`;
+      return `${base}#/lab?c=${encoded}`;
+    } catch {
+      return window.location.href;
+    }
+  };
+
+  const handleCopyShareLink = async () => {
+    const url = generateShareUrl();
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2500);
+    } catch {
+      prompt("Copy your circuit share link:", url);
+    }
+  };
+
+  useEffect(() => {
+    if (!isShareModalOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsShareModalOpen(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isShareModalOpen]);
 
   const visualizationData: QuantumVisualizationData = React.useMemo(() => {
     return {
@@ -426,6 +522,15 @@ export const QuantumLab: React.FC = () => {
                 className="px-3.5 py-2 rounded-xl text-xs font-semibold text-black-olive bg-warm-gold/20 border border-warm-gold/40 hover:bg-warm-gold/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1.5 shadow-sm"
               >
                 <Sparkles className="w-3.5 h-3.5 text-cocoa-noir" /> Explain Circuit
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsShareModalOpen(true)}
+                disabled={circuit.length === 0}
+                title={circuit.length === 0 ? "Place at least one gate to share circuit" : "Share this quantum circuit via link"}
+                className="px-3.5 py-2 rounded-xl text-xs font-semibold text-black-olive bg-warm-ivory border border-soft-sand hover:bg-soft-sand disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1.5 shadow-sm"
+              >
+                <Share2 className="w-3.5 h-3.5 text-olive-mist" /> Share
               </button>
               <button
                 onClick={handleRunCircuit}
@@ -781,6 +886,101 @@ export const QuantumLab: React.FC = () => {
         simulationResult={simResult}
         algorithmName="Custom Quantum Lab Circuit"
       />
+
+      {/* Share Circuit Modal */}
+      {isShareModalOpen && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setIsShareModalOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="share-circuit-title"
+        >
+          <div 
+            className="bg-floral-white rounded-2xl max-w-lg w-full border border-soft-sand p-6 shadow-2xl space-y-4 relative"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-soft-sand">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-warm-gold/20 border border-warm-gold/40 flex items-center justify-center text-black-olive">
+                  <Share2 className="w-5 h-5 text-cocoa-noir" />
+                </div>
+                <div>
+                  <h3 id="share-circuit-title" className="text-base font-bold font-serif text-black-olive">
+                    Share Quantum Circuit
+                  </h3>
+                  <p className="text-xs text-olive-mist">
+                    Portable state link with zero credentials or personal data
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsShareModalOpen(false)}
+                className="p-1.5 rounded-lg text-olive-mist hover:text-black-olive hover:bg-soft-sand/50 transition-colors"
+                aria-label="Close dialog"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Circuit specs summary */}
+            <div className="flex items-center gap-3 p-3 bg-warm-ivory rounded-xl border border-soft-sand text-xs text-black-olive">
+              <span className="font-semibold font-mono bg-floral-white px-2.5 py-1 rounded-lg border border-soft-sand">
+                {numQubits} Qubit{numQubits > 1 ? 's' : ''}
+              </span>
+              <span className="font-semibold font-mono bg-floral-white px-2.5 py-1 rounded-lg border border-soft-sand">
+                {circuit.length} Gate{circuit.length === 1 ? '' : 's'}
+              </span>
+              <span className="text-olive-mist text-[11px] ml-auto">
+                Deterministic Base64 State
+              </span>
+            </div>
+
+            {/* Link URL input & copy */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-black-olive">Shareable URL</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  readOnly
+                  value={generateShareUrl()}
+                  onFocus={e => e.target.select()}
+                  className="flex-1 px-3 py-2 text-xs font-mono bg-warm-ivory border border-soft-sand rounded-xl text-black-olive focus:outline-none focus:ring-2 focus:ring-warm-gold"
+                />
+                <button
+                  type="button"
+                  onClick={handleCopyShareLink}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 flex-shrink-0 shadow-sm ${
+                    copiedLink
+                      ? 'bg-muted-sage text-floral-white'
+                      : 'bg-warm-gold text-deep-slate hover:bg-[#D4BA7F]'
+                  }`}
+                >
+                  {copiedLink ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  {copiedLink ? 'Copied!' : 'Copy Link'}
+                </button>
+              </div>
+            </div>
+
+            {/* Scientific and privacy assurance */}
+            <p className="text-[11px] text-olive-mist leading-relaxed bg-[#F7F3E7] p-3 rounded-xl border border-soft-sand/60">
+              Anyone opening this link will immediately see this exact circuit layout, wire configuration, and automatic simulation results on their device without needing to create an account.
+            </p>
+
+            {/* Footer button */}
+            <div className="pt-2 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setIsShareModalOpen(false)}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-black-olive bg-warm-ivory border border-soft-sand hover:bg-soft-sand transition-all shadow-sm"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Floating Context-Aware AI Tutor Drawer */}
       <AITutorPanel

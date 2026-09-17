@@ -124,6 +124,16 @@ export const Navbar: React.FC = () => {
               </div>
             </div>
 
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent('quantum:start-tour'))}
+              title="Interactive Platform Tour"
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-warm-ivory border border-soft-sand text-black-olive text-xs font-semibold shadow-sm hover:bg-soft-sand transition-all"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-warm-gold" />
+              Tour
+            </button>
+
             <Link
               to="/login"
               className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-warm-ivory border border-soft-sand text-black-olive text-xs font-semibold shadow-sm hover:bg-soft-sand transition-all"
@@ -178,6 +188,19 @@ export const Navbar: React.FC = () => {
               </Link>
             );
           })}
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              window.dispatchEvent(new CustomEvent('quantum:start-tour'));
+            }}
+            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-black-olive hover:bg-warm-ivory transition-all border-t border-soft-sand/60 mt-2 pt-3"
+          >
+            <div className="flex items-center gap-2.5">
+              <Sparkles className="w-4 h-4 text-warm-gold" />
+              Interactive Platform Tour
+            </div>
+          </button>
         </div>
       )}
     </header>

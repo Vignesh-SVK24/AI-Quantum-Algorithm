@@ -19,16 +19,25 @@ import {
   Layers,
   Globe2,
   Lightbulb,
-  Cpu
+  Cpu,
+  Languages
 } from 'lucide-react';
 import { searchQuantum, simulateCircuit, type QuantumTopicSearchResponse } from '../services/api';
 import type { QuantumVisualizationData } from './visualization3d';
+import { SUPPORTED_LANGUAGES, type SupportedLanguage } from '../data/quantumTranslations';
 
 const QuantumVisualizer = React.lazy(() => import('./visualization3d').then(m => ({ default: m.QuantumVisualizer })));
 
 export const HeroSearchBar: React.FC = () => {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
+  const [searchLang, setSearchLang] = useState<SupportedLanguage>(() => {
+    if (typeof localStorage !== 'undefined') {
+      const saved = localStorage.getItem('quantum_preferred_lang');
+      if (saved === 'hi' || saved === 'ta' || saved === 'en') return saved;
+    }
+    return 'en';
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<QuantumTopicSearchResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -199,7 +208,13 @@ export const HeroSearchBar: React.FC = () => {
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             disabled={isLoading}
-            placeholder="Ask anything about quantum computing — e.g. What is a qubit?"
+            placeholder={
+              searchLang === 'hi' 
+                ? "क्वांटम विषय खोजें — जैसे: क्युबिट क्या है? या सुपरपोजिशन" 
+                : searchLang === 'ta' 
+                ? "குவாண்டம் தலைப்பைத் தேடுங்கள் — எ.கா: க்யூபிட் அல்லது மேற்பொருந்துதல்" 
+                : "Ask anything about quantum computing — e.g. What is a qubit?"
+            }
             className="flex-1 bg-transparent text-floral-white placeholder:text-floral-white/50 text-sm sm:text-base font-medium outline-none tracking-wide disabled:opacity-60"
             aria-label="Quantum topic encyclopedia search query"
           />
@@ -212,6 +227,7 @@ export const HeroSearchBar: React.FC = () => {
                 onClick={handleClear}
                 className="p-1 rounded-full text-floral-white/60 hover:text-floral-white hover:bg-floral-white/10 transition-colors"
                 title="Clear search input"
+                aria-label="Clear search input"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -227,6 +243,7 @@ export const HeroSearchBar: React.FC = () => {
                   : 'bg-floral-white/10 text-floral-white/30 cursor-not-allowed'
               }`}
               title="Search Quantum Encyclopedia"
+              aria-label="Search Quantum Encyclopedia"
             >
               {isLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin text-deep-olive" />
@@ -238,29 +255,60 @@ export const HeroSearchBar: React.FC = () => {
         </div>
       </div>
 
-      {/* Suggested Quick Starters (shown when idle) */}
-      {!hasSearched && (
-        <div className="flex flex-wrap items-center gap-2 pt-1 text-xs text-olive-mist">
-          <span className="font-semibold text-black-olive flex items-center gap-1">
-            <HelpCircle className="w-3.5 h-3.5 text-warm-gold" /> Try topics:
-          </span>
-          {[
-            'What is a qubit?',
-            'Hadamard Gate',
-            'Quantum Entanglement',
-            "Grover's Algorithm"
-          ].map((promptText) => (
-            <button
-              key={promptText}
-              type="button"
-              onClick={() => handleSearch(promptText)}
-              className="px-3 py-1 rounded-full bg-warm-ivory border border-soft-sand text-black-olive text-[11px] font-medium hover:border-black-olive/40 hover:bg-soft-sand transition-all"
-            >
-              {promptText}
-            </button>
-          ))}
+      {/* Suggested Quick Starters & Language Selector Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1 text-xs text-olive-mist">
+        {!hasSearched ? (
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="font-semibold text-black-olive flex items-center gap-1">
+              <HelpCircle className="w-3.5 h-3.5 text-warm-gold" /> {searchLang === 'hi' ? 'सुझाए गए विषय:' : searchLang === 'ta' ? 'பரிந்துரைக்கப்பட்டவை:' : 'Try topics:'}
+            </span>
+            {(
+              searchLang === 'hi'
+                ? ['क्युबिट क्या है?', 'हैडामार्ड गेट', 'क्वांटम एंटैंगलमेंट', 'ग्रोवर']
+                : searchLang === 'ta'
+                ? ['க்யூபிட் என்றால் என்ன?', 'ஹாடமார்ட் கேட்', 'குவாண்டம் பின்னல்', 'குரோவர்']
+                : ['What is a qubit?', 'Hadamard Gate', 'Quantum Entanglement', "Grover's Algorithm"]
+            ).map((promptText) => (
+              <button
+                key={promptText}
+                type="button"
+                onClick={() => handleSearch(promptText)}
+                className="px-2.5 py-1 rounded-full bg-warm-ivory border border-soft-sand text-black-olive text-[11px] font-medium hover:border-black-olive/40 hover:bg-soft-sand transition-all"
+              >
+                {promptText}
+              </button>
+            ))}
+          </div>
+        ) : <div />}
+
+        {/* Trilingual Toggle */}
+        <div className="flex items-center gap-1 self-end sm:self-auto bg-warm-ivory/80 px-2 py-1 rounded-full border border-soft-sand">
+          <Languages className="w-3.5 h-3.5 text-olive-mist" />
+          {SUPPORTED_LANGUAGES.map((lang) => {
+            const isSelected = searchLang === lang.code;
+            return (
+              <button
+                key={lang.code}
+                type="button"
+                onClick={() => {
+                  setSearchLang(lang.code);
+                  try {
+                    localStorage.setItem('quantum_preferred_lang', lang.code);
+                  } catch {}
+                }}
+                className={`px-2 py-0.5 rounded-full text-[10px] font-semibold transition-all ${
+                  isSelected
+                    ? 'bg-black-olive text-floral-white'
+                    : 'text-black-olive/60 hover:text-black-olive'
+                }`}
+                title={`Switch encyclopedia search to ${lang.label}`}
+              >
+                {lang.nativeLabel}
+              </button>
+            );
+          })}
         </div>
-      )}
+      </div>
 
       {/* Loading Skeleton */}
       {isLoading && (

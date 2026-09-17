@@ -209,7 +209,11 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "epr pairs",
       "bell pair",
       "bell basis",
-      "maximally entangled state"
+      "maximally entangled state",
+      "बेल अवस्था",
+      "बेल स्टेट",
+      "பெல் நிலை",
+      "பெல் ஸ்டேட்"
     ],
     "keywords": [
       "bell state",
@@ -497,7 +501,11 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "bloch representation",
       "bloch vector",
       "bloch coordinates",
-      "bloch sphere visualization"
+      "bloch sphere visualization",
+      "ब्लोच गोला",
+      "ब्लोच स्फेयर",
+      "ப்ளோச் கோளம்",
+      "ப்ளொச்"
     ],
     "keywords": [
       "bloch",
@@ -606,7 +614,11 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "cx gate",
       "cnot",
       "controlled x",
-      "cx operator"
+      "cx operator",
+      "सी-नॉट गेट",
+      "सीनॉट",
+      "சி-நாட் கேட்",
+      "சிநாட்"
     ],
     "keywords": [
       "cnot",
@@ -863,7 +875,11 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "deutsch-jozsa",
       "deutsch jozsa",
       "deutsch–jozsa",
-      "constant vs balanced"
+      "constant vs balanced",
+      "डॉयच-जोज़ा एल्गोरिदम",
+      "डॉयच जोज़ा",
+      "டாய்ச்-ஜோசா அல்காரிதம்",
+      "டாய்ச் ஜோசா"
     ],
     "keywords": [
       "deutsch-jozsa algorithm",
@@ -1009,7 +1025,11 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "grover",
       "quantum search algorithm",
       "search algorithm",
-      "amplitude amplification"
+      "amplitude amplification",
+      "ग्रोवर एल्गोरिदम",
+      "ग्रोवर",
+      "குரோவர் அல்காரிதம்",
+      "குரோவரின் அல்காரிதம்"
     ],
     "keywords": [
       "grover's algorithm",
@@ -1212,7 +1232,11 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "hadamard",
       "h operator",
       "hadamard transform",
-      "gate for equal superposition"
+      "gate for equal superposition",
+      "हैडामार्ड गेट",
+      "एच गेट",
+      "ஹாடமார்ட் கேட்",
+      "ஹடாமார்ட்"
     ],
     "keywords": [
       "hadamard",
@@ -1750,7 +1774,11 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "projective measurement",
       "born rule",
       "measuring a qubit",
-      "probability of measuring a qubit"
+      "probability of measuring a qubit",
+      "मापन",
+      "क्वांटम मापन",
+      "அளவீடு",
+      "குவாண்டம் அளவீடு"
     ],
     "keywords": [
       "measurement",
@@ -1972,7 +2000,9 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "pauli operators",
       "sigma matrices",
       "pauli group",
-      "pauli-x y z"
+      "pauli-x y z",
+      "पॉली गेट्स",
+      "பவுலி கேட்கள்"
     ],
     "keywords": [
       "pauli",
@@ -2205,7 +2235,9 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
     "aliases": [
       "kickback",
       "phase kickback effect",
-      "eigenvalue kickback"
+      "eigenvalue kickback",
+      "फेज किकबैक",
+      "ஃபேஸ் கிக்பேக்"
     ],
     "keywords": [
       "phase kickback",
@@ -2327,7 +2359,9 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "qaoa",
       "quantum approximate optimization algorithm",
       "quantum approximate optimization",
-      "quantum combinatorial optimization"
+      "quantum combinatorial optimization",
+      "क्यूएओए",
+      "க்யூ.ஏ.ஓ.ஏ"
     ],
     "keywords": [
       "qaoa",
@@ -3610,7 +3644,9 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "what is quantum computing",
       "intro to quantum computing",
       "quantum information science",
-      "quantum tech"
+      "quantum tech",
+      "क्वांटम कंप्यूटिंग",
+      "குவாண்டம் கம்ப்யூட்டிங்"
     ],
     "keywords": [
       "quantum computing",
@@ -4013,7 +4049,11 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "entanglement",
       "quantum correlations",
       "spooky action at a distance",
-      "quantum non-locality"
+      "quantum non-locality",
+      "क्वांटम एंटैंगलमेंट",
+      "क्वांटम उलझाव",
+      "குவாண்டம் பின்னல்",
+      "என்டாங்கிள்மென்ட்"
     ],
     "keywords": [
       "quantum entanglement",
@@ -4135,7 +4175,9 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "stabilizer codes",
       "shor code",
       "quantum error correcting",
-      "error correction quantum computing"
+      "error correction quantum computing",
+      "क्वांटम त्रुटि सुधार",
+      "குவாண்டம் பிழை திருத்தம்"
     ],
     "keywords": [
       "error correction",
@@ -4243,7 +4285,9 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "qft",
       "quantum fourier",
       "fourier transform",
-      "quantum dft"
+      "quantum dft",
+      "क्वांटम फूरियर रूपांतरण",
+      "குவாண்டம் ஃபோரியர் உருமாற்றம்"
     ],
     "keywords": [
       "quantum fourier transform",
@@ -4466,7 +4510,9 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "quantum cryptography",
       "bennett brassard 1984",
       "quantum secure communication",
-      "quantum key exchange"
+      "quantum key exchange",
+      "क्वांटम कुंजी वितरण",
+      "குவாண்டம் விசை விநியோகம்"
     ],
     "keywords": [
       "qkd",
@@ -5215,7 +5261,9 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "quantum state transfer",
       "qubit teleportation",
       "quantum communication protocol",
-      "bell state teleportation"
+      "bell state teleportation",
+      "क्वांटम टेलीपोर्टेशन",
+      "குவாண்டம் டெலிபோர்ட்டேஷன்"
     ],
     "keywords": [
       "teleportation",
@@ -5489,7 +5537,11 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "quantum bit",
       "qubits",
       "what is a qubit",
-      "single qubit"
+      "single qubit",
+      "क्युबिट",
+      "क्वांटम बिट",
+      "க்யூபிட்",
+      "குவாண்டம் பிட்"
     ],
     "keywords": [
       "qubit",
@@ -5724,7 +5776,11 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "quantum factoring",
       "integer factorization quantum",
       "shor's period finding",
-      "rsa breaking"
+      "rsa breaking",
+      "शोर एल्गोरिदम",
+      "शोर का एल्गोरिदम",
+      "ஷோரின் அல்காரிதம்",
+      "ஷோர் அல்காரிதம்"
     ],
     "keywords": [
       "shor",
@@ -6285,7 +6341,11 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "quantum superposition",
       "linear superposition",
       "superposition principle",
-      "state superposition"
+      "state superposition",
+      "सुपरपोजिशन",
+      "अध्यारोपण",
+      "மேற்பொருந்துதல்",
+      "சூப்பர்பொசிஷன்"
     ],
     "keywords": [
       "superposition",
@@ -6511,7 +6571,9 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "ccnot",
       "toffoli",
       "controlled-controlled-x",
-      "three qubit gate"
+      "three qubit gate",
+      "टोफ़ोली गेट",
+      "டாஃபோலி கேட்"
     ],
     "keywords": [
       "toffoli",
@@ -6918,7 +6980,9 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "quantum not",
       "bit flip gate",
       "gate that flips a qubit",
-      "x operator"
+      "x operator",
+      "एक्स गेट",
+      "எக்ஸ் கேட்"
     ],
     "keywords": [
       "x gate",
@@ -7023,7 +7087,9 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "pauli-y",
       "pauli y gate",
       "y operator",
-      "bit and phase flip gate"
+      "bit and phase flip gate",
+      "वाई गेट",
+      "ஒய் கேட்"
     ],
     "keywords": [
       "y gate",
@@ -7115,7 +7181,9 @@ export const QUANTUM_TOPICS_CATALOG: QuantumTopic[] = [
       "pauli z gate",
       "phase flip gate",
       "phase flip",
-      "z operator"
+      "z operator",
+      "ज़ेड गेट",
+      "இசட் கேட்"
     ],
     "keywords": [
       "z gate",

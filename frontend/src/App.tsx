@@ -12,6 +12,8 @@ import { Practice } from './pages/Practice';
 import { Dashboard } from './pages/Dashboard';
 import { About } from './pages/About';
 import { LoginPage } from './pages/LoginPage';
+import { AdminIngestion } from './pages/AdminIngestion';
+import { OnboardingTour } from './components/OnboardingTour';
 
 const RootRoute: React.FC = () => {
   const isExplored = typeof window !== 'undefined' && sessionStorage.getItem('isExplored') === 'true';
@@ -72,11 +74,14 @@ const AppContent: React.FC = () => {
           <Route path="/tutor" element={<AITutor />} />
           <Route path="/practice" element={<Practice />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/admin" element={<AdminIngestion />} />
+          <Route path="/admin/ingestion" element={<AdminIngestion />} />
           <Route path="/about" element={<About />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
       {!isLoginPage && <Footer />}
+      <OnboardingTour />
     </div>
   );
 };

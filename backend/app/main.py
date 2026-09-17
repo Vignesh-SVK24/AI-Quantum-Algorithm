@@ -6,6 +6,8 @@ except Exception:
     QISKIT_VERSION = "2.5.2 (Statevector Engine)"
 
 import os
+from pathlib import Path
+import logging
 import urllib.error
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -399,6 +401,50 @@ def get_playground_algorithm(algo_id: str):
     if not algo:
         raise HTTPException(status_code=404, detail=f"Algorithm '{algo_id}' not found.")
     return algo
+
+
+@app.get("/admin/ingestion-jobs")
+@app.get("/api/admin/ingestion-jobs")
+def get_admin_ingestion_jobs():
+    """
+    Admin Knowledge Ingestion Jobs Endpoint:
+    Returns the audit log of knowledge ingestion jobs including status, quality scores,
+    verification status, and timestamps. Queries Supabase with graceful fallback to local SQLite.
+    """
+    # 1. Try Supabase if configured and reachable
+    try:
+        from ingestion.publisher import _get_supabase_client
+        sb = _get_supabase_client()
+        res = sb.table("knowledge_ingestion_jobs").select("*").order("submitted_at", desc=True).limit(50).execute()
+        if res.data:
+            return {"jobs": res.data, "source": "supabase", "total": len(res.data)}
+    except Exception:
+        pass
+
+    # 2. Fallback to local SQLite audit log
+    sqlite_path = Path(__file__).parent.parent / "data" / "quantum_topics.sqlite3"
+    if sqlite_path.exists():
+        try:
+            import sqlite3
+            con = sqlite3.connect(str(sqlite_path))
+            cur = con.cursor()
+            cur.execute("""
+                SELECT id, source_id, target_topic_slug, status, raw_content,
+                       parsed_fields, quality_score, quality_report, admin_notes,
+                       rejection_reason, submitted_at, reviewed_at, published_at
+                FROM knowledge_ingestion_jobs
+                ORDER BY submitted_at DESC
+                LIMIT 50
+            """)
+            cols = [d[0] for d in cur.description]
+            rows = cur.fetchall()
+            jobs = [dict(zip(cols, row)) for row in rows]
+            con.close()
+            return {"jobs": jobs, "source": "sqlite_cache", "total": len(jobs)}
+        except Exception as e:
+            logging.getLogger(__name__).warning(f"Failed to read ingestion jobs from SQLite: {e}")
+
+    return {"jobs": [], "source": "empty", "total": 0}
 
 
 if __name__ == "__main__":

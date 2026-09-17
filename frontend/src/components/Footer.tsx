@@ -42,6 +42,7 @@ export const Footer: React.FC = () => {
             <ul className="space-y-2 text-xs">
               <li><Link to="/tutor" className="hover:text-floral-white text-floral-white/75 transition-colors">AI Quantum Tutor</Link></li>
               <li><Link to="/dashboard" className="hover:text-floral-white text-floral-white/75 transition-colors">Student Dashboard</Link></li>
+              <li><Link to="/admin" className="hover:text-floral-white text-floral-white/75 transition-colors">Admin Ingestion Log</Link></li>
               <li><Link to="/about" className="hover:text-floral-white text-floral-white/75 transition-colors">About & Methodology</Link></li>
             </ul>
           </div>

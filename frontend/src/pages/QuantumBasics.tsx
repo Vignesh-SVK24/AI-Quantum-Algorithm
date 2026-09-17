@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   ArrowLeft, 
@@ -9,7 +9,9 @@ import {
   BarChart3, 
   Crosshair, 
   Globe2,
-  CheckCircle2
+  CheckCircle2,
+  Languages,
+  Sparkles
 } from 'lucide-react';
 import ClassicalVsQubits from './basics/ClassicalVsQubits';
 import WhatIsQubit from './basics/WhatIsQubit';
@@ -18,6 +20,11 @@ import Superposition from './basics/Superposition';
 import ProbabilityAmplitudes from './basics/ProbabilityAmplitudes';
 import Measurement from './basics/Measurement';
 import BlochSphere from './basics/BlochSphere';
+import { 
+  SUPPORTED_LANGUAGES, 
+  BASICS_TRANSLATIONS, 
+  type SupportedLanguage 
+} from '../data/quantumTranslations';
 
 const sections = [
   { id: 'classical-vs-qubits', title: 'Classical Bits vs Qubits', icon: CircleDot, component: ClassicalVsQubits },
@@ -31,6 +38,22 @@ const sections = [
 
 export const QuantumBasics: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
+  const [language, setLanguage] = useState<SupportedLanguage>(() => {
+    if (typeof localStorage !== 'undefined') {
+      const saved = localStorage.getItem('quantum_preferred_lang');
+      if (saved === 'hi' || saved === 'ta' || saved === 'en') return saved;
+    }
+    return 'en';
+  });
+
+  const handleLanguageChange = (newLang: SupportedLanguage) => {
+    setLanguage(newLang);
+    try {
+      localStorage.setItem('quantum_preferred_lang', newLang);
+    } catch {
+      // safe fallback
+    }
+  };
 
   const handleNext = () => {
     if (currentStep < sections.length - 1) {
@@ -46,13 +69,16 @@ export const QuantumBasics: React.FC = () => {
     }
   };
 
-  const CurrentSection = sections[currentStep].component;
+  const activeSectionMeta = sections[currentStep];
+  const CurrentSection = activeSectionMeta.component;
+  const currentTranslation = BASICS_TRANSLATIONS[language]?.[activeSectionMeta.id] || BASICS_TRANSLATIONS.en[activeSectionMeta.id];
 
   return (
     <div className="min-h-screen bg-transparent text-black-olive">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        
+        {/* Header with Language Selector */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div className="flex items-center gap-4">
             <Link 
               to="/" 
@@ -63,12 +89,40 @@ export const QuantumBasics: React.FC = () => {
             <div className="w-1 h-4 rounded-full bg-soft-sand" />
             <div className="flex items-center gap-2">
               <BookOpen className="w-4 h-4 text-warm-gold" />
-              <span className="text-sm font-bold text-black-olive">Quantum Basics</span>
+              <span className="text-sm font-bold text-black-olive">Quantum Basics Curriculum</span>
             </div>
           </div>
-          <span className="text-xs font-mono text-olive-mist px-3 py-1 rounded-full bg-warm-ivory border border-soft-sand font-medium">
-            Step {currentStep + 1} of {sections.length}
-          </span>
+
+          <div className="flex items-center gap-3">
+            {/* Language Switcher */}
+            <div className="flex items-center gap-1 p-1 bg-warm-ivory/80 rounded-2xl border border-soft-sand shadow-sm">
+              <div className="pl-1.5 pr-0.5 text-olive-mist">
+                <Languages className="w-3.5 h-3.5" />
+              </div>
+              {SUPPORTED_LANGUAGES.map((lang) => {
+                const isSelected = language === lang.code;
+                return (
+                  <button
+                    key={lang.code}
+                    type="button"
+                    onClick={() => handleLanguageChange(lang.code)}
+                    className={`px-2.5 py-1 rounded-xl text-xs font-semibold transition-all ${
+                      isSelected
+                        ? 'bg-black-olive text-floral-white shadow-xs'
+                        : 'text-black-olive/70 hover:text-black-olive hover:bg-white/60'
+                    }`}
+                    title={`Switch language to ${lang.label}`}
+                  >
+                    {lang.nativeLabel}
+                  </button>
+                );
+              })}
+            </div>
+
+            <span className="text-xs font-mono text-olive-mist px-3 py-1.5 rounded-2xl bg-warm-ivory border border-soft-sand font-medium">
+              Step {currentStep + 1} of {sections.length}
+            </span>
+          </div>
         </div>
 
         {/* Progress Navigation Pills */}
@@ -78,6 +132,7 @@ export const QuantumBasics: React.FC = () => {
               const Icon = section.icon;
               const isActive = idx === currentStep;
               const isCompleted = idx < currentStep;
+              const sectionTrans = BASICS_TRANSLATIONS[language]?.[section.id] || BASICS_TRANSLATIONS.en[section.id];
               return (
                 <button
                   key={section.id}
@@ -98,7 +153,7 @@ export const QuantumBasics: React.FC = () => {
                   ) : (
                     <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-warm-gold' : 'text-olive-mist'}`} />
                   )}
-                  <span className="hidden sm:inline">{section.title}</span>
+                  <span className="hidden sm:inline">{sectionTrans.title}</span>
                   <span className="sm:hidden">{idx + 1}</span>
                 </button>
               );
@@ -114,7 +169,48 @@ export const QuantumBasics: React.FC = () => {
           </div>
         </div>
 
-        {/* Active Section Content */}
+        {/* Multilingual Pedagogical Insight Banner */}
+        {language !== 'en' && (
+          <div className="mb-6 p-6 rounded-3xl bg-warm-ivory/90 border border-soft-sand shadow-sm space-y-3 animate-in fade-in duration-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-warm-gold" />
+                <h3 className="text-sm font-bold text-black-olive font-serif">
+                  {currentTranslation.title}
+                </h3>
+              </div>
+              <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded-lg bg-soft-sand/60 text-olive-mist">
+                {language === 'hi' ? 'हिन्दी अनुवाद' : 'தமிழ் வடிவம்'}
+              </span>
+            </div>
+
+            <p className="text-xs text-olive-mist font-medium italic">
+              {currentTranslation.tagline}
+            </p>
+
+            <div className="space-y-2 text-xs text-black-olive/85 leading-relaxed font-sans">
+              {currentTranslation.paragraphs.map((p, pIdx) => (
+                <p key={`p-${pIdx}`}>{p}</p>
+              ))}
+            </div>
+
+            <div className="pt-2 border-t border-soft-sand/60">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-olive-mist block mb-1">
+                {language === 'hi' ? 'मुख्य बिंदु (Key Takeaways):' : 'முக்கிய கருத்துகள் (Key Takeaways):'}
+              </span>
+              <ul className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                {currentTranslation.keyTakeaways.map((point, kIdx) => (
+                  <li key={`k-${kIdx}`} className="text-[11px] text-black-olive bg-white/70 p-2 rounded-xl border border-soft-sand/50 flex items-start gap-1.5">
+                    <span className="text-warm-gold font-bold">•</span>
+                    <span>{point}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+
+        {/* Active Section Content (Interactive SVG Canvas & State Simulation) */}
         <div className="rounded-3xl bg-[#FFFDF7] border border-soft-sand p-6 sm:p-10 shadow-sm">
           <CurrentSection
             onNext={handleNext}
@@ -145,3 +241,5 @@ export const QuantumBasics: React.FC = () => {
     </div>
   );
 };
+
+export default QuantumBasics;

@@ -6,9 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>QuantumPlatform — Interactive Quantum Algorithm Learning Platform</title>
     <meta name="description" content="AI-Based Interactive Quantum Algorithm Learning Platform. Build circuits, visualize Bloch sphere rotations, simulate superposition, and explore Deutsch-Jozsa and Grover's search algorithms." />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <meta name="theme-color" content="#FAF7EE" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="./src/main.tsx"></script>
+    <script>
+      if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js').catch((err) => {
+            console.warn('PWA service worker registration notice:', err);
+          });
+        });
+      }
+    </script>
   </body>
 </html>

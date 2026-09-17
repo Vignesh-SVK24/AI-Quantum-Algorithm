@@ -1,0 +1,18 @@
+﻿{
+  "name": "QuantumPlatform — Interactive Quantum Algorithm Learning Platform",
+  "short_name": "QuantumPlatform",
+  "description": "Interactive Quantum Algorithm Learning Platform for SIH 2026. Learn quantum computing, Dirac notation, and algorithms with 100% offline deterministic verification.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FAF7EE",
+  "theme_color": "#FAF7EE",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -15,7 +15,8 @@ import {
   MousePointer2, 
   Eraser, 
   Split, 
-  BarChart3 
+  BarChart3,
+  Box
 } from 'lucide-react';
 import { 
   PLAYGROUND_ALGORITHMS, 
@@ -31,6 +32,13 @@ import { MeasurementHistogramWidget } from '../components/MeasurementHistogramWi
 import { BlochSphereWidget } from '../components/BlochSphereWidget';
 import { AITutorPanel } from '../components/AITutorPanel';
 import { ExplainCircuitModal } from '../components/ExplainCircuitModal';
+import { 
+  GroverVisualization3D, 
+  DeutschJozsaVisualization3D, 
+  ProbabilityBars3D, 
+  ThreeErrorBoundary 
+} from '../components/visualization3d';
+
 
 const GATE_PALETTE = ['H', 'X', 'Y', 'Z', 'S', 'T', 'CNOT', 'CZ', 'SWAP'] as const;
 type PaletteGate = typeof GATE_PALETTE[number];
@@ -59,6 +67,7 @@ export const AlgorithmPlayground: React.FC = () => {
   const [simResult, setSimResult] = useState<SimulateResponse | null>(null);
   const [simLoading, setSimLoading] = useState<boolean>(false);
   const [simError, setSimError] = useState<string | null>(null);
+  const [viewTab, setViewTab] = useState<'3d' | '2d'>('3d');
 
   // 5. Modals & Tutor State
   const [isExplainModalOpen, setIsExplainModalOpen] = useState<boolean>(false);
@@ -700,22 +709,59 @@ export const AlgorithmPlayground: React.FC = () => {
           {/* BOTTOM TELEMETRY DOCK: REAL-TIME SIMULATION & RESULTS */}
           {/* ========================================================================= */}
           <div className="bg-[#FFFDF7] border-t border-[#E0D9C8] p-4 space-y-4 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <BarChart3 className="w-4 h-4 text-[#C5A86A]" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-[#31372B]">
-                  Simulation Telemetry & Probabilities
-                </h3>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-1.5">
+                  <BarChart3 className="w-4 h-4 text-[#C5A86A]" />
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-[#31372B]">
+                    Quantum State & Telemetry
+                  </h3>
+                </div>
+
+                {/* 3D vs 2D View Switcher */}
+                <div className="flex items-center gap-1 bg-[#FAF7EE] p-1 rounded-xl border border-[#E0D9C8]">
+                  <button
+                    type="button"
+                    onClick={() => setViewTab('3d')}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                      viewTab === '3d'
+                        ? 'bg-[#202C3D] text-[#FAF7EE] shadow-sm'
+                        : 'text-[#31372B]/70 hover:text-[#31372B]'
+                    }`}
+                    aria-label="Switch to 3D Quantum State View"
+                  >
+                    <Box className="w-3.5 h-3.5 text-[#C5A86A]" />
+                    <span>3D State View</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setViewTab('2d')}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                      viewTab === '2d'
+                        ? 'bg-[#202C3D] text-[#FAF7EE] shadow-sm'
+                        : 'text-[#31372B]/70 hover:text-[#31372B]'
+                    }`}
+                    aria-label="Switch to 2D Telemetry View"
+                  >
+                    <BarChart3 className="w-3.5 h-3.5 text-[#31372B]/60" />
+                    <span>2D Telemetry</span>
+                  </button>
+                </div>
               </div>
 
               <div className="flex items-center space-x-3 text-xs">
                 <span className="text-[#31372B]/60">
-                  Most Likely State:
+                  Dominant State:
                 </span>
                 <span className="font-mono font-bold text-[#202C3D] px-2 py-0.5 rounded bg-emerald-100 border border-emerald-300">
                   {telemetry.dominantState} ({(telemetry.dominantProb * 100).toFixed(1)}%)
                 </span>
               </div>
+            </div>
+
+            {/* Screen Reader Live Readout for 3D state changes */}
+            <div className="sr-only" role="status" aria-live="polite">
+              {currentStep ? `Algorithm Step ${currentStep.stepNumber}: ${currentStep.name}. ${currentStep.description}. Current state: ${currentStep.whatHappens}` : ''}
             </div>
 
             {simLoading ? (
@@ -727,8 +773,55 @@ export const AlgorithmPlayground: React.FC = () => {
               <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800">
                 {simError}
               </div>
+            ) : viewTab === '3d' ? (
+              /* 3D Visualizer Mode */
+              <ThreeErrorBoundary
+                fallback={
+                  <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800 flex items-center justify-between">
+                    <span>3D hardware acceleration is unavailable. Fallback 2D view is enabled.</span>
+                    <button
+                      type="button"
+                      onClick={() => setViewTab('2d')}
+                      className="px-2 py-1 rounded bg-[#202C3D] text-[#FAF7EE] text-[11px] font-bold"
+                    >
+                      Switch to 2D
+                    </button>
+                  </div>
+                }
+              >
+                <div className="space-y-3">
+                  {activeAlgo.id === 'grover' ? (
+                    <GroverVisualization3D
+                      targetState="|11>"
+                      stepIndex={activeStepIndex}
+                      onStepChange={(idx) => setActiveStepIndex(idx)}
+                      showControls={false}
+                    />
+                  ) : activeAlgo.id === 'deutsch' ? (
+                    <DeutschJozsaVisualization3D
+                      oracleType="balanced"
+                      stepIndex={activeStepIndex}
+                      onStepChange={(idx) => setActiveStepIndex(idx)}
+                      showControls={false}
+                    />
+                  ) : (
+                    <div className="w-full h-80 rounded-2xl overflow-hidden bg-floral-white shadow-neu-pressed border border-black-olive/10 relative">
+                      <ProbabilityBars3D
+                        probabilities={simResult?.probabilities || {}}
+                        measurementCounts={simResult?.measurement_counts}
+                        numQubits={activeAlgo.numQubits}
+                      />
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between text-[11px] text-[#31372B]/70 font-mono px-1">
+                    <span>Synchronized with Algorithm Step {activeStepIndex + 1} of {activeAlgo.steps.length}: <strong>{currentStep?.name}</strong></span>
+                    <span className="text-[#202C3D] font-bold">Interactive 3D Orbit: Click and drag to rotate view</span>
+                  </div>
+                </div>
+              </ThreeErrorBoundary>
             ) : simResult ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              /* 2D Telemetry Mode */
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 animate-in fade-in duration-150">
                 {/* 1. Probability Histogram Widget */}
                 <div className="p-3 rounded-xl bg-white border border-[#E0D9C8] shadow-xs">
                   <div className="text-[11px] font-bold uppercase tracking-wider text-[#31372B]/60 mb-2">

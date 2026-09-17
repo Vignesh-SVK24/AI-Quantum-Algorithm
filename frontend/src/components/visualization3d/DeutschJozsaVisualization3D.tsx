@@ -5,12 +5,18 @@ import { Sparkles, ChevronRight } from 'lucide-react';
 
 interface DeutschJozsaVisualization3DProps {
   oracleType?: 'constant' | 'balanced';
+  stepIndex?: number;
+  onStepChange?: (index: number) => void;
+  showControls?: boolean;
 }
 
 export const DeutschJozsaVisualization3D: React.FC<DeutschJozsaVisualization3DProps> = ({
-  oracleType = 'balanced'
+  oracleType = 'balanced',
+  stepIndex,
+  onStepChange,
+  showControls = true
 }) => {
-  const [stageIdx, setStageIdx] = useState(0);
+  const [internalStageIdx, setInternalStageIdx] = useState(0);
   const isBalanced = oracleType === 'balanced';
 
   const stages = [
@@ -41,6 +47,12 @@ export const DeutschJozsaVisualization3D: React.FC<DeutschJozsaVisualization3DPr
         : { '|00>': 0.5, '|01>': 0.5, '|10>': 0.0, '|11>': 0.0 }
     }
   ];
+
+  const stageIdx = stepIndex !== undefined ? Math.min(Math.max(0, stepIndex), stages.length - 1) : internalStageIdx;
+  const setStage = (idx: number) => {
+    if (onStepChange) onStepChange(idx);
+    setInternalStageIdx(idx);
+  };
 
   const current = stages[stageIdx];
   const entries = Object.entries(current.probs);
@@ -107,41 +119,50 @@ export const DeutschJozsaVisualization3D: React.FC<DeutschJozsaVisualization3DPr
         </div>
       </div>
 
-      {/* Stepping controls */}
-      <div className="p-3 rounded-2xl bg-floral-white shadow-neu-sm-raised border border-black-olive/10 space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="font-bold text-xs text-slate-gray uppercase tracking-wider">
-            {current.name}
-          </span>
-          <div className="flex items-center gap-1.5">
-            {stages.map((_, sIdx) => (
-              <button
-                key={`dot-${sIdx}`}
-                type="button"
-                onClick={() => setStageIdx(sIdx)}
-                className={`w-2.5 h-2.5 rounded-full transition-all ${
-                  stageIdx === sIdx
-                    ? 'bg-slate-gray scale-125'
-                    : 'bg-black-olive/20 hover:bg-black-olive/40'
-                }`}
-              />
-            ))}
+      {/* Accessible screen-reader live readout */}
+      <div className="sr-only" role="status" aria-live="polite">
+        Stage {stageIdx + 1} of {stages.length}: {current.name}. {current.desc}
+      </div>
+
+      {/* Stepping controls (shown if showControls is true) */}
+      {showControls && (
+        <div className="p-3 rounded-2xl bg-floral-white shadow-neu-sm-raised border border-black-olive/10 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="font-bold text-xs text-slate-gray uppercase tracking-wider">
+              {current.name}
+            </span>
+            <div className="flex items-center gap-1.5">
+              {stages.map((_, sIdx) => (
+                <button
+                  key={`dot-${sIdx}`}
+                  type="button"
+                  aria-label={`Go to stage ${sIdx + 1}: ${stages[sIdx].name}`}
+                  onClick={() => setStage(sIdx)}
+                  className={`w-2.5 h-2.5 rounded-full transition-all focus-visible:ring-2 focus-visible:ring-warm-gold outline-none ${
+                    stageIdx === sIdx
+                      ? 'bg-slate-gray scale-125'
+                      : 'bg-black-olive/20 hover:bg-black-olive/40'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+          <p className="text-xs text-black-olive/80 leading-relaxed">
+            {current.desc}
+          </p>
+          <div className="flex justify-end pt-1">
+            <button
+              type="button"
+              aria-label={stageIdx === stages.length - 1 ? 'Restart Deutsch-Jozsa stages' : 'Advance to next stage'}
+              onClick={() => setStage((stageIdx + 1) % stages.length)}
+              className="px-3 py-1 rounded-xl bg-slate-gray text-floral-white text-xs font-bold shadow-neu-sm-raised hover:shadow-neu-sm-pressed transition-all inline-flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-warm-gold outline-none"
+            >
+              <span>{stageIdx === stages.length - 1 ? 'Restart' : 'Next Step'}</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
           </div>
         </div>
-        <p className="text-xs text-black-olive/80 leading-relaxed">
-          {current.desc}
-        </p>
-        <div className="flex justify-end pt-1">
-          <button
-            type="button"
-            onClick={() => setStageIdx((prev) => (prev + 1) % stages.length)}
-            className="px-3 py-1 rounded-xl bg-slate-gray text-floral-white text-xs font-bold shadow-neu-sm-raised hover:shadow-neu-sm-pressed transition-all inline-flex items-center gap-1"
-          >
-            <span>{stageIdx === stages.length - 1 ? 'Restart' : 'Next Step'}</span>
-            <ChevronRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      </div>
+      )}
     </div>
   );
 };
