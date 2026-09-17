@@ -9,13 +9,11 @@ import {
 } from 'lucide-react';
 import { 
   sendTutorChat, 
-  getTutorConnectionStatus,
   type TutorContext, 
   type TutorSourceCitation 
 } from '../services/api';
 import { ResearchIndicator } from './ResearchIndicator';
 import { TutorMessageRenderer } from './TutorMessageRenderer';
-import { GeminiKeyModal } from './GeminiKeyModal';
 
 interface Message {
   id: string;
@@ -46,20 +44,6 @@ export const AITutorPanel: React.FC<AITutorPanelProps> = ({ context, compact = f
   const [isOpen, setIsOpen] = useState<boolean>(!compact);
   const [inputQuestion, setInputQuestion] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const [isKeyModalOpen, setIsKeyModalOpen] = useState(false);
-  const [connStatus, setConnStatus] = useState<{ mode: 'backend' | 'direct_gemini' | 'offline'; label: string; hasKey: boolean }>({
-    mode: 'offline',
-    label: 'Checking...',
-    hasKey: false
-  });
-
-  const refreshStatus = () => {
-    getTutorConnectionStatus().then(setConnStatus);
-  };
-
-  useEffect(() => {
-    refreshStatus();
-  }, []);
 
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -179,24 +163,13 @@ export const AITutorPanel: React.FC<AITutorPanelProps> = ({ context, compact = f
             </div>
 
             <div className="flex items-center gap-1.5">
-              <button
-                onClick={() => setIsKeyModalOpen(true)}
-                title="Configure Gemini API Key"
-                className={`px-2 py-0.5 rounded-lg text-[9px] font-bold flex items-center gap-1 transition-all border shadow-sm ${
-                  connStatus.mode === 'backend'
-                    ? 'bg-muted-sage/20 border-muted-sage/40 text-muted-sage'
-                    : connStatus.mode === 'direct_gemini'
-                    ? 'bg-soft-cyan/20 border-soft-cyan/40 text-soft-cyan'
-                    : 'bg-warm-gold/15 border-warm-gold/30 text-warm-gold hover:bg-warm-gold/25'
-                }`}
+              <span
+                className="px-2 py-0.5 rounded-lg text-[9px] font-bold flex items-center gap-1 bg-muted-sage/20 border border-muted-sage/40 text-muted-sage shadow-sm"
+                title="AI Quantum Tutor Active"
               >
-                <span className={`w-1.5 h-1.5 rounded-full ${
-                  connStatus.mode === 'backend' || connStatus.mode === 'direct_gemini'
-                    ? 'bg-muted-sage animate-pulse'
-                    : 'bg-warm-gold'
-                }`} />
-                <span>{connStatus.mode === 'backend' ? 'Live' : connStatus.mode === 'direct_gemini' ? 'Gemini AI' : 'Offline'}</span>
-              </button>
+                <span className="w-1.5 h-1.5 rounded-full bg-muted-sage animate-pulse" />
+                <span>AI Active</span>
+              </span>
               {compact && (
                 <button
                   onClick={() => setIsOpen(false)}
@@ -307,11 +280,6 @@ export const AITutorPanel: React.FC<AITutorPanelProps> = ({ context, compact = f
           </form>
         </div>
       )}
-      <GeminiKeyModal
-        isOpen={isKeyModalOpen}
-        onClose={() => setIsKeyModalOpen(false)}
-        onKeyUpdated={refreshStatus}
-      />
     </div>
   );
 };

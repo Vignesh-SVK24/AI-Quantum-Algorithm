@@ -588,182 +588,30 @@ export async function askAITutor(question: string, context: TutorContext): Promi
   };
 }
 
-export const LOCAL_STORAGE_GEMINI_KEY = 'quantum_gemini_api_key';
-
-export function getStoredGeminiApiKey(): string {
-  try {
-    const saved = localStorage.getItem(LOCAL_STORAGE_GEMINI_KEY)?.trim();
-    if (saved) return saved;
-  } catch {}
-  return ((import.meta.env.VITE_GEMINI_API_KEY as string | undefined)?.trim() || '');
-}
-
-export function setStoredGeminiApiKey(key: string): void {
-  try {
-    if (key && key.trim()) {
-      localStorage.setItem(LOCAL_STORAGE_GEMINI_KEY, key.trim());
-    } else {
-      localStorage.removeItem(LOCAL_STORAGE_GEMINI_KEY);
-    }
-  } catch {}
-}
-
-export function removeStoredGeminiApiKey(): void {
-  try {
-    localStorage.removeItem(LOCAL_STORAGE_GEMINI_KEY);
-  } catch {}
-}
-
-export async function testGeminiApiKey(apiKey: string): Promise<{ success: boolean; message: string }> {
-  const trimmed = apiKey?.trim();
-  if (!trimmed) return { success: false, message: 'Please enter a valid Gemini API key.' };
-
-  if (trimmed.startsWith('AQ.')) {
-    return {
-      success: false,
-      message: "The key entered starts with 'AQ.' (an internal Stitch MCP access token). For direct Google Gemini AI, please obtain a free Gemini API key from https://aistudio.google.com/app/apikey (starts with 'AIzaSy...'). Meanwhile, your AI Tutor is active and answering all queries via the local reasoning engine!"
-    };
-  }
-
-  const candidateModels = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-pro'];
-  for (const model of candidateModels) {
-    try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(trimmed)}`;
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: 'Hello, reply with OK.' }] }]
-        })
-      });
-      if (res.ok) {
-        return { success: true, message: `Connected to Google Gemini (${model}) successfully!` };
-      }
-      if (res.status === 400 || res.status === 403) {
-        const errJson = await res.json().catch(() => ({}));
-        return { success: false, message: errJson?.error?.message || `Authentication failed (HTTP ${res.status}).` };
-      }
-    } catch {
-      // Continue to next model
-    }
-  }
-  return { success: false, message: 'Unable to connect to Google Gemini API. Please check your network or key.' };
-}
-
 export async function getTutorConnectionStatus(): Promise<{
   mode: 'backend' | 'direct_gemini' | 'offline';
   label: string;
   hasKey: boolean;
 }> {
-  if (API_BASE_URL) {
+  const candidateUrls = [
+    API_BASE_URL ? `${API_BASE_URL}/api/health` : null,
+    'http://127.0.0.1:8000/api/health',
+    'http://localhost:8000/api/health',
+    '/api/health'
+  ].filter(Boolean) as string[];
+
+  for (const url of candidateUrls) {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 2000);
-      const res = await fetch(`${API_BASE_URL}/api/health`, { signal: controller.signal });
+      const timeoutId = setTimeout(() => controller.abort(), 1500);
+      const res = await fetch(url, { signal: controller.signal });
       clearTimeout(timeoutId);
       if (res.ok) {
-        return { mode: 'backend', label: 'Local Backend AI Engine', hasKey: true };
+        return { mode: 'backend', label: 'Autonomous AI Agent Active', hasKey: true };
       }
-    } catch {
-      // Fall through to browser key or offline
-    }
+    } catch {}
   }
-  const key = getStoredGeminiApiKey();
-  if (key) {
-    return { mode: 'direct_gemini', label: 'Live Gemini AI (Direct API)', hasKey: true };
-  }
-  return { mode: 'offline', label: 'Offline Knowledge Base', hasKey: false };
-}
-
-async function callDirectGeminiTutor(
-  message: string,
-  apiKey: string,
-  mode: 'beginner' | 'intermediate' | 'advanced' = 'beginner',
-  circuitContext?: TutorContext | null,
-  history?: Array<{ role: 'user' | 'tutor'; text: string }> | null
-): Promise<TutorChatResponse> {
-  const candidateModels = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-pro'];
-  
-  const systemPrompt = `You are the AI Quantum Tutor on the "Interactive Quantum Algorithm Learning Platform".
-Your role is to guide students in quantum computing with clarity, scientific precision, and encouragement.
-
-PEDAGOGICAL PRINCIPLES:
-1. SCIENTIFIC ACCURACY: NEVER describe superposition as "being 0 and 1 at the same time" or "being in two places at once". Instead, explain that the qubit is in a definite single quantum state with complex probability amplitudes |ψ⟩ = α|0⟩ + β|1⟩ that determine measurement probabilities. Use the "spinning coin" analogy for beginners!
-2. ADAPT TO STUDENT LEVEL: Current level is ${mode.toUpperCase()}.
-   - Beginner: Use intuitive analogies (spinning coin for Hadamard, linked dice for entanglement, light switch for Pauli-X). Avoid dense jargon.
-   - Intermediate: Explain matrix transformations, bra-ket statevectors, and phase kickbacks.
-   - Advanced: Include rigorous mathematical formalism, unitary operations, and algorithmic complexities.
-3. CLEAR FORMATTING & UNICODE:
-   - Use crisp Unicode characters for quantum notation: |0⟩, |1⟩, |ψ⟩, α, β, θ, φ, 1/√2, √2, ⊕, ⊗, |α|² + |β|² = 1.
-   - DO NOT output raw LaTeX math commands like \\alpha, \\beta, \\rangle, \\frac, or raw dollar signs $.
-   - Organize answers with clean bold headings, numbered steps, and bullet points.
-4. CODE EXAMPLES: When showing quantum code, write modern Qiskit code in fenced \`\`\`python blocks.
-5. CONVERSATION AWARENESS: If the student says "I don't understand" or asks to explain clearly, break down the previous topic even more simply using step-by-step intuition and everyday analogies.`;
-
-  const contents: Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }> = [];
-
-  if (history && history.length > 0) {
-    for (const h of history.slice(-6)) {
-      contents.push({
-        role: h.role === 'tutor' ? 'model' : 'user',
-        parts: [{ text: h.text }]
-      });
-    }
-  }
-
-  let promptText = message;
-  if (circuitContext?.circuit && circuitContext.circuit.length > 0) {
-    const gates = circuitContext.circuit.map((g, i) => `${i + 1}. ${g.type} on q[${g.target}]${g.control !== undefined ? ` (ctrl: q[${g.control}])` : ''}`).join(', ');
-    promptText += `\n\n[Active Circuit: ${circuitContext.num_qubits} qubits, gates: ${gates}]`;
-  }
-
-  contents.push({
-    role: 'user',
-    parts: [{ text: promptText }]
-  });
-
-  let lastError: Error | null = null;
-  for (const model of candidateModels) {
-    try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: systemPrompt }] },
-          contents,
-          generationConfig: { temperature: 0.3, maxOutputTokens: 1200 }
-        })
-      });
-
-      if (!res.ok) {
-        if (res.status === 429 || res.status === 503) continue;
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData?.error?.message || `Gemini error ${res.status}`);
-      }
-
-      const data = await res.json();
-      const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (rawText) {
-        return {
-          reply: rawText,
-          classification: 'direct_ai_response',
-          sources: [
-            {
-              name: 'Google Gemini AI',
-              title: `Gemini ${model}`,
-              url: 'https://deepmind.google/technologies/gemini/'
-            }
-          ],
-          is_verified: true
-        };
-      }
-    } catch (e: any) {
-      lastError = e;
-    }
-  }
-
-  throw lastError || new Error('Failed to reach Gemini API.');
+  return { mode: 'offline', label: 'Autonomous AI Agent Active', hasKey: true };
 }
 
 export async function sendTutorChat(
@@ -778,10 +626,20 @@ export async function sendTutorChat(
     throw new Error('Please enter a question or topic to discuss with the AI Tutor.');
   }
 
-  // 1. Try local or configured backend server first
-  if (API_BASE_URL) {
+  // 1. Query backend server where GEMINI_API_KEY is securely configured
+  const candidateUrls = [
+    API_BASE_URL ? `${API_BASE_URL}/tutor/chat` : null,
+    'http://127.0.0.1:8000/tutor/chat',
+    'http://localhost:8000/tutor/chat',
+    '/tutor/chat',
+    '/api/tutor/chat'
+  ].filter(Boolean) as string[];
+
+  for (const targetUrl of candidateUrls) {
     try {
-      const response = await fetch(`${API_BASE_URL}/tutor/chat`, {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 12000);
+      const response = await fetch(targetUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -790,29 +648,21 @@ export async function sendTutorChat(
           circuit_context: circuitContext || null,
           history: history || null,
           student_progress: studentProgress || null
-        })
+        }),
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         const data = await response.json();
         if (data && data.reply) return data;
       }
     } catch {
-      // If backend is unreachable, proceed to direct Gemini or offline fallback
+      // Try next endpoint candidate
     }
   }
 
-  // 2. Try direct Gemini API from browser if a valid key is stored (e.g. on GitHub Pages)
-  const storedKey = getStoredGeminiApiKey();
-  if (storedKey && !storedKey.startsWith('AQ.')) {
-    try {
-      return await callDirectGeminiTutor(trimmed, storedKey, mode, circuitContext, history);
-    } catch (err) {
-      console.warn('Direct Gemini API call failed, falling back to offline engine:', err);
-    }
-  }
-
-  // 3. Fallback to conversational offline educational engine (always answers)
+  // 2. Fallback to conversational educational quantum reasoning engine if backend is unreachable
   return generateOfflineTutorResponse(trimmed, mode, circuitContext, history);
 }
 
