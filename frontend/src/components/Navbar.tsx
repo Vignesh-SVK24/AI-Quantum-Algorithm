@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Atom, 
@@ -9,39 +9,41 @@ import {
   Sparkles, 
   LayoutDashboard, 
   Info,
-  Activity,
   Menu,
   X,
   Layers,
   LogIn,
   LogOut
 } from 'lucide-react';
-import { checkBackendHealth } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
   const { profile, isGuest, isAuthenticated, signOut } = useAuth();
-  const [backendOnline, setBackendOnline] = useState<boolean | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
 
+  // Close dropdown on outside click
   useEffect(() => {
-    let mounted = true;
-    const pollHealth = async () => {
-      try {
-        const res = await checkBackendHealth();
-        if (mounted) setBackendOnline(res.status === 'online');
-      } catch {
-        if (mounted) setBackendOnline(false);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+        setProfileMenuOpen(false);
       }
     };
-    pollHealth();
-    const interval = setInterval(pollHealth, 10000);
+    if (profileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
     return () => {
-      mounted = false;
-      clearInterval(interval);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
+  }, [profileMenuOpen]);
+
+  // Close menus on route change
+  useEffect(() => {
+    setProfileMenuOpen(false);
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
 
   const baseNavLinks = [
     { name: 'Basics', path: '/basics', icon: BookOpen },
@@ -59,6 +61,13 @@ export const Navbar: React.FC = () => {
     : [...baseNavLinks, { name: 'Login', path: '/login', icon: LogIn }];
 
   const userInitial = (profile?.full_name || profile?.email || 'U').charAt(0).toUpperCase();
+
+  const getLoginTypeLabel = (provider?: string | null, guest?: boolean) => {
+    if (guest || provider === 'anonymous') return 'Guest Account';
+    if (provider === 'google') return 'Google Account';
+    if (provider === 'email') return 'Email / Password';
+    return provider ? provider.toUpperCase() : 'Supabase Auth';
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-floral-white/90 backdrop-blur-md border-b border-soft-sand/80 shadow-sm mb-4">
@@ -103,35 +112,8 @@ export const Navbar: React.FC = () => {
             })}
           </nav>
 
-          {/* Right side: Backend Health indicator & Auth / CTA */}
+          {/* Right side: Tour & User Profile Icon / Dropdown */}
           <div className="hidden sm:flex items-center gap-3">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-warm-ivory border border-soft-sand text-xs font-mono">
-              <Activity className="w-3.5 h-3.5 text-olive-mist" />
-              <span className="text-olive-mist text-[11px]">Qiskit:</span>
-              <div className="flex items-center gap-1.5">
-                <span
-                  className={`w-2 h-2 rounded-full ${
-                    backendOnline === true
-                      ? 'bg-muted-sage animate-pulse'
-                      : backendOnline === false
-                      ? 'bg-cocoa-noir'
-                      : 'bg-warm-gold animate-ping'
-                  }`}
-                />
-                <span
-                  className={`text-[11px] font-medium ${
-                    backendOnline === true
-                      ? 'text-deep-olive'
-                      : backendOnline === false
-                      ? 'text-cocoa-noir'
-                      : 'text-olive-mist'
-                  }`}
-                >
-                  {backendOnline === true ? 'Online' : backendOnline === false ? 'Offline' : 'Connecting...'}
-                </span>
-              </div>
-            </div>
-
             <button
               type="button"
               onClick={() => window.dispatchEvent(new CustomEvent('quantum:start-tour'))}
@@ -143,42 +125,98 @@ export const Navbar: React.FC = () => {
             </button>
 
             {isAuthenticated ? (
-              <div className="flex items-center gap-2">
-                <Link
-                  to="/dashboard"
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-warm-ivory border border-soft-sand hover:border-black-olive/40 hover:bg-soft-sand transition-all text-xs group"
-                  title={profile?.email || 'Student Dashboard'}
+              <div className="relative" ref={profileMenuRef}>
+                {/* Profile Icon Only Button */}
+                <button
+                  type="button"
+                  onClick={() => setProfileMenuOpen((prev) => !prev)}
+                  className="relative flex items-center justify-center p-0.5 rounded-full border-2 border-soft-sand hover:border-black-olive/40 focus:outline-none focus:ring-2 focus:ring-warm-gold/40 transition-all shadow-sm group bg-warm-ivory cursor-pointer"
+                  title={profile?.full_name || profile?.email || 'Student Profile'}
+                  aria-expanded={profileMenuOpen}
                 >
                   {profile?.avatar_url ? (
                     <img
                       src={profile.avatar_url}
-                      alt={profile.full_name || 'User'}
-                      className="w-5 h-5 rounded-full object-cover border border-soft-sand"
+                      alt={profile.full_name || 'Profile'}
+                      className="w-9 h-9 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="w-5 h-5 rounded-full bg-black-olive text-warm-gold text-[10px] font-bold flex items-center justify-center">
+                    <div className="w-9 h-9 rounded-full bg-black-olive text-warm-gold text-xs font-bold flex items-center justify-center group-hover:bg-deep-olive transition-colors">
                       {userInitial}
                     </div>
                   )}
-                  <span className="font-semibold text-black-olive max-w-[110px] truncate">
-                    {profile?.full_name || 'Student'}
-                  </span>
                   {isGuest && (
-                    <span className="text-[9px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-200">
-                      Guest
-                    </span>
+                    <span
+                      className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-amber-400 border-2 border-floral-white"
+                      title="Guest session"
+                    />
                   )}
-                </Link>
-
-                <button
-                  type="button"
-                  onClick={() => signOut()}
-                  title="Sign out"
-                  className="inline-flex items-center gap-1 px-2.5 py-2 rounded-xl bg-warm-ivory border border-soft-sand text-olive-mist hover:text-cocoa-noir hover:bg-soft-sand transition-all text-xs font-medium"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                  <span className="hidden md:inline">Logout</span>
                 </button>
+
+                {/* Animated Dropdown Menu with Name, Type of Login, and Logout */}
+                {profileMenuOpen && (
+                  <div className="absolute right-0 mt-2.5 w-64 rounded-2xl bg-floral-white border border-soft-sand shadow-xl p-3.5 z-50 profile-dropdown-animate">
+                    {/* User Identity Header */}
+                    <div className="flex items-center gap-3 pb-3 border-b border-soft-sand/70">
+                      {profile?.avatar_url ? (
+                        <img
+                          src={profile.avatar_url}
+                          alt={profile.full_name || 'User'}
+                          className="w-10 h-10 rounded-full object-cover border border-soft-sand"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-black-olive text-warm-gold text-sm font-bold flex items-center justify-center shadow-sm">
+                          {userInitial}
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="font-semibold text-sm text-black-olive truncate">
+                          {profile?.full_name || (isGuest ? 'Guest Scholar' : 'Student')}
+                        </div>
+                        {profile?.email && (
+                          <div className="text-[11px] text-olive-mist truncate" title={profile.email}>
+                            {profile.email}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Type of Login */}
+                    <div className="py-2.5 px-1 space-y-1">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-olive-mist block">
+                        Type of Login
+                      </span>
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-warm-ivory border border-soft-sand text-xs font-medium text-black-olive">
+                        <span className={`w-2 h-2 rounded-full ${isGuest ? 'bg-amber-400' : 'bg-warm-gold'}`} />
+                        {getLoginTypeLabel(profile?.auth_provider, isGuest)}
+                      </div>
+                    </div>
+
+                    {/* Navigation & Logout inside Dropdown */}
+                    <div className="pt-2 border-t border-soft-sand/70 space-y-1">
+                      <Link
+                        to="/dashboard"
+                        onClick={() => setProfileMenuOpen(false)}
+                        className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-black-olive hover:bg-warm-ivory transition-all"
+                      >
+                        <LayoutDashboard className="w-3.5 h-3.5 text-olive-mist" />
+                        Student Dashboard
+                      </Link>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setProfileMenuOpen(false);
+                          signOut();
+                        }}
+                        className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-cocoa-noir hover:bg-rose-50 hover:text-red-700 transition-all text-left cursor-pointer"
+                      >
+                        <LogOut className="w-3.5 h-3.5" />
+                        Sign Out
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <Link
@@ -189,14 +227,6 @@ export const Navbar: React.FC = () => {
                 Login
               </Link>
             )}
-
-            <Link
-              to="/lab"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-black-olive text-floral-white text-xs font-semibold shadow-sm hover:bg-deep-olive transition-all"
-            >
-              <FlaskConical className="w-3.5 h-3.5 text-soft-cyan" />
-              Launch Lab
-            </Link>
           </div>
 
           {/* Mobile menu toggle */}
@@ -215,47 +245,49 @@ export const Navbar: React.FC = () => {
       {mobileMenuOpen && (
         <div className="xl:hidden bg-floral-white border-t border-soft-sand mx-4 mt-2 mb-4 px-4 py-4 space-y-2 rounded-2xl shadow-lg">
           {isAuthenticated && (
-            <div className="p-3 mb-2 rounded-xl bg-warm-ivory border border-soft-sand flex items-center justify-between">
+            <div className="p-3 mb-2 rounded-xl bg-warm-ivory border border-soft-sand space-y-2.5">
               <div className="flex items-center gap-2.5">
                 {profile?.avatar_url ? (
                   <img
                     src={profile.avatar_url}
                     alt={profile.full_name || 'User'}
-                    className="w-8 h-8 rounded-full object-cover border border-soft-sand"
+                    className="w-9 h-9 rounded-full object-cover border border-soft-sand"
                   />
                 ) : (
-                  <div className="w-8 h-8 rounded-full bg-black-olive text-warm-gold text-xs font-bold flex items-center justify-center">
+                  <div className="w-9 h-9 rounded-full bg-black-olive text-warm-gold text-xs font-bold flex items-center justify-center">
                     {userInitial}
                   </div>
                 )}
-                <div>
-                  <div className="font-semibold text-xs text-black-olive flex items-center gap-1.5">
-                    {profile?.full_name || 'Student'}
-                    {isGuest && (
-                      <span className="text-[9px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-200">
-                        Guest
-                      </span>
-                    )}
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-xs text-black-olive truncate">
+                    {profile?.full_name || (isGuest ? 'Guest Scholar' : 'Student')}
                   </div>
                   {profile?.email && (
-                    <div className="text-[11px] text-olive-mist truncate max-w-[180px]">
+                    <div className="text-[11px] text-olive-mist truncate">
                       {profile.email}
                     </div>
                   )}
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  signOut();
-                }}
-                className="px-2.5 py-1.5 rounded-lg bg-soft-sand/70 text-cocoa-noir hover:bg-soft-sand text-xs font-medium flex items-center gap-1"
-              >
-                <LogOut className="w-3.5 h-3.5" />
-                Sign Out
-              </button>
+              <div className="flex items-center justify-between pt-2 border-t border-soft-sand/60">
+                <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-floral-white border border-soft-sand text-[11px] font-medium text-black-olive">
+                  <span className={`w-1.5 h-1.5 rounded-full ${isGuest ? 'bg-amber-400' : 'bg-warm-gold'}`} />
+                  {getLoginTypeLabel(profile?.auth_provider, isGuest)}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    signOut();
+                  }}
+                  className="px-2.5 py-1.5 rounded-lg bg-soft-sand/70 text-cocoa-noir hover:bg-rose-50 hover:text-red-700 text-xs font-medium flex items-center gap-1 cursor-pointer"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  Sign Out
+                </button>
+              </div>
             </div>
           )}
 
