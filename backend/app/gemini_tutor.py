@@ -850,63 +850,79 @@ def invoke_groq(system_prompt: str, user_message: str, model_name: str | None = 
         logger.info("GROQ_API_KEY is not configured or placeholder; skipping Groq.")
         raise RuntimeError("GROQ_API_KEY_MISSING")
 
-    model = (
+    primary_model = (
         model_name
         or os.environ.get("GROQ_MODEL", "").strip()
-        or "llama-3.3-70b-versatile"
+        or "openai/gpt-oss-120b"
     )
+
+    # Ordered list of models to try in case of 404 model_not_found on specific Groq tiers
+    candidate_models = [primary_model]
+    for fallback_cand in ["openai/gpt-oss-120b", "qwen/qwen3.8-27b", "openai/gpt-oss-20b", "llama-3.3-70b-versatile"]:
+        if fallback_cand not in candidate_models:
+            candidate_models.append(fallback_cand)
 
     url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {api_key}",
-        "User-Agent": "QuantumPlatform/1.0"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
 
-    payload = {
-        "model": model,
-        "messages": [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_message}
-        ],
-        "temperature": 0.3,
-        "max_tokens": 1000
-    }
+    last_error = None
+    for model in candidate_models:
+        payload = {
+            "model": model,
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_message}
+            ],
+            "temperature": 0.3,
+            "max_tokens": 1000
+        }
 
-    data_bytes = json.dumps(payload).encode("utf-8")
+        data_bytes = json.dumps(payload).encode("utf-8")
 
-    try:
-        req = urllib.request.Request(url, data=data_bytes, headers=headers, method="POST")
-        with urllib.request.urlopen(req, timeout=8) as resp:
-            resp_data = json.loads(resp.read().decode("utf-8"))
-            choices = resp_data.get("choices", [])
-            if choices:
-                msg = choices[0].get("message", {})
-                content = msg.get("content", "")
-                if content and len(content.strip()) > 0:
-                    return content.strip()
-            raise RuntimeError("GROQ_MALFORMED_RESPONSE")
-    except urllib.error.HTTPError as he:
-        if he.code in (401, 403):
-            logger.warning("Groq API authentication failed (invalid GROQ_API_KEY).")
-            raise RuntimeError("GROQ_AUTH_ERROR")
-        elif he.code == 429:
-            logger.warning("Groq API rate limit or quota exceeded.")
-            raise RuntimeError("GROQ_RATE_LIMIT")
-        elif he.code >= 500:
-            logger.warning(f"Groq API server error (HTTP {he.code}).")
-            raise RuntimeError(f"GROQ_SERVER_ERROR_{he.code}")
-        logger.warning(f"Groq API HTTP error {he.code}.")
-        raise RuntimeError(f"GROQ_HTTP_ERROR_{he.code}")
-    except urllib.error.URLError as ue:
-        logger.warning(f"Groq API network/connection error: {ue.reason}")
-        raise RuntimeError("GROQ_NETWORK_ERROR")
-    except TimeoutError:
-        logger.warning("Groq API request timed out after 8s.")
-        raise RuntimeError("GROQ_TIMEOUT")
-    except Exception as e:
-        logger.warning(f"Groq API invocation failed: {e}")
-        raise RuntimeError("GROQ_INVOCATION_ERROR")
+        try:
+            req = urllib.request.Request(url, data=data_bytes, headers=headers, method="POST")
+            with urllib.request.urlopen(req, timeout=8) as resp:
+                resp_data = json.loads(resp.read().decode("utf-8"))
+                choices = resp_data.get("choices", [])
+                if choices:
+                    msg = choices[0].get("message", {})
+                    content = msg.get("content", "")
+                    if content and len(content.strip()) > 0:
+                        return content.strip()
+                raise RuntimeError("GROQ_MALFORMED_RESPONSE")
+        except urllib.error.HTTPError as he:
+            if he.code == 404:
+                logger.warning(f"Groq model '{model}' not found (404); attempting next candidate model...")
+                last_error = he
+                continue
+            elif he.code in (401, 403):
+                logger.warning("Groq API authentication failed (invalid GROQ_API_KEY).")
+                raise RuntimeError("GROQ_AUTH_ERROR")
+            elif he.code == 429:
+                logger.warning("Groq API rate limit or quota exceeded.")
+                raise RuntimeError("GROQ_RATE_LIMIT")
+            elif he.code >= 500:
+                logger.warning(f"Groq API server error (HTTP {he.code}).")
+                raise RuntimeError(f"GROQ_SERVER_ERROR_{he.code}")
+            logger.warning(f"Groq API HTTP error {he.code}.")
+            raise RuntimeError(f"GROQ_HTTP_ERROR_{he.code}")
+        except urllib.error.URLError as ue:
+            logger.warning(f"Groq API network/connection error: {ue.reason}")
+            raise RuntimeError("GROQ_NETWORK_ERROR")
+        except TimeoutError:
+            logger.warning("Groq API request timed out after 8s.")
+            raise RuntimeError("GROQ_TIMEOUT")
+        except Exception as e:
+            logger.warning(f"Groq API invocation failed: {e}")
+            raise RuntimeError("GROQ_INVOCATION_ERROR")
+
+    if last_error:
+        raise RuntimeError(f"GROQ_HTTP_ERROR_{last_error.code}")
+    raise RuntimeError("GROQ_NO_MODELS_AVAILABLE")
 
 
 def dispatch_ai_tutor(
