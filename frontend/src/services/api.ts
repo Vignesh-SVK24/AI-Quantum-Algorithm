@@ -150,6 +150,7 @@ export interface TutorChatResponse {
   qiskit_verified?: boolean | null;
   practice_question?: TutorPracticeQuestion | null;
   is_verified?: boolean | null;
+  provider?: string;
 }
 
 export interface ResearchStatusResponse {

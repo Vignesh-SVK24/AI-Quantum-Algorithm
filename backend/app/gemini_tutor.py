@@ -18,7 +18,7 @@ logging.basicConfig(level=logging.INFO)
 # 1. ENVIRONMENT & .ENV LOADER
 # =========================================================================
 
-def load_dotenv(dotenv_path=None, override=True):
+def load_dotenv(dotenv_path=None, override=False):
     """Simple, zero-dependency .env loader that populates os.environ."""
     paths_to_check = [
         dotenv_path,
@@ -43,7 +43,7 @@ def load_dotenv(dotenv_path=None, override=True):
             except Exception as e:
                 logger.warning(f"Failed to read {p}: {e}")
 
-load_dotenv(override=True)
+load_dotenv(override=False)
 
 
 # =========================================================================
@@ -763,7 +763,7 @@ def build_system_prompt(
 
 def invoke_gemini(system_prompt: str, user_message: str) -> str:
     """Invokes Google Gemini with model fallbacks, multi-auth header strategies, and exponential backoff."""
-    load_dotenv(override=True)
+    load_dotenv(override=False)
     api_key = os.environ.get("GEMINI_API_KEY", "").strip()
 
     if not api_key:
@@ -820,9 +820,8 @@ def invoke_gemini(system_prompt: str, user_message: str) -> str:
                         logger.warning(f"Model {model_name} returned {he.code}. Retrying...")
                         break
                     elif he.code in (400, 401, 403):
-                        # Token auth error — immediately switch to autonomous grounded agent
-                        logger.info(f"Gemini API returned {he.code}; switching to autonomous quantum reasoning agent.")
-                        raise RuntimeError("GEMINI_AUTH_FALLBACK")
+                        logger.info(f"Gemini API returned {he.code}; raising error for fallback.")
+                        raise RuntimeError(f"GEMINI_AUTH_ERROR_{he.code}")
                     continue
                 except Exception as e:
                     logger.debug(f"Gemini attempt failed ({e}); trying next configuration...")
@@ -832,6 +831,132 @@ def invoke_gemini(system_prompt: str, user_message: str) -> str:
             time.sleep(backoff_delays[attempt])
 
     raise RuntimeError("GEMINI_AUTONOMOUS_FALLBACK")
+
+
+# =========================================================================
+# 10A. GROQ API FALLBACK INVOCATION
+# =========================================================================
+
+def invoke_groq(system_prompt: str, user_message: str, model_name: str | None = None) -> str:
+    """
+    Invokes Groq Cloud Chat Completion API as high-speed fallback provider.
+    Uses OpenAI-compatible /v1/chat/completions endpoint with safe error mapping.
+    Never exposes API keys or raw error details to client.
+    """
+    load_dotenv(override=False)
+    api_key = os.environ.get("GROQ_API_KEY", "").strip()
+
+    if not api_key or api_key == "YOUR_GROQ_API_KEY":
+        logger.info("GROQ_API_KEY is not configured or placeholder; skipping Groq.")
+        raise RuntimeError("GROQ_API_KEY_MISSING")
+
+    model = (
+        model_name
+        or os.environ.get("GROQ_MODEL", "").strip()
+        or "llama-3.3-70b-versatile"
+    )
+
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {api_key}",
+        "User-Agent": "QuantumPlatform/1.0"
+    }
+
+    payload = {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_message}
+        ],
+        "temperature": 0.3,
+        "max_tokens": 1000
+    }
+
+    data_bytes = json.dumps(payload).encode("utf-8")
+
+    try:
+        req = urllib.request.Request(url, data=data_bytes, headers=headers, method="POST")
+        with urllib.request.urlopen(req, timeout=8) as resp:
+            resp_data = json.loads(resp.read().decode("utf-8"))
+            choices = resp_data.get("choices", [])
+            if choices:
+                msg = choices[0].get("message", {})
+                content = msg.get("content", "")
+                if content and len(content.strip()) > 0:
+                    return content.strip()
+            raise RuntimeError("GROQ_MALFORMED_RESPONSE")
+    except urllib.error.HTTPError as he:
+        if he.code in (401, 403):
+            logger.warning("Groq API authentication failed (invalid GROQ_API_KEY).")
+            raise RuntimeError("GROQ_AUTH_ERROR")
+        elif he.code == 429:
+            logger.warning("Groq API rate limit or quota exceeded.")
+            raise RuntimeError("GROQ_RATE_LIMIT")
+        elif he.code >= 500:
+            logger.warning(f"Groq API server error (HTTP {he.code}).")
+            raise RuntimeError(f"GROQ_SERVER_ERROR_{he.code}")
+        logger.warning(f"Groq API HTTP error {he.code}.")
+        raise RuntimeError(f"GROQ_HTTP_ERROR_{he.code}")
+    except urllib.error.URLError as ue:
+        logger.warning(f"Groq API network/connection error: {ue.reason}")
+        raise RuntimeError("GROQ_NETWORK_ERROR")
+    except TimeoutError:
+        logger.warning("Groq API request timed out after 8s.")
+        raise RuntimeError("GROQ_TIMEOUT")
+    except Exception as e:
+        logger.warning(f"Groq API invocation failed: {e}")
+        raise RuntimeError("GROQ_INVOCATION_ERROR")
+
+
+def dispatch_ai_tutor(
+    system_prompt: str,
+    user_message: str,
+    fallback_fn: callable
+) -> tuple[str, str]:
+    """
+    Dispatches request to AI providers following the strict fallback hierarchy:
+    1. Primary: Google Gemini API (invoke_gemini)
+    2. Secondary Fallback: Groq API (invoke_groq) with same assembled context
+    3. Tertiary Fallback: Autonomous Grounded Quantum Reasoning Engine (fallback_fn)
+    
+    Returns:
+        tuple[str, str]: (raw_reply, provider_name) where provider_name in ("gemini", "groq", "grounded_engine")
+    """
+    # 1. Primary: Google Gemini
+    try:
+        reply = invoke_gemini(system_prompt, user_message)
+        if reply and len(reply.strip()) > 0:
+            logger.info("Primary provider (Gemini) generated response successfully.")
+            return reply, "gemini"
+    except Exception as gemini_err:
+        logger.warning(f"Primary provider (Gemini) failed ({gemini_err}) -> attempting Groq fallback...")
+
+    # 2. Secondary Fallback: Groq API (strictly fallback, never dual-called)
+    try:
+        groq_key = os.environ.get("GROQ_API_KEY", "").strip()
+        if groq_key and groq_key != "YOUR_GROQ_API_KEY":
+            reply = invoke_groq(system_prompt, user_message)
+            if reply and len(reply.strip()) > 0:
+                logger.info("Groq fallback succeeded.")
+                return reply, "groq"
+        else:
+            logger.info("GROQ_API_KEY not configured or placeholder; proceeding to autonomous grounded engine.")
+    except Exception as groq_err:
+        logger.warning(f"Groq fallback failed ({groq_err}) -> falling back to autonomous grounded engine.")
+
+    # 3. Tertiary: Autonomous Grounded Quantum Reasoning Engine
+    logger.info("Both external AI providers unavailable or unconfigured; generating grounded pedagogical response.")
+    try:
+        reply = fallback_fn()
+        return reply, "grounded_engine"
+    except Exception as fb_err:
+        logger.error(f"Grounded synthesis encountered an error: {fb_err}")
+        return (
+            "### AI Tutor Temporarily Unavailable\n\n"
+            "The AI Tutor is temporarily unavailable. Please try again in a moment.",
+            "error_fallback"
+        )
 
 
 # =========================================================================
@@ -1519,6 +1644,7 @@ def process_tutor_chat(
         research_category=research_category
     )
 
+    provider_used = "grounded_engine"
     if classification == "greeting":
         raw_reply = synthesize_grounded_tutor_response(
             query=clean_msg,
@@ -1528,12 +1654,10 @@ def process_tutor_chat(
             ranked_web_sources=ranked_web_sources,
             history=history
         )
+        provider_used = "grounded_engine"
     else:
-        try:
-            raw_reply = invoke_gemini(system_prompt, clean_msg)
-        except Exception as e:
-            logger.info(f"Gemini API invocation note ({e}); synthesizing grounded tutor response.")
-            raw_reply = synthesize_grounded_tutor_response(
+        def grounded_fallback():
+            return synthesize_grounded_tutor_response(
                 query=clean_msg,
                 mode=mode,
                 circuit_context=circuit_context,
@@ -1541,6 +1665,7 @@ def process_tutor_chat(
                 ranked_web_sources=ranked_web_sources,
                 history=history
             )
+        raw_reply, provider_used = dispatch_ai_tutor(system_prompt, clean_msg, grounded_fallback)
 
     # 7. Anti-Hallucination Self-Check Pass
     checked_reply, _ = perform_hallucination_self_check(raw_reply, clean_msg)
@@ -1558,6 +1683,7 @@ def process_tutor_chat(
     return {
         "reply": final_reply,
         "classification": classification,
+        "provider": provider_used,
         "research_category": research_category,
         "research_reasoning": research_reasoning,
         "is_web_grounded": bool(ranked_web_sources),
