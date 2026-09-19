@@ -14,10 +14,25 @@ import { About } from './pages/About';
 import { LoginPage } from './pages/LoginPage';
 import { AdminIngestion } from './pages/AdminIngestion';
 import { OnboardingTour } from './components/OnboardingTour';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { Atom } from 'lucide-react';
 
 const RootRoute: React.FC = () => {
-  const isExplored = typeof window !== 'undefined' && sessionStorage.getItem('isExplored') === 'true';
-  if (!isExplored) {
+  const { isAuthenticated, loading } = useAuth();
+  
+  if (loading) {
+    return (
+      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center space-y-3">
+        <div className="w-12 h-12 rounded-2xl bg-slate-glow border border-soft-cyan/30 flex items-center justify-center shadow-md">
+          <Atom className="w-6 h-6 text-warm-gold animate-spin-slow" />
+        </div>
+        <p className="text-xs text-olive-mist font-medium">Initializing Quantum Session...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
   return <LandingPage />;
@@ -72,10 +87,38 @@ const AppContent: React.FC = () => {
           <Route path="/playground/:algoId" element={<AlgorithmPlayground />} />
           <Route path="/algorithms" element={<AlgorithmLab />} />
           <Route path="/tutor" element={<AITutor />} />
-          <Route path="/practice" element={<Practice />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/admin" element={<AdminIngestion />} />
-          <Route path="/admin/ingestion" element={<AdminIngestion />} />
+          <Route
+            path="/practice"
+            element={
+              <ProtectedRoute>
+                <Practice />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requireRegistered>
+                <AdminIngestion />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/ingestion"
+            element={
+              <ProtectedRoute requireRegistered>
+                <AdminIngestion />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/about" element={<About />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
@@ -89,7 +132,9 @@ const AppContent: React.FC = () => {
 export const App: React.FC = () => {
   return (
     <HashRouter>
-      <AppContent />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </HashRouter>
   );
 };
