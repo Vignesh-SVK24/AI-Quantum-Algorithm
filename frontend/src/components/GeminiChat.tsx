@@ -16,7 +16,8 @@ import {
   ThumbsUp, 
   ThumbsDown, 
   HelpCircle, 
-  Award 
+  Award,
+  Cpu
 } from 'lucide-react';
 import { 
   sendTutorChat, 
@@ -50,7 +51,52 @@ interface ChatMessage {
   is_web_grounded?: boolean;
   search_provider?: string | null;
   domain_breakdown?: Record<string, number>;
+  provider?: string;
+  model?: string;
 }
+
+export interface AIModelOption {
+  id: string;
+  name: string;
+  provider: 'auto' | 'gemini' | 'groq';
+  modelId?: string;
+  badge: string;
+  description: string;
+}
+
+export const AI_MODEL_OPTIONS: AIModelOption[] = [
+  {
+    id: 'auto',
+    name: 'Auto (Gemini + Groq)',
+    provider: 'auto',
+    badge: 'Smart Auto',
+    description: 'Gemini 2.5 Flash primary with instant Groq fallback'
+  },
+  {
+    id: 'gemini-flash',
+    name: 'Gemini 2.5 Flash',
+    provider: 'gemini',
+    modelId: 'gemini-2.5-flash',
+    badge: 'Google Gemini',
+    description: 'Google DeepMind model with Dirac grounding'
+  },
+  {
+    id: 'groq-gpt120b',
+    name: 'Groq (GPT-OSS 120B)',
+    provider: 'groq',
+    modelId: 'openai/gpt-oss-120b',
+    badge: 'Groq 120B',
+    description: 'Ultra-fast 120B parameter model via Groq'
+  },
+  {
+    id: 'groq-qwen27b',
+    name: 'Groq (Qwen 27B)',
+    provider: 'groq',
+    modelId: 'qwen/qwen3.8-27b',
+    badge: 'Groq Qwen',
+    description: 'Fast quantum reasoning model via Groq'
+  }
+];
 
 interface GeminiChatProps {
   circuitContext?: TutorContext | null;
@@ -67,11 +113,19 @@ const STARTER_QUESTIONS = [
 
 const CHAT_STORAGE_KEY = 'quantum_tutor_chat_history_v2';
 const PROGRESS_STORAGE_KEY = 'quantum_learning_progress';
+const MODEL_STORAGE_KEY = 'quantum_tutor_selected_model_v1';
 
 export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCircuit }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [difficultyMode, setDifficultyMode] = useState<'beginner' | 'intermediate' | 'advanced'>('beginner');
+  const [selectedModelId, setSelectedModelId] = useState<string>(() => {
+    try {
+      return localStorage.getItem(MODEL_STORAGE_KEY) || 'auto';
+    } catch {
+      return 'auto';
+    }
+  });
   const [copiedCodeId, setCopiedCodeId] = useState<string | null>(null);
   const [practiceAnswers, setPracticeAnswers] = useState<Record<string, number>>({});
   const [practiceFeedback, setPracticeFeedback] = useState<Record<string, { correct: boolean; explanation: string }>>({});
@@ -207,7 +261,16 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
 
     try {
       const progress = getStudentProgress();
-      const response = await sendTutorChat(textToSend, difficultyMode, circuitContext, history, progress);
+      const currentOption = AI_MODEL_OPTIONS.find(o => o.id === selectedModelId) || AI_MODEL_OPTIONS[0];
+      const response = await sendTutorChat(
+        textToSend,
+        difficultyMode,
+        circuitContext,
+        history,
+        progress,
+        currentOption.provider,
+        currentOption.modelId
+      );
       
       const tutorMessage: ChatMessage = {
         id: `tutor-${Date.now()}`,
@@ -225,7 +288,9 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
         research_reasoning: response.research_reasoning,
         is_web_grounded: response.is_web_grounded,
         search_provider: response.search_provider,
-        domain_breakdown: response.domain_breakdown
+        domain_breakdown: response.domain_breakdown,
+        provider: response.provider,
+        model: response.model
       };
       setMessages(prev => [...prev, tutorMessage]);
     } catch (err: any) {
@@ -332,14 +397,39 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center flex-wrap gap-2">
           {/* Autonomous AI Agent Status Indicator */}
           <div
             className="px-3 py-1.5 rounded-2xl text-[10px] font-bold flex items-center gap-1.5 border border-muted-sage/40 bg-muted-sage/15 text-muted-sage shadow-sm"
-            title="Autonomous Quantum AI Agent — Backend Gemini Connected"
+            title="Autonomous Quantum AI Agent — Backend AI Connected"
           >
             <span className="w-2 h-2 rounded-full bg-muted-sage animate-pulse" />
             <span>Autonomous AI Agent</span>
+          </div>
+
+          {/* AI Model & Provider Switcher */}
+          <div className="flex items-center gap-1 bg-deep-slate border border-soft-slate/50 p-1 rounded-2xl">
+            <span className="text-[10px] font-semibold text-warm-ivory/70 px-2 flex items-center gap-1">
+              <Cpu className="w-3 h-3 text-warm-gold" /> Model:
+            </span>
+            <select
+              value={selectedModelId}
+              onChange={(e) => {
+                const newId = e.target.value;
+                setSelectedModelId(newId);
+                try {
+                  localStorage.setItem(MODEL_STORAGE_KEY, newId);
+                } catch {}
+              }}
+              className="bg-slate-glow text-soft-cyan text-[10px] font-bold py-1 px-2.5 rounded-xl border border-soft-cyan/30 focus:outline-none focus:ring-1 focus:ring-soft-cyan cursor-pointer transition-all"
+              title="Switch between Groq and Gemini models for tutor conversation"
+            >
+              {AI_MODEL_OPTIONS.map((opt) => (
+                <option key={opt.id} value={opt.id} className="bg-deep-slate text-floral-white text-xs">
+                  {opt.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Difficulty Mode Toggle */}
@@ -413,17 +503,34 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
                 }`}
               >
                 {/* Tutor Status Header */}
-                {!isUser && m.is_verified && (
+                {!isUser && (
                   <div className="flex items-center justify-between pb-2 border-b border-soft-slate/30 text-[10px] text-soft-cyan">
                     <span className="flex items-center gap-1.5 font-mono font-semibold">
                       <ShieldCheck className="w-3.5 h-3.5 text-muted-sage" />
                       <span className="text-muted-sage">✓ Grounded &amp; Mathematically Verified</span>
                     </span>
-                    {m.classification && (
-                      <span className="text-warm-ivory/60 uppercase tracking-wider font-mono text-[9px] px-2 py-0.5 rounded bg-deep-slate/80 border border-soft-slate/30">
-                        {m.classification.replace('_', ' ')}
-                      </span>
-                    )}
+                    <div className="flex items-center gap-1.5">
+                      {m.provider && (
+                        <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full border shadow-sm ${
+                          m.provider === 'groq'
+                            ? 'bg-amber-500/20 text-warm-gold border-amber-500/40'
+                            : m.provider === 'gemini'
+                            ? 'bg-soft-cyan/20 text-soft-cyan border-soft-cyan/40'
+                            : 'bg-muted-sage/20 text-muted-sage border-muted-sage/40'
+                        }`}>
+                          {m.provider === 'groq'
+                            ? (m.model?.includes('120b') ? 'Groq · GPT 120B' : m.model?.includes('qwen') ? 'Groq · Qwen 27B' : 'Groq Fast Fallback')
+                            : m.provider === 'gemini'
+                            ? 'Gemini 2.5 Flash'
+                            : 'Grounded Engine'}
+                        </span>
+                      )}
+                      {m.classification && (
+                        <span className="text-warm-ivory/60 uppercase tracking-wider font-mono text-[9px] px-2 py-0.5 rounded bg-deep-slate/80 border border-soft-slate/30">
+                          {m.classification.replace('_', ' ')}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 )}
 

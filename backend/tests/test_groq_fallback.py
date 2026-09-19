@@ -142,6 +142,42 @@ class TestGroqFallback(unittest.TestCase):
             self.assertIn("reply", result)
             self.assertTrue(len(result["reply"]) > 50)
 
+    def test_preferred_provider_groq_calls_groq_directly(self):
+        """When user selects Groq, Groq is called directly without calling Gemini first."""
+        with patch("app.gemini_tutor.invoke_gemini") as mock_gemini, \
+             patch.dict(os.environ, {"GROQ_API_KEY": "gsk_test_key"}), \
+             patch("app.gemini_tutor.invoke_groq", return_value="Direct Groq Response") as mock_groq:
+
+            result = process_tutor_chat(
+                "Explain superposition",
+                mode="beginner",
+                preferred_provider="groq",
+                model_name="openai/gpt-oss-120b"
+            )
+
+            mock_gemini.assert_not_called()
+            mock_groq.assert_called_once()
+            self.assertEqual(result["provider"], "groq")
+            self.assertEqual(result["model"], "openai/gpt-oss-120b")
+            self.assertIn("Direct Groq Response", result["reply"])
+
+    def test_preferred_provider_gemini_calls_gemini_directly(self):
+        """When user selects Gemini, Gemini is called directly without calling Groq."""
+        with patch("app.gemini_tutor.invoke_gemini", return_value="Direct Gemini Response") as mock_gemini, \
+             patch("app.gemini_tutor.invoke_groq") as mock_groq:
+
+            result = process_tutor_chat(
+                "Explain entanglement",
+                mode="intermediate",
+                preferred_provider="gemini"
+            )
+
+            mock_gemini.assert_called_once()
+            mock_groq.assert_not_called()
+            self.assertEqual(result["provider"], "gemini")
+            self.assertEqual(result["model"], "gemini-2.5-flash")
+
 
 if __name__ == "__main__":
     unittest.main()
+

@@ -192,13 +192,16 @@ class ChatMessageRequest(BaseModel):
     algorithm_context: dict | None = None
     history: list[dict] | None = None
     student_progress: dict | None = None
+    provider: str | None = "auto"
+    model: str | None = None
 
 
 @app.post("/tutor/chat")
 @app.post("/api/tutor/chat")
 async def chat_with_tutor(req: ChatMessageRequest, request: Request):
     """
-    AI Chat endpoint powered by Google Gemini + Quantum Knowledge Base (RAG).
+    AI Chat endpoint powered by Google Gemini / Groq + Quantum Knowledge Base (RAG).
+    - Provider selection (auto, gemini, groq) and model choice
     - Strict rate limiting per client IP (max 15 requests/min)
     - Input sanitization and length validation
     - Multi-turn conversation memory
@@ -228,7 +231,9 @@ async def chat_with_tutor(req: ChatMessageRequest, request: Request):
             circuit_context=req.circuit_context,
             algorithm_context=req.algorithm_context,
             history=req.history,
-            student_progress=req.student_progress
+            student_progress=req.student_progress,
+            preferred_provider=req.provider or "auto",
+            model_name=req.model
         )
         return result
     except ValueError as ve:

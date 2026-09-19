@@ -151,6 +151,7 @@ export interface TutorChatResponse {
   practice_question?: TutorPracticeQuestion | null;
   is_verified?: boolean | null;
   provider?: string;
+  model?: string;
 }
 
 export interface ResearchStatusResponse {
@@ -620,14 +621,16 @@ export async function sendTutorChat(
   mode: 'beginner' | 'intermediate' | 'advanced' = 'beginner',
   circuitContext?: TutorContext | null,
   history?: Array<{ role: 'user' | 'tutor'; text: string }> | null,
-  studentProgress?: Record<string, any> | null
+  studentProgress?: Record<string, any> | null,
+  provider?: 'auto' | 'gemini' | 'groq',
+  model?: string
 ): Promise<TutorChatResponse> {
   const trimmed = message?.trim();
   if (!trimmed) {
     throw new Error('Please enter a question or topic to discuss with the AI Tutor.');
   }
 
-  // 1. Query backend server where GEMINI_API_KEY is securely configured
+  // 1. Query backend server where GEMINI_API_KEY and GROQ_API_KEY are securely configured
   const candidateUrls = [
     API_BASE_URL ? `${API_BASE_URL}/tutor/chat` : null,
     'http://127.0.0.1:8000/tutor/chat',
@@ -648,7 +651,9 @@ export async function sendTutorChat(
           mode,
           circuit_context: circuitContext || null,
           history: history || null,
-          student_progress: studentProgress || null
+          student_progress: studentProgress || null,
+          provider: provider || 'auto',
+          model: model || null
         }),
         signal: controller.signal
       });

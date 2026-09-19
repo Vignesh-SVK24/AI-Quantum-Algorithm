@@ -928,41 +928,76 @@ def invoke_groq(system_prompt: str, user_message: str, model_name: str | None = 
 def dispatch_ai_tutor(
     system_prompt: str,
     user_message: str,
-    fallback_fn: callable
+    fallback_fn: callable,
+    preferred_provider: str = "auto",
+    model_name: str | None = None
 ) -> tuple[str, str]:
     """
-    Dispatches request to AI providers following the strict fallback hierarchy:
-    1. Primary: Google Gemini API (invoke_gemini)
-    2. Secondary Fallback: Groq API (invoke_groq) with same assembled context
-    3. Tertiary Fallback: Autonomous Grounded Quantum Reasoning Engine (fallback_fn)
+    Dispatches request to AI providers following the user's preference or fallback hierarchy:
+    - If preferred_provider == "groq": attempts Groq first with optional model_name, cascades to Gemini, then grounded engine.
+    - If preferred_provider == "gemini": attempts Gemini first, cascades to Groq, then grounded engine.
+    - If preferred_provider in ("auto", None): Primary Gemini -> Groq fallback -> Grounded engine.
     
     Returns:
         tuple[str, str]: (raw_reply, provider_name) where provider_name in ("gemini", "groq", "grounded_engine")
     """
-    # 1. Primary: Google Gemini
-    try:
-        reply = invoke_gemini(system_prompt, user_message)
-        if reply and len(reply.strip()) > 0:
-            logger.info("Primary provider (Gemini) generated response successfully.")
-            return reply, "gemini"
-    except Exception as gemini_err:
-        logger.warning(f"Primary provider (Gemini) failed ({gemini_err}) -> attempting Groq fallback...")
+    pref = (preferred_provider or "auto").lower().strip()
 
-    # 2. Secondary Fallback: Groq API (strictly fallback, never dual-called)
-    try:
-        groq_key = os.environ.get("GROQ_API_KEY", "").strip()
-        if groq_key and groq_key != "YOUR_GROQ_API_KEY":
-            reply = invoke_groq(system_prompt, user_message)
+    if pref == "groq":
+        # 1. Preferred: Groq API
+        try:
+            groq_key = os.environ.get("GROQ_API_KEY", "").strip()
+            if groq_key and groq_key != "YOUR_GROQ_API_KEY":
+                if model_name:
+                    reply = invoke_groq(system_prompt, user_message, model_name=model_name)
+                else:
+                    reply = invoke_groq(system_prompt, user_message)
+                if reply and len(reply.strip()) > 0:
+                    logger.info("Preferred provider (Groq) generated response successfully.")
+                    return reply, "groq"
+            else:
+                logger.info("GROQ_API_KEY not configured; attempting Gemini fallback.")
+        except Exception as groq_err:
+            logger.warning(f"Preferred provider (Groq) failed ({groq_err}) -> cascading to Gemini fallback...")
+
+        # 2. Fallback: Gemini API
+        try:
+            reply = invoke_gemini(system_prompt, user_message)
             if reply and len(reply.strip()) > 0:
-                logger.info("Groq fallback succeeded.")
-                return reply, "groq"
-        else:
-            logger.info("GROQ_API_KEY not configured or placeholder; proceeding to autonomous grounded engine.")
-    except Exception as groq_err:
-        logger.warning(f"Groq fallback failed ({groq_err}) -> falling back to autonomous grounded engine.")
+                logger.info("Gemini fallback succeeded.")
+                return reply, "gemini"
+        except Exception as gemini_err:
+            logger.warning(f"Gemini fallback failed ({gemini_err}) -> falling back to grounded engine.")
+
+    else:
+        # Default ("auto") or "gemini" preferred:
+        # 1. Primary: Google Gemini
+        try:
+            reply = invoke_gemini(system_prompt, user_message)
+            if reply and len(reply.strip()) > 0:
+                logger.info("Primary provider (Gemini) generated response successfully.")
+                return reply, "gemini"
+        except Exception as gemini_err:
+            logger.warning(f"Primary provider (Gemini) failed ({gemini_err}) -> attempting Groq fallback...")
+
+        # 2. Secondary Fallback: Groq API
+        try:
+            groq_key = os.environ.get("GROQ_API_KEY", "").strip()
+            if groq_key and groq_key != "YOUR_GROQ_API_KEY":
+                if model_name:
+                    reply = invoke_groq(system_prompt, user_message, model_name=model_name)
+                else:
+                    reply = invoke_groq(system_prompt, user_message)
+                if reply and len(reply.strip()) > 0:
+                    logger.info("Groq fallback succeeded.")
+                    return reply, "groq"
+            else:
+                logger.info("GROQ_API_KEY not configured or placeholder; proceeding to autonomous grounded engine.")
+        except Exception as groq_err:
+            logger.warning(f"Groq fallback failed ({groq_err}) -> falling back to autonomous grounded engine.")
 
     # 3. Tertiary: Autonomous Grounded Quantum Reasoning Engine
-    logger.info("Both external AI providers unavailable or unconfigured; generating grounded pedagogical response.")
+    logger.info("External AI providers unavailable or unconfigured; generating grounded pedagogical response.")
     try:
         reply = fallback_fn()
         return reply, "grounded_engine"
@@ -1570,7 +1605,9 @@ def process_tutor_chat(
     circuit_context: dict | None = None,
     algorithm_context: dict | None = None,
     history: list[dict] | None = None,
-    student_progress: dict | None = None
+    student_progress: dict | None = None,
+    preferred_provider: str = "auto",
+    model_name: str | None = None
 ) -> dict:
     """
     Full AI Tutor Pipeline:
@@ -1590,6 +1627,8 @@ def process_tutor_chat(
         return {
             "reply": "I'm focused on quantum computing topics for this platform — happy to help with qubits, gates, circuits, or algorithms!",
             "classification": "off_topic",
+            "provider": "grounded_engine",
+            "model": "grounded_engine",
             "sources": [],
             "circuit_data": None,
             "qiskit_code": None,
@@ -1681,7 +1720,13 @@ def process_tutor_chat(
                 ranked_web_sources=ranked_web_sources,
                 history=history
             )
-        raw_reply, provider_used = dispatch_ai_tutor(system_prompt, clean_msg, grounded_fallback)
+        raw_reply, provider_used = dispatch_ai_tutor(
+            system_prompt,
+            clean_msg,
+            grounded_fallback,
+            preferred_provider=preferred_provider,
+            model_name=model_name
+        )
 
     # 7. Anti-Hallucination Self-Check Pass
     checked_reply, _ = perform_hallucination_self_check(raw_reply, clean_msg)
@@ -1696,10 +1741,17 @@ def process_tutor_chat(
     # 9. Clean all raw LaTeX and unwanted symbol artifacts into crisp, clear Unicode
     final_reply = clean_math_and_symbols(verified_reply)
 
+    effective_model = (
+        model_name
+        if (provider_used == "groq" and model_name)
+        else ("openai/gpt-oss-120b" if provider_used == "groq" else ("gemini-2.5-flash" if provider_used == "gemini" else "grounded_engine"))
+    )
+
     return {
         "reply": final_reply,
         "classification": classification,
         "provider": provider_used,
+        "model": effective_model,
         "research_category": research_category,
         "research_reasoning": research_reasoning,
         "is_web_grounded": bool(ranked_web_sources),

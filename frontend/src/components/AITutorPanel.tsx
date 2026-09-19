@@ -5,7 +5,8 @@ import {
   Send, 
   Sparkles, 
   HelpCircle, 
-  Loader2 
+  Loader2,
+  Cpu
 } from 'lucide-react';
 import { 
   sendTutorChat, 
@@ -14,6 +15,7 @@ import {
 } from '../services/api';
 import { ResearchIndicator } from './ResearchIndicator';
 import { TutorMessageRenderer } from './TutorMessageRenderer';
+import { AI_MODEL_OPTIONS } from './GeminiChat';
 
 interface Message {
   id: string;
@@ -26,6 +28,8 @@ interface Message {
   is_web_grounded?: boolean;
   search_provider?: string | null;
   domain_breakdown?: Record<string, number>;
+  provider?: string;
+  model?: string;
 }
 
 interface AITutorPanelProps {
@@ -44,6 +48,13 @@ export const AITutorPanel: React.FC<AITutorPanelProps> = ({ context, compact = f
   const [isOpen, setIsOpen] = useState<boolean>(!compact);
   const [inputQuestion, setInputQuestion] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const [selectedModelId, setSelectedModelId] = useState<string>(() => {
+    try {
+      return localStorage.getItem('quantum_tutor_selected_model_v1') || 'auto';
+    } catch {
+      return 'auto';
+    }
+  });
 
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -98,7 +109,16 @@ export const AITutorPanel: React.FC<AITutorPanelProps> = ({ context, compact = f
     }));
 
     try {
-      const res = await sendTutorChat(q, 'beginner', context, history);
+      const currentOption = AI_MODEL_OPTIONS.find(o => o.id === selectedModelId) || AI_MODEL_OPTIONS[0];
+      const res = await sendTutorChat(
+        q,
+        'beginner',
+        context,
+        history,
+        null,
+        currentOption.provider,
+        currentOption.modelId
+      );
       const tutorMsg: Message = {
         id: Math.random().toString(36).substring(2, 9),
         sender: 'tutor',
@@ -109,7 +129,9 @@ export const AITutorPanel: React.FC<AITutorPanelProps> = ({ context, compact = f
         research_reasoning: res.research_reasoning,
         is_web_grounded: res.is_web_grounded,
         search_provider: res.search_provider,
-        domain_breakdown: res.domain_breakdown
+        domain_breakdown: res.domain_breakdown,
+        provider: res.provider,
+        model: res.model
       };
       setMessages(prev => [...prev, tutorMsg]);
     } catch (err) {
@@ -181,13 +203,27 @@ export const AITutorPanel: React.FC<AITutorPanelProps> = ({ context, compact = f
             </div>
 
             <div className="flex items-center gap-1.5">
-              <span
-                className="px-2 py-0.5 rounded-lg text-[9px] font-bold flex items-center gap-1 bg-muted-sage/20 border border-muted-sage/40 text-muted-sage shadow-sm"
-                title="AI Quantum Tutor Active"
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-muted-sage animate-pulse" />
-                <span>AI Active</span>
-              </span>
+              <div className="flex items-center bg-slate-glow border border-soft-slate/40 rounded-xl px-2 py-0.5 shadow-sm">
+                <Cpu className="w-3 h-3 text-warm-gold mr-1 flex-shrink-0" />
+                <select
+                  value={selectedModelId}
+                  onChange={(e) => {
+                    const newId = e.target.value;
+                    setSelectedModelId(newId);
+                    try {
+                      localStorage.setItem('quantum_tutor_selected_model_v1', newId);
+                    } catch {}
+                  }}
+                  className="bg-transparent text-soft-cyan text-[10px] font-bold focus:outline-none cursor-pointer"
+                  title="Switch AI Model"
+                >
+                  {AI_MODEL_OPTIONS.map((opt) => (
+                    <option key={opt.id} value={opt.id} className="bg-deep-slate text-floral-white text-xs">
+                      {opt.badge}
+                    </option>
+                  ))}
+                </select>
+              </div>
               {compact && (
                 <button
                   onClick={() => setIsOpen(false)}
@@ -223,6 +259,23 @@ export const AITutorPanel: React.FC<AITutorPanelProps> = ({ context, compact = f
                       : 'bg-slate-glow text-floral-white border border-soft-slate/40 shadow-md'
                   }`}
                 >
+                  {m.sender === 'tutor' && m.provider && (
+                    <div className="flex items-center gap-1 pb-1">
+                      <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full border shadow-sm ${
+                        m.provider === 'groq'
+                          ? 'bg-amber-500/20 text-warm-gold border-amber-500/40'
+                          : m.provider === 'gemini'
+                          ? 'bg-soft-cyan/20 text-soft-cyan border-soft-cyan/40'
+                          : 'bg-muted-sage/20 text-muted-sage border-muted-sage/40'
+                      }`}>
+                        {m.provider === 'groq'
+                          ? (m.model?.includes('120b') ? 'Groq · GPT 120B' : m.model?.includes('qwen') ? 'Groq · Qwen 27B' : 'Groq Fast Fallback')
+                          : m.provider === 'gemini'
+                          ? 'Gemini 2.5 Flash'
+                          : 'Quantum Engine'}
+                      </span>
+                    </div>
+                  )}
                   {m.sender === 'user' ? (
                     <p className="leading-relaxed whitespace-pre-wrap">{m.text}</p>
                   ) : (
