@@ -375,10 +375,10 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
   };
 
   return (
-    <div className="flex flex-col h-[740px] bg-slate-glow text-floral-white shadow-xl rounded-3xl overflow-hidden border border-soft-slate/40">
+    <div className="flex flex-col h-[600px] sm:h-[680px] md:h-[740px] max-h-[85vh] bg-slate-glow text-floral-white shadow-xl rounded-3xl overflow-hidden border border-soft-slate/40">
       
       {/* Top Header Bar */}
-      <div className="px-6 py-4 bg-deep-slate border-b border-soft-slate/40 flex flex-wrap items-center justify-between gap-4">
+      <div className="px-3.5 sm:px-6 py-3 sm:py-4 bg-deep-slate border-b border-soft-slate/40 flex flex-wrap items-center justify-between gap-2.5 sm:gap-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-slate-glow border border-soft-cyan/40 text-soft-cyan shadow-sm flex items-center justify-center">
             <Bot className="w-5 h-5" />

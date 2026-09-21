@@ -230,7 +230,7 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Mobile menu toggle */}
-          <div className="flex xl:hidden items-center gap-2">
+          <div className="flex lg:hidden items-center gap-2">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 rounded-xl bg-warm-ivory border border-soft-sand text-black-olive hover:bg-soft-sand transition-all"
@@ -243,7 +243,7 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile dropdown */}
       {mobileMenuOpen && (
-        <div className="xl:hidden bg-floral-white border-t border-soft-sand mx-4 mt-2 mb-4 px-4 py-4 space-y-2 rounded-2xl shadow-lg">
+        <div className="lg:hidden bg-floral-white border-t border-soft-sand mx-4 mt-2 mb-4 px-4 py-4 space-y-2 rounded-2xl shadow-lg">
           {isAuthenticated && (
             <div className="p-3 mb-2 rounded-xl bg-warm-ivory border border-soft-sand space-y-2.5">
               <div className="flex items-center gap-2.5">

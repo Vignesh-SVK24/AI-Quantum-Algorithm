@@ -177,8 +177,8 @@ export const AITutor: React.FC = () => {
         {/* Tab 1: Gemini Flash Direct AI Chat */}
         {activeTab === 'chat' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* About Card with AI Tutor Video (Order 1 on mobile, Col-span-4 on desktop) */}
-            <div className="order-1 lg:order-2 lg:col-span-4 space-y-5">
+            {/* About Card with AI Tutor Video (Order 2 on mobile, Col-span-4 on desktop) */}
+            <div className="order-2 lg:order-2 lg:col-span-4 space-y-5">
               {/* About Card (Light Surface #FFFDF7) */}
               <div className="p-5 sm:p-6 rounded-3xl bg-[#FFFDF7] border border-soft-sand shadow-sm space-y-4">
                 <div className="flex items-center gap-3">
@@ -237,8 +237,8 @@ export const AITutor: React.FC = () => {
               </div>
             </div>
 
-            {/* Main Chat: Order 2 on mobile, Col-span-8 on desktop */}
-            <div className="order-2 lg:order-1 lg:col-span-8 space-y-5">
+            {/* Main Chat: Order 1 on mobile, Col-span-8 on desktop */}
+            <div className="order-1 lg:order-1 lg:col-span-8 space-y-5">
               <GeminiChat circuitContext={selected.context} />
 
               {/* Security & Reliability (Mobile below chat) */}

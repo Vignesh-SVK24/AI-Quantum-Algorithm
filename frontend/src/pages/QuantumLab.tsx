@@ -204,6 +204,7 @@ export const QuantumLab: React.FC = () => {
   const [isPaletteCollapsed, setIsPaletteCollapsed] = useState<boolean>(false);
   const [viewMode, setViewMode] = useState<'split' | 'circuit' | 'results'>('split');
   const [isResultsExpanded, setIsResultsExpanded] = useState<boolean>(false);
+  const [mobileTab, setMobileTab] = useState<'palette' | 'circuit' | 'results'>('circuit');
 
   useEffect(() => {
     const handleResize = () => {
@@ -302,7 +303,9 @@ export const QuantumLab: React.FC = () => {
       });
       setSimResult(result);
 
-      if (viewMode === 'circuit' || window.innerWidth < 1024) {
+      if (window.innerWidth < 1024) {
+        setMobileTab('results');
+      } else if (viewMode === 'circuit') {
         setViewMode('split');
       }
     } catch (err) {
@@ -316,148 +319,233 @@ export const QuantumLab: React.FC = () => {
   const showResults = viewMode === 'split' || viewMode === 'results';
 
   return (
-    <div className="flex h-[calc(100vh-4.5rem)] bg-floral-white text-black-olive overflow-hidden relative">
+    <div className="flex flex-col h-[calc(100vh-4.5rem)] bg-floral-white text-black-olive overflow-hidden relative">
 
-      {/* ========================================================================= */}
-      {/* LEFT PANEL: GATE PALETTE */}
-      {/* ========================================================================= */}
-      <div 
-        className={`bg-[#FFFDF7] flex flex-col flex-shrink-0 transition-all duration-300 relative z-20 border-r border-soft-sand shadow-sm ${
-          isPaletteCollapsed ? 'w-14' : 'w-48 lg:w-56'
-        }`}
-      >
-        {/* Palette Header */}
-        <div className="p-3 flex items-center justify-between border-b border-soft-sand">
-          {!isPaletteCollapsed && (
-            <h2 className="text-xs font-bold text-black-olive uppercase tracking-wider">Gate Palette</h2>
+      {/* Mobile Screen Segmented Tab Bar (< lg) */}
+      <div className="lg:hidden flex items-center justify-around bg-[#FFFDF7] border-b border-soft-sand px-2 py-2 z-30 shadow-xs shrink-0">
+        <button
+          type="button"
+          onClick={() => setMobileTab('palette')}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            mobileTab === 'palette'
+              ? 'bg-black-olive text-floral-white shadow-sm'
+              : 'text-black-olive/70 hover:text-black-olive bg-warm-ivory/60 border border-soft-sand'
+          }`}
+        >
+          <Layers className="w-3.5 h-3.5" />
+          <span>Gates</span>
+          {activeTool !== 'CURSOR' && (
+            <span className="w-2 h-2 rounded-full bg-warm-gold" />
           )}
-          <button
-            onClick={() => setIsPaletteCollapsed(!isPaletteCollapsed)}
-            title={isPaletteCollapsed ? "Expand Palette" : "Collapse Palette"}
-            className="p-1.5 rounded-xl bg-warm-ivory text-black-olive/80 hover:bg-soft-sand border border-soft-sand transition-all mx-auto shadow-sm"
-          >
-            {isPaletteCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-          </button>
-        </div>
+        </button>
 
-        {/* Palette Tools & Gates */}
-        <div className="p-2.5 flex-1 overflow-y-auto space-y-4">
-          
-          {/* Tools */}
-          <div className="space-y-1.5">
-            {!isPaletteCollapsed && (
-              <h3 className="text-[10px] font-semibold text-olive-mist uppercase tracking-widest px-2 mb-1">Tools</h3>
-            )}
-            <button
-              onClick={() => { setActiveTool('CURSOR'); setPendingCNOT(null); }}
-              title="Select / Pointer"
-              className={`w-full flex items-center rounded-xl text-xs font-medium transition-all ${
-                isPaletteCollapsed ? 'justify-center p-2' : 'gap-2 px-3 py-2'
-              } ${
-                activeTool === 'CURSOR' 
-                  ? 'bg-black-olive text-floral-white font-bold shadow-sm' 
-                  : 'bg-warm-ivory/60 hover:bg-warm-ivory text-black-olive/80 border border-soft-sand'
-              }`}
-            >
-              <MousePointer2 className="w-4 h-4 flex-shrink-0" />
-              {!isPaletteCollapsed && <span>Select</span>}
-            </button>
-            <button
-              onClick={() => { setActiveTool('ERASER'); setPendingCNOT(null); }}
-              title="Eraser"
-              className={`w-full flex items-center rounded-xl text-xs font-medium transition-all ${
-                isPaletteCollapsed ? 'justify-center p-2' : 'gap-2 px-3 py-2'
-              } ${
-                activeTool === 'ERASER' 
-                  ? 'bg-black-olive text-floral-white font-bold shadow-sm' 
-                  : 'bg-warm-ivory/60 hover:bg-warm-ivory text-black-olive/80 border border-soft-sand'
-              }`}
-            >
-              <Eraser className="w-4 h-4 flex-shrink-0" />
-              {!isPaletteCollapsed && <span>Eraser</span>}
-            </button>
-          </div>
+        <button
+          type="button"
+          onClick={() => setMobileTab('circuit')}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            mobileTab === 'circuit'
+              ? 'bg-black-olive text-floral-white shadow-sm'
+              : 'text-black-olive/70 hover:text-black-olive bg-warm-ivory/60 border border-soft-sand'
+          }`}
+        >
+          <Cpu className="w-3.5 h-3.5" />
+          <span>Circuit</span>
+          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-warm-gold/20 text-black-olive font-bold">
+            {circuit.length}
+          </span>
+        </button>
 
-          {/* Quantum Gates as Distinctive Botanical Chips */}
-          <div className="space-y-2">
-            {!isPaletteCollapsed && (
-              <h3 className="text-[10px] font-semibold text-olive-mist uppercase tracking-widest px-2 mb-1">Gates</h3>
-            )}
-            {GATES.map(gate => {
-              const isH = gate.id === 'H';
-              const isX = gate.id === 'X';
-              const isZ = gate.id === 'Z';
-              const isCNOT = gate.id === 'CNOT';
-              const isActive = activeTool === gate.id;
-
-              let gateBadgeStyle = 'bg-warm-ivory text-black-olive border-soft-sand';
-              if (isH) gateBadgeStyle = 'bg-soft-cyan/25 text-deep-slate border-soft-cyan/60';
-              if (isX) gateBadgeStyle = 'bg-muted-sage/25 text-black-olive border-muted-sage/60';
-              if (isZ) gateBadgeStyle = 'bg-dusty-lavender/25 text-black-olive border-dusty-lavender/60';
-              if (isCNOT) gateBadgeStyle = 'bg-warm-gold/25 text-cocoa-noir border-warm-gold/60';
-
-              return (
-                <div key={gate.id} className="relative group">
-                  <button
-                    onClick={() => { setActiveTool(gate.id); setPendingCNOT(null); }}
-                    title={`${gate.name}: ${gate.desc}`}
-                    className={`w-full flex items-center rounded-xl transition-all border ${
-                      isPaletteCollapsed ? 'justify-center p-2' : 'gap-2.5 px-3 py-2'
-                    } ${
-                      isActive 
-                        ? 'bg-black-olive text-floral-white border-black-olive shadow-sm font-bold' 
-                        : 'bg-warm-ivory/50 hover:bg-warm-ivory text-black-olive border-soft-sand'
-                    }`}
-                  >
-                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold font-mono text-xs flex-shrink-0 border ${
-                      isActive ? 'bg-floral-white text-black-olive border-transparent' : gateBadgeStyle
-                    }`}>
-                      {gate.id}
-                    </div>
-                    {!isPaletteCollapsed && (
-                      <span className="text-xs font-semibold truncate">{gate.name}</span>
-                    )}
-                  </button>
-
-                  {/* Tooltip on hover */}
-                  <div className="absolute left-full ml-2 top-0 w-52 p-3 bg-black-olive text-warm-ivory text-[11px] rounded-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 shadow-xl border border-black-olive/50">
-                    <div className="font-semibold text-warm-gold mb-0.5 flex items-center gap-1.5">
-                      <Info className="w-3.5 h-3.5"/> {gate.name}
-                    </div>
-                    <p className="text-warm-ivory/80">{gate.desc}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-        </div>
+        <button
+          type="button"
+          onClick={() => setMobileTab('results')}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            mobileTab === 'results'
+              ? 'bg-black-olive text-floral-white shadow-sm'
+              : 'text-black-olive/70 hover:text-black-olive bg-warm-ivory/60 border border-soft-sand'
+          }`}
+        >
+          <BarChart3 className="w-3.5 h-3.5" />
+          <span>Results</span>
+          {simResult && (
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+          )}
+        </button>
       </div>
+
+      {/* Main Panels Flex Row */}
+      <div className="flex-1 flex flex-row overflow-hidden relative">
+
+        {/* ========================================================================= */}
+        {/* LEFT PANEL: GATE PALETTE */}
+        {/* ========================================================================= */}
+        <div 
+          className={`bg-[#FFFDF7] flex-col flex-shrink-0 transition-all duration-300 relative z-20 border-r border-soft-sand shadow-sm ${
+            mobileTab === 'palette' ? 'flex w-full flex-1' : 'hidden lg:flex'
+          } ${
+            isPaletteCollapsed ? 'lg:w-14' : 'lg:w-48 xl:w-56'
+          }`}
+        >
+          {/* Palette Header */}
+          <div className="p-3 flex items-center justify-between border-b border-soft-sand">
+            {!isPaletteCollapsed && (
+              <h2 className="text-xs font-bold text-black-olive uppercase tracking-wider">Gate Palette</h2>
+            )}
+            <button
+              onClick={() => setIsPaletteCollapsed(!isPaletteCollapsed)}
+              title={isPaletteCollapsed ? "Expand Palette" : "Collapse Palette"}
+              className="hidden lg:flex p-1.5 rounded-xl bg-warm-ivory text-black-olive/80 hover:bg-soft-sand border border-soft-sand transition-all mx-auto shadow-sm"
+            >
+              {isPaletteCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileTab('circuit')}
+              className="lg:hidden px-2.5 py-1 rounded-xl bg-warm-ivory text-xs font-semibold text-black-olive border border-soft-sand"
+            >
+              Go to Circuit →
+            </button>
+          </div>
+
+          {/* Palette Tools & Gates */}
+          <div className="p-2.5 flex-1 overflow-y-auto space-y-4">
+            
+            {/* Tools */}
+            <div className="space-y-1.5">
+              {!isPaletteCollapsed && (
+                <h3 className="text-[10px] font-semibold text-olive-mist uppercase tracking-widest px-2 mb-1">Tools</h3>
+              )}
+              <button
+                onClick={() => { 
+                  setActiveTool('CURSOR'); 
+                  setPendingCNOT(null);
+                  if (window.innerWidth < 1024) setMobileTab('circuit');
+                }}
+                title="Select / Pointer"
+                className={`w-full flex items-center rounded-xl text-xs font-medium transition-all ${
+                  isPaletteCollapsed ? 'justify-center p-2' : 'gap-2 px-3 py-2'
+                } ${
+                  activeTool === 'CURSOR' 
+                    ? 'bg-black-olive text-floral-white font-bold shadow-sm' 
+                    : 'bg-warm-ivory/60 hover:bg-warm-ivory text-black-olive/80 border border-soft-sand'
+                }`}
+              >
+                <MousePointer2 className="w-4 h-4 flex-shrink-0" />
+                {!isPaletteCollapsed && <span>Select</span>}
+              </button>
+              <button
+                onClick={() => { 
+                  setActiveTool('ERASER'); 
+                  setPendingCNOT(null); 
+                  if (window.innerWidth < 1024) setMobileTab('circuit');
+                }}
+                title="Eraser"
+                className={`w-full flex items-center rounded-xl text-xs font-medium transition-all ${
+                  isPaletteCollapsed ? 'justify-center p-2' : 'gap-2 px-3 py-2'
+                } ${
+                  activeTool === 'ERASER' 
+                    ? 'bg-black-olive text-floral-white font-bold shadow-sm' 
+                    : 'bg-warm-ivory/60 hover:bg-warm-ivory text-black-olive/80 border border-soft-sand'
+                }`}
+              >
+                <Eraser className="w-4 h-4 flex-shrink-0" />
+                {!isPaletteCollapsed && <span>Eraser</span>}
+              </button>
+            </div>
+
+            {/* Quantum Gates as Distinctive Botanical Chips */}
+            <div className="space-y-2">
+              {!isPaletteCollapsed && (
+                <div className="flex items-center justify-between px-2 mb-1">
+                  <h3 className="text-[10px] font-semibold text-olive-mist uppercase tracking-widest">Gates</h3>
+                  <span className="lg:hidden text-[10px] text-olive-mist font-medium">Tap to select &amp; place</span>
+                </div>
+              )}
+              {GATES.map(gate => {
+                const isH = gate.id === 'H';
+                const isX = gate.id === 'X';
+                const isZ = gate.id === 'Z';
+                const isCNOT = gate.id === 'CNOT';
+                const isActive = activeTool === gate.id;
+
+                let gateBadgeStyle = 'bg-warm-ivory text-black-olive border-soft-sand';
+                if (isH) gateBadgeStyle = 'bg-soft-cyan/25 text-deep-slate border-soft-cyan/60';
+                if (isX) gateBadgeStyle = 'bg-muted-sage/25 text-black-olive border-muted-sage/60';
+                if (isZ) gateBadgeStyle = 'bg-dusty-lavender/25 text-black-olive border-dusty-lavender/60';
+                if (isCNOT) gateBadgeStyle = 'bg-warm-gold/25 text-cocoa-noir border-warm-gold/60';
+
+                return (
+                  <div key={gate.id} className="relative group">
+                    <button
+                      onClick={() => { 
+                        setActiveTool(gate.id); 
+                        setPendingCNOT(null); 
+                        if (window.innerWidth < 1024) setMobileTab('circuit');
+                      }}
+                      title={`${gate.name}: ${gate.desc}`}
+                      className={`w-full flex items-center rounded-xl transition-all border ${
+                        isPaletteCollapsed ? 'justify-center p-2' : 'gap-2.5 px-3 py-2'
+                      } ${
+                        isActive 
+                          ? 'bg-black-olive text-floral-white border-black-olive shadow-sm font-bold' 
+                          : 'bg-warm-ivory/50 hover:bg-warm-ivory text-black-olive border-soft-sand'
+                      }`}
+                    >
+                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold font-mono text-xs flex-shrink-0 border ${
+                        isActive ? 'bg-floral-white text-black-olive border-transparent' : gateBadgeStyle
+                      }`}>
+                        {gate.id}
+                      </div>
+                      {!isPaletteCollapsed && (
+                        <div className="flex flex-col text-left min-w-0 flex-1">
+                          <span className="text-xs font-semibold truncate">{gate.name}</span>
+                          <span className="lg:hidden text-[10px] text-olive-mist truncate">{gate.desc}</span>
+                        </div>
+                      )}
+                    </button>
+
+                    {/* Tooltip on hover (desktop only) */}
+                    <div className="hidden lg:block absolute left-full ml-2 top-0 w-52 p-3 bg-black-olive text-warm-ivory text-[11px] rounded-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 shadow-xl border border-black-olive/50">
+                      <div className="font-semibold text-warm-gold mb-0.5 flex items-center gap-1.5">
+                        <Info className="w-3.5 h-3.5"/> {gate.name}
+                      </div>
+                      <p className="text-warm-ivory/80">{gate.desc}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+          </div>
+        </div>
 
       {/* ========================================================================= */}
       {/* CENTER PANEL: CIRCUIT BUILDER CANVAS */}
       {/* ========================================================================= */}
       {showCircuit && (
-        <div className={`flex-1 flex flex-col relative bg-floral-white min-w-0 transition-all ${
-          viewMode === 'circuit' ? 'w-full' : ''
+        <div className={`flex-col relative bg-floral-white min-w-0 transition-all ${
+          mobileTab === 'circuit' ? 'flex flex-1 w-full' : 'hidden lg:flex flex-1'
+        } ${
+          viewMode === 'circuit' ? 'lg:w-full' : ''
         }`}>
           
           {/* Canvas Top Bar */}
-          <div className="p-3 bg-[#FFFDF7] flex flex-wrap justify-between items-center gap-2 border-b border-soft-sand z-10 shadow-sm">
+          <div className="p-2 sm:p-3 bg-[#FFFDF7] flex flex-wrap justify-between items-center gap-2 border-b border-soft-sand z-10 shadow-sm shrink-0">
             
             {/* Left Controls: Title + Qubit Selector */}
             <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-              <h1 className="text-sm sm:text-base font-bold font-serif text-black-olive flex items-center gap-1.5">
-                <Cpu className="w-4 h-4 text-olive-mist hidden sm:inline" /> Circuit Workbench
+              <h1 className="text-xs sm:text-base font-bold font-serif text-black-olive flex items-center gap-1.5">
+                <Cpu className="w-4 h-4 text-olive-mist hidden sm:inline" />
+                <span className="hidden sm:inline">Circuit Workbench</span>
+                <span className="sm:hidden font-sans font-bold">Workbench</span>
               </h1>
               
               {/* Qubit Count Selector */}
-              <div className="flex items-center gap-1 bg-warm-ivory border border-soft-sand p-1 rounded-xl text-xs">
+              <div className="flex items-center gap-0.5 sm:gap-1 bg-warm-ivory border border-soft-sand p-0.5 sm:p-1 rounded-xl text-xs">
                 {[1, 2, 3].map(count => (
                   <button
                     key={count}
                     onClick={() => handleQubitCountChange(count)}
-                    className={`px-2.5 py-0.5 rounded-lg font-mono text-[11px] font-semibold transition-all ${
+                    className={`px-2 sm:px-2.5 py-0.5 rounded-lg font-mono text-[10px] sm:text-[11px] font-semibold transition-all ${
                       numQubits === count 
                         ? 'bg-black-olive text-floral-white shadow-sm' 
                         : 'text-black-olive/70 hover:text-black-olive'
@@ -469,13 +557,13 @@ export const QuantumLab: React.FC = () => {
               </div>
 
               {activeTool !== 'CURSOR' && (
-                <span className="px-2.5 py-1 rounded-full bg-warm-ivory border border-soft-sand text-black-olive text-[10px] font-mono uppercase tracking-wider font-bold">
-                  {activeTool} {pendingCNOT && '(Select Target Wire)'}
+                <span className="px-2 py-0.5 rounded-full bg-warm-ivory border border-soft-sand text-black-olive text-[10px] font-mono uppercase tracking-wider font-bold">
+                  {activeTool} {pendingCNOT && '(Wire)'}
                 </span>
               )}
             </div>
 
-            {/* Center: View Switcher */}
+            {/* Center: View Switcher (Desktop) */}
             <div className="hidden md:flex items-center bg-warm-ivory border border-soft-sand p-1 rounded-xl text-[11px]">
               <button
                 onClick={() => setViewMode('split')}
@@ -506,47 +594,52 @@ export const QuantumLab: React.FC = () => {
               </button>
             </div>
 
-            {/* Right Actions: Reset & Run Circuit (Warm Gold Primary Button) */}
-            <div className="flex items-center gap-2">
+            {/* Right Actions: Reset & Run Circuit */}
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <button 
                 onClick={clearCircuit} 
-                className="px-3.5 py-2 rounded-xl text-xs font-semibold text-black-olive/80 bg-warm-ivory border border-soft-sand hover:bg-soft-sand transition-all flex items-center gap-1.5 shadow-sm"
+                className="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-semibold text-black-olive/80 bg-warm-ivory border border-soft-sand hover:bg-soft-sand transition-all flex items-center gap-1 shadow-sm"
               >
-                <Trash2 className="w-3.5 h-3.5 text-olive-mist" /> Reset
+                <Trash2 className="w-3.5 h-3.5 text-olive-mist" /> <span className="hidden xs:inline sm:inline">Reset</span>
               </button>
               <button
                 type="button"
                 onClick={() => setIsExplainModalOpen(true)}
                 disabled={circuit.length === 0}
                 title={circuit.length === 0 ? "Place at least one gate to explain circuit" : "Explain this circuit in detail"}
-                className="px-3.5 py-2 rounded-xl text-xs font-semibold text-black-olive bg-warm-gold/20 border border-warm-gold/40 hover:bg-warm-gold/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1.5 shadow-sm"
+                className="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-semibold text-black-olive bg-warm-gold/20 border border-warm-gold/40 hover:bg-warm-gold/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1 shadow-sm"
               >
-                <Sparkles className="w-3.5 h-3.5 text-cocoa-noir" /> Explain Circuit
+                <Sparkles className="w-3.5 h-3.5 text-cocoa-noir" /> <span className="hidden sm:inline">Explain Circuit</span><span className="sm:hidden">Explain</span>
               </button>
               <button
                 type="button"
                 onClick={() => setIsShareModalOpen(true)}
                 disabled={circuit.length === 0}
                 title={circuit.length === 0 ? "Place at least one gate to share circuit" : "Share this quantum circuit via link"}
-                className="px-3.5 py-2 rounded-xl text-xs font-semibold text-black-olive bg-warm-ivory border border-soft-sand hover:bg-soft-sand disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1.5 shadow-sm"
+                className="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-semibold text-black-olive bg-warm-ivory border border-soft-sand hover:bg-soft-sand disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1 shadow-sm"
               >
-                <Share2 className="w-3.5 h-3.5 text-olive-mist" /> Share
+                <Share2 className="w-3.5 h-3.5 text-olive-mist" /> <span className="hidden sm:inline">Share</span>
               </button>
               <button
                 onClick={handleRunCircuit}
                 disabled={isSimulating}
-                className="px-5 py-2 rounded-xl text-xs font-bold bg-warm-gold text-deep-slate hover:bg-[#D4BA7F] shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-1.5"
+                className="px-3 sm:px-5 py-1.5 sm:py-2 rounded-xl text-xs font-bold bg-warm-gold text-deep-slate hover:bg-[#D4BA7F] shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-1.5"
               >
                 {isSimulating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5 fill-current" />}
-                {isSimulating ? 'Simulating...' : 'Run Circuit'}
+                <span>{isSimulating ? 'Simulating...' : 'Run'}</span><span className="hidden sm:inline">{!isSimulating && ' Circuit'}</span>
               </button>
             </div>
 
           </div>
 
+          {/* Mobile swipe helper */}
+          <div className="lg:hidden text-center py-1 px-2 bg-warm-ivory/80 border-b border-soft-sand text-[10px] sm:text-[11px] text-olive-mist font-medium shrink-0">
+            ↔ Swipe horizontally to access all 10 circuit steps
+          </div>
+
           {/* Interactive Quantum Wire Canvas */}
-          <div className="flex-1 overflow-auto p-6 sm:p-8 flex justify-center items-center">
-            <div className="relative" style={{ width: `${NUM_STEPS * 64 + 90}px`, height: `${numQubits * ROW_HEIGHT}px` }}>
+          <div className="flex-1 overflow-auto p-4 sm:p-6 md:p-8 flex justify-start lg:justify-center items-start sm:items-center min-w-0">
+            <div className="relative shrink-0" style={{ width: `${NUM_STEPS * 64 + 90}px`, height: `${numQubits * ROW_HEIGHT}px` }}>
               {/* Qubit Wires */}
               {Array.from({ length: numQubits }).map((_, qIdx) => (
                 <div key={`wire-${qIdx}`} className="absolute left-0 right-0 flex items-center" style={{ top: qIdx * ROW_HEIGHT, height: ROW_HEIGHT }}>
@@ -621,6 +714,45 @@ export const QuantumLab: React.FC = () => {
             </div>
           </div>
 
+          {/* Mobile docked bottom gate picker (< lg) */}
+          <div className="lg:hidden bg-[#FFFDF7] border-t border-soft-sand px-3 py-2 flex items-center justify-between gap-1 shadow-lg shrink-0">
+            <span className="text-[10px] uppercase font-bold text-olive-mist shrink-0">Tool:</span>
+            <div className="flex items-center gap-1 overflow-x-auto py-0.5">
+              <button
+                type="button"
+                onClick={() => { setActiveTool('CURSOR'); setPendingCNOT(null); }}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all shrink-0 ${
+                  activeTool === 'CURSOR' ? 'bg-black-olive text-floral-white shadow-sm' : 'bg-warm-ivory text-black-olive border-soft-sand'
+                }`}
+              >
+                Pointer
+              </button>
+              {GATES.map(g => (
+                <button
+                  key={g.id}
+                  type="button"
+                  onClick={() => { setActiveTool(g.id); setPendingCNOT(null); }}
+                  className={`px-3 py-1 rounded-lg text-xs font-mono font-bold border transition-all shrink-0 ${
+                    activeTool === g.id
+                      ? 'bg-black-olive text-floral-white border-black-olive shadow-sm'
+                      : 'bg-warm-ivory text-black-olive border-soft-sand'
+                  }`}
+                >
+                  {g.id}
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => { setActiveTool('ERASER'); setPendingCNOT(null); }}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all shrink-0 ${
+                  activeTool === 'ERASER' ? 'bg-black-olive text-floral-white shadow-sm' : 'bg-warm-ivory text-black-olive border-soft-sand'
+                }`}
+              >
+                Eraser
+              </button>
+            </div>
+          </div>
+
           {/* Quick Results Bar */}
           {viewMode === 'circuit' && simResult && (
             <div className="p-3 bg-floral-white border-t border-black-olive/10 flex items-center justify-between text-xs px-6">
@@ -645,12 +777,14 @@ export const QuantumLab: React.FC = () => {
       {/* ========================================================================= */}
       {showResults && (
         <div 
-          className={`bg-[#FFFDF7] border-l border-soft-sand flex flex-col relative overflow-hidden transition-all duration-300 shadow-sm ${
+          className={`bg-[#FFFDF7] border-l border-soft-sand flex-col relative overflow-hidden transition-all duration-300 shadow-sm ${
+            mobileTab === 'results' ? 'flex w-full flex-1' : 'hidden lg:flex'
+          } ${
             viewMode === 'results' 
-              ? 'flex-1 w-full' 
+              ? 'lg:flex-1 lg:w-full' 
               : isResultsExpanded 
-              ? 'w-full lg:w-[560px] xl:w-[640px] flex-shrink-0' 
-              : 'w-80 sm:w-96 lg:w-[380px] xl:w-[420px] flex-shrink-0'
+              ? 'lg:w-[560px] xl:w-[640px] flex-shrink-0' 
+              : 'lg:w-[380px] xl:w-[420px] flex-shrink-0'
           }`}
         >
           {/* Results Header */}
@@ -727,12 +861,15 @@ export const QuantumLab: React.FC = () => {
                 </button>
               )}
 
-              {viewMode === 'results' && (
+              {(viewMode === 'results' || mobileTab === 'results') && (
                 <button
-                  onClick={() => setViewMode('split')}
+                  onClick={() => {
+                    setMobileTab('circuit');
+                    if (viewMode === 'results') setViewMode('split');
+                  }}
                   className="px-3 py-1 rounded-xl bg-warm-ivory text-black-olive text-[10px] font-semibold border border-soft-sand hover:bg-soft-sand transition-all flex items-center gap-1 shadow-sm"
                 >
-                  Back to Circuit
+                  <ChevronLeft className="w-3.5 h-3.5" /> Back to Circuit
                 </button>
               )}
             </div>
@@ -788,7 +925,7 @@ export const QuantumLab: React.FC = () => {
                   />
                 )}
 
-                {/* 2. Bloch Sphere Visualization */}
+                {/* 2. Bloch Sphere Coordinates & Vectors */}
                 {(activeTab === 'all' || activeTab === 'bloch') && (
                   <BlochSphereWidget
                     statevector={simResult.statevector}
@@ -870,6 +1007,8 @@ export const QuantumLab: React.FC = () => {
           </div>
         </div>
       )}
+
+      </div> {/* End Main Panels Flex Row */}
 
       {/* Explain Circuit Interactive Modal */}
       <ExplainCircuitModal

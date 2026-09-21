@@ -227,7 +227,7 @@ export const AlgorithmLab: React.FC = () => {
                 {/* Circuit Schematic Card (Dark Slate Technical Identity) */}
                 <div className="p-6 rounded-3xl bg-slate-glow text-warm-ivory border border-soft-slate/40 shadow-md space-y-3">
                   <h3 className="text-xs font-bold text-soft-cyan uppercase tracking-wider">Circuit Architecture</h3>
-                  <div className="p-4 bg-deep-slate border border-soft-slate/30 rounded-2xl font-mono text-xs text-soft-cyan space-y-2">
+                  <div className="p-4 bg-deep-slate border border-soft-slate/30 rounded-2xl font-mono text-xs text-soft-cyan space-y-2 overflow-x-auto whitespace-nowrap">
                     <div>q[0]: |0⟩ ──[H]──[   ]──[H]── [Measure]</div>
                     <div>q[1]: |0⟩ ──[H]──[ Uf]──[H]── [Measure]</div>
                     <div>q[2]: |1⟩ ──[H]──[   ]──────── (Ancilla |−⟩)</div>

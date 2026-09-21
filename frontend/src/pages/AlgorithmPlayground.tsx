@@ -71,6 +71,7 @@ export const AlgorithmPlayground: React.FC = () => {
 
   // 5. Modals & Tutor State
   const [isExplainModalOpen, setIsExplainModalOpen] = useState<boolean>(false);
+  const [mobileTab, setMobileTab] = useState<'playground' | 'algorithms' | 'info'>('playground');
 
   // Filtered algorithms list
   const filteredAlgorithms = useMemo(() => {
@@ -307,16 +308,62 @@ export const AlgorithmPlayground: React.FC = () => {
         </div>
       </header>
 
+      {/* Mobile Tab Bar (< lg) */}
+      <div className="lg:hidden flex items-center justify-around bg-[#FFFDF7] border-b border-[#E0D9C8] px-2 py-2 shrink-0 shadow-xs">
+        <button
+          type="button"
+          onClick={() => setMobileTab('playground')}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            mobileTab === 'playground'
+              ? 'bg-[#202C3D] text-[#FAF7EE] shadow-sm'
+              : 'text-[#31372B]/70 bg-white/60 border border-[#E0D9C8]'
+          }`}
+        >
+          <Cpu className="w-3.5 h-3.5 text-[#C5A86A]" />
+          <span>Lab &amp; Steps</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setMobileTab('algorithms')}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            mobileTab === 'algorithms'
+              ? 'bg-[#202C3D] text-[#FAF7EE] shadow-sm'
+              : 'text-[#31372B]/70 bg-white/60 border border-[#E0D9C8]'
+          }`}
+        >
+          <Sliders className="w-3.5 h-3.5 text-[#C5A86A]" />
+          <span>Algorithms ({activeAlgo.numQubits}Q)</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setMobileTab('info')}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            mobileTab === 'info'
+              ? 'bg-[#202C3D] text-[#FAF7EE] shadow-sm'
+              : 'text-[#31372B]/70 bg-white/60 border border-[#E0D9C8]'
+          }`}
+        >
+          <BookOpen className="w-3.5 h-3.5 text-[#C5A86A]" />
+          <span>Theory &amp; Speedup</span>
+        </button>
+      </div>
+
       {/* Main Workspace Body */}
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
         
         {/* ========================================================================= */}
         {/* LEFT COLUMN: ALGORITHM SELECTOR & KNOWLEDGE PANEL */}
         {/* ========================================================================= */}
-        <div className="w-full lg:w-80 xl:w-96 flex flex-col bg-[#FFFDF7] border-r border-[#E0D9C8] overflow-y-auto shrink-0 shadow-sm">
+        <div className={`w-full lg:w-80 xl:w-96 flex-col bg-[#FFFDF7] border-r border-[#E0D9C8] overflow-y-auto shrink-0 shadow-sm ${
+          mobileTab === 'playground' ? 'hidden lg:flex' : 'flex'
+        }`}>
           
-          {/* Category Filter Pills */}
-          <div className="p-3 border-b border-[#E0D9C8] bg-[#FAF7EE]/70">
+          {/* Category Filter Pills (Visible when algorithms tab selected on mobile, always on desktop) */}
+          <div className={`p-3 border-b border-[#E0D9C8] bg-[#FAF7EE]/70 ${
+            mobileTab === 'info' ? 'hidden lg:block' : 'block'
+          }`}>
             <div className="text-[11px] font-bold uppercase tracking-wider text-[#31372B]/60 mb-2 px-1">
               Filter Algorithms
             </div>
@@ -338,7 +385,9 @@ export const AlgorithmPlayground: React.FC = () => {
           </div>
 
           {/* Algorithm List */}
-          <div className="p-2 space-y-1.5 max-h-56 lg:max-h-72 overflow-y-auto border-b border-[#E0D9C8]">
+          <div className={`p-2 space-y-1.5 max-h-72 lg:max-h-72 overflow-y-auto border-b border-[#E0D9C8] ${
+            mobileTab === 'info' ? 'hidden lg:block' : 'block'
+          }`}>
             {filteredAlgorithms.map(algo => {
               const isSelected = algo.id === selectedAlgoId;
               const catColor = 
@@ -349,7 +398,10 @@ export const AlgorithmPlayground: React.FC = () => {
               return (
                 <button
                   key={algo.id}
-                  onClick={() => setSelectedAlgoId(algo.id)}
+                  onClick={() => {
+                    setSelectedAlgoId(algo.id);
+                    if (window.innerWidth < 1024) setMobileTab('playground');
+                  }}
                   className={`w-full text-left p-2.5 rounded-xl border transition-all flex items-center justify-between ${
                     isSelected
                       ? 'bg-[#202C3D] text-[#FAF7EE] border-[#C5A86A] shadow-sm'
@@ -378,19 +430,25 @@ export const AlgorithmPlayground: React.FC = () => {
           </div>
 
           {/* Active Algorithm Information Dossier */}
-          <div className="p-4 space-y-4 flex-1">
-            <div>
-              <div className="flex items-center justify-between">
+          <div className={`p-4 space-y-4 flex-1 ${
+            mobileTab === 'algorithms' ? 'hidden lg:block' : 'block'
+          }`}>
+            <div className="flex items-center justify-between">
+              <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[#C5A86A]">
                   Algorithm Profile
                 </span>
-                <span className="text-[11px] font-mono font-bold text-[#31372B]/60">
-                  {activeAlgo.numQubits} Qubits · {activeAlgo.steps.length} Steps
-                </span>
+                <h2 className="text-base font-bold font-serif text-[#202C3D] mt-0.5">
+                  {activeAlgo.name}
+                </h2>
               </div>
-              <h2 className="text-base font-bold font-serif text-[#202C3D] mt-0.5">
-                {activeAlgo.name}
-              </h2>
+              <button
+                type="button"
+                onClick={() => setMobileTab('playground')}
+                className="lg:hidden px-3 py-1 rounded-xl bg-[#202C3D] text-[#FAF7EE] text-xs font-semibold"
+              >
+                Go to Lab →
+              </button>
             </div>
 
             {/* Purpose */}
@@ -445,7 +503,9 @@ export const AlgorithmPlayground: React.FC = () => {
         {/* ========================================================================= */}
         {/* CENTER COLUMN: INTERACTIVE WORKBENCH & STEP-BY-STEP CONTROLLER */}
         {/* ========================================================================= */}
-        <div className="flex-1 flex flex-col bg-[#FAF7EE] min-w-0 overflow-y-auto">
+        <div className={`flex-1 flex-col bg-[#FAF7EE] min-w-0 overflow-y-auto ${
+          mobileTab === 'playground' ? 'flex' : 'hidden lg:flex'
+        }`}>
           
           {/* Controls Header: Mode Switcher & Execution Toolbar */}
           <div className="p-3 sm:p-4 bg-[#FFFDF7] border-b border-[#E0D9C8] flex flex-wrap items-center justify-between gap-3 shadow-xs">
@@ -606,8 +666,13 @@ export const AlgorithmPlayground: React.FC = () => {
             </div>
           )}
 
+          {/* Mobile swipe helper */}
+          <div className="lg:hidden text-center py-1 px-2 bg-[#FAF7EE] border-b border-[#E0D9C8] text-[10px] sm:text-[11px] text-[#31372B]/70 font-medium shrink-0">
+            ↔ Swipe horizontally to inspect all execution steps
+          </div>
+
           {/* Quantum Wire Circuit Canvas */}
-          <div className="flex-1 overflow-auto p-6 sm:p-8 flex items-center justify-center bg-radial from-white to-[#FAF7EE]/60 min-h-[300px]">
+          <div className="flex-1 overflow-auto p-3 sm:p-6 md:p-8 flex items-start sm:items-center justify-start lg:justify-center bg-radial from-white to-[#FAF7EE]/60 min-h-[260px] min-w-0">
             <div 
               className="relative p-4 rounded-2xl bg-white/80 border border-[#E0D9C8] shadow-sm"
               style={{ minWidth: `${(maxStepNumber + 1) * 72 + 80}px` }}
