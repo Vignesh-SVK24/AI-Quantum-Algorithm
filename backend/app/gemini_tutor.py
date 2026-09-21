@@ -770,7 +770,15 @@ def invoke_gemini(system_prompt: str, user_message: str) -> str:
         logger.warning("GEMINI_API_KEY is not configured in backend/.env; using autonomous grounded engine.")
         raise RuntimeError("GEMINI_API_KEY_MISSING")
 
-    candidate_models = ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-1.5-pro"]
+    candidate_models = [
+        "gemini-2.5-flash",
+        "gemini-3.6-flash",
+        "gemini-3.7-flash",
+        "gemini-2.5-flash-lite",
+        "gemini-1.5-flash",
+        "gemini-2.0-flash",
+        "gemini-1.5-pro"
+    ]
     max_attempts = 2
     backoff_delays = [0.8, 1.5]
 
@@ -783,10 +791,13 @@ def invoke_gemini(system_prompt: str, user_message: str) -> str:
                 (f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}",
                  {"Content-Type": "application/json"}),
                 (f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent",
-                 {"Content-Type": "application/json", "x-goog-api-key": api_key}),
-                (f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent",
-                 {"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"})
+                 {"Content-Type": "application/json", "x-goog-api-key": api_key})
             ]
+            if api_key.startswith("ya29."):
+                auth_configs.append((
+                    f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent",
+                    {"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"}
+                ))
 
             payload = {
                 "systemInstruction": {
