@@ -524,9 +524,9 @@ def perform_hallucination_self_check(reply: str, query: str) -> tuple[str, bool]
 
 def clean_math_and_symbols(text: str) -> str:
     """
-    Cleans raw LaTeX syntax, dollar signs ($), backslashes, and obscure math macros
-    into clean, natural Unicode quantum notation (e.g., |0⟩, |1⟩, α, β, 1/√2, ⊕).
-    Preserves python code blocks intact.
+    Cleans raw LaTeX syntax, delimiters (\\[ \\], \\( \\)), dollar signs ($),
+    matrices, and obscure math macros into clean, natural Unicode quantum notation
+    (e.g., |0⟩, |1⟩, α, β, 1/√2, ⊕). Preserves python code blocks intact.
     """
     if not text:
         return ""
@@ -541,98 +541,144 @@ def clean_math_and_symbols(text: str) -> str:
             continue
 
         s = part
-        # 1. Text wrappers
-        s = re.sub(r'\\text\{([^}]*)\}', r'\1', s)
-        s = re.sub(r'\\mathrm\{([^}]*)\}', r'\1', s)
-        s = re.sub(r'\\mathbf\{([^}]*)\}', r'\1', s)
 
-        # 2. Fractions
-        s = re.sub(r'\\frac\{1\}\{\\sqrt\{2\}\}', '1/√2', s)
-        s = re.sub(r'\\frac\{1\}\{2\}', '1/2', s)
-        s = re.sub(r'\\frac\{([^}]+)\}\{([^}]+)\}', r'\1/\2', s)
+        # 0. Normalize non-breaking hyphens, dashes, and invisible spaces
+        s = s.replace('\u2011', '-').replace('\u2013', '-').replace('\u2014', '--')
+        s = s.replace('\u00a0', ' ').replace('\u200b', '').replace('\u2002', ' ').replace('\u2003', ' ')
 
-        # 3. Square roots
+        # 1. Strip display and inline math brackets: \[ ... \] and \( ... \)
+        s = re.sub(r'\\\[\s*', '\n\n', s)
+        s = re.sub(r'\s*\\\]', '\n\n', s)
+        s = re.sub(r'\\\(\s*', '', s)
+        s = re.sub(r'\s*\\\)', '', s)
+
+        # 2. LaTeX matrix environments: \begin{pmatrix} ... \end{pmatrix}, bmatrix, etc.
+        def matrix_repl(m):
+            content = m.group(1).strip()
+            content = re.sub(r'\\\\\[.*?\]', r'\\\\', content)
+            raw_rows = [r.strip() for r in re.split(r'\\{2,}', content) if r.strip()]
+            formatted_rows = []
+            for r in raw_rows:
+                cols = [c.strip() for c in r.split('&')]
+                formatted_rows.append('   '.join(cols))
+            if not formatted_rows:
+                return ""
+            return '\n\n' + '\n'.join(f'[  {row}  ]' for row in formatted_rows) + '\n\n'
+
+        s = re.sub(r'\\begin\{(?:pmatrix|bmatrix|vmatrix|matrix)\}([\s\S]*?)\\end\{(?:pmatrix|bmatrix|vmatrix|matrix)\}', matrix_repl, s)
+
+        # 3. Spacing macros
+        s = re.sub(r'\\(qquad|quad|enspace)', '  ', s)
+        s = re.sub(r'\\[,;:!]', ' ', s)
+
+        # 4. Sizing wrappers
+        s = re.sub(r'\\(left|right|Bigl|Bigr|Big|big|bigg|Bigg)', '', s)
+
+        # 5. Common math function names
+        s = re.sub(r'\\(sin|cos|tan|exp|log|ln|det|dim|tr|lim|min|max)\b', r'\1', s)
+
+        # 6. Arrows and transformations
+        s = re.sub(r'\\xrightarrow\{([^}]*)\}', r'──[\1]──>', s)
+        s = re.sub(r'\\rightarrow\b|\\to\b', '→', s)
+
+        # 7. Text wrappers
+        s = re.sub(r'\\(?:text|mathrm|mathbf|mathit|textbf|texttt)\{([^}]*)\}', r'\1', s)
+        s = re.sub(r'\\bar\{([^}]+)\}', r'\1̄', s)
+        s = re.sub(r'\\bar\s+([a-zA-Z])', r'\1̄', s)
+
+        # 8. Fractions: wrap multi-term numerators/denominators in parentheses
+        def frac_repl(m):
+            num = m.group(1).strip()
+            den = m.group(2).strip()
+            if num == "1" and den in ("\\sqrt{2}", "\\sqrt2", "√2"):
+                return "1/√2"
+            if num == "1" and den == "2":
+                return "1/2"
+            if re.search(r'[+\-\s]', num) and not (num.startswith('(') and num.endswith(')')):
+                num = f"({num})"
+            if re.search(r'[+\-\s]', den) and not (den.startswith('(') and den.endswith(')')):
+                den = f"({den})"
+            return f"{num}/{den}"
+
+        s = re.sub(r'\\frac\{([^}]+)\}\{([^}]+)\}', frac_repl, s)
+
+        # 9. Square roots
         s = re.sub(r'\\sqrt\{([^}]+)\}', r'√\1', s)
         s = re.sub(r'\\sqrt\s*([0-9a-zA-Z])', r'√\1', s)
 
-        # 4. Dirac notation
-        s = s.replace(r'\rangle', '⟩')
-        s = s.replace(r'\langle', '⟨')
+        # 10. Dirac notation
+        s = re.sub(r'\\ket\{([^}]*)\}', r'|\1⟩', s)
+        s = re.sub(r'\\bra\{([^}]*)\}', r'⟨\1|', s)
+        s = s.replace(r'\rangle', '⟩').replace(r'\langle', '⟨')
 
-        # 5. Bell state symbols
+        # 11. Bell states
         s = s.replace(r'\Phi^+', 'Φ⁺').replace(r'\Phi^-', 'Φ⁻')
         s = s.replace(r'\Psi^+', 'Ψ⁺').replace(r'\Psi^-', 'Ψ⁻')
         s = s.replace(r'\Phi', 'Φ').replace(r'\Psi', 'Ψ')
 
-        # 6. Greek letters
+        # 12. Greek letters
         greek_replacements = [
-            (r'\\alpha', 'α'),
-            (r'\\beta', 'β'),
-            (r'\\gamma', 'γ'),
-            (r'\\delta', 'δ'),
-            (r'\\epsilon', 'ε'),
-            (r'\\theta', 'θ'),
-            (r'\\lambda', 'λ'),
-            (r'\\mu', 'μ'),
-            (r'\\pi', 'π'),
-            (r'\\sigma', 'σ'),
-            (r'\\phi', 'ϕ'),
-            (r'\\psi', 'ψ'),
-            (r'\\omega', 'ω'),
+            (r'\\alpha\b', 'α'),
+            (r'\\beta\b', 'β'),
+            (r'\\gamma\b', 'γ'),
+            (r'\\delta\b', 'δ'),
+            (r'\\epsilon\b', 'ε'),
+            (r'\\theta\b', 'θ'),
+            (r'\\lambda\b', 'λ'),
+            (r'\\mu\b', 'μ'),
+            (r'\\pi\b', 'π'),
+            (r'\\sigma\b', 'σ'),
+            (r'\\phi\b', 'ϕ'),
+            (r'\\psi\b', 'ψ'),
+            (r'\\omega\b', 'ω'),
         ]
         for pattern, rep in greek_replacements:
             s = re.sub(pattern, rep, s)
 
-        # 7. Quantum and mathematical operators
+        # 13. Quantum and mathematical operators
         operator_replacements = [
-            (r'\\oplus', '⊕'),
-            (r'\\otimes', '⊗'),
-            (r'\\approx', '≈'),
-            (r'\\neq', '≠'),
+            (r'\\oplus\b', '⊕'),
+            (r'\\otimes\b', '⊗'),
+            (r'\\approx\b', '≈'),
+            (r'\\neq\b', '≠'),
             (r'\\ne\b', '≠'),
-            (r'\\leq', '≤'),
+            (r'\\leq\b', '≤'),
             (r'\\le\b', '≤'),
-            (r'\\geq', '≥'),
+            (r'\\geq\b', '≥'),
             (r'\\ge\b', '≥'),
-            (r'\\times', '×'),
-            (r'\\cdot', '·'),
-            (r'\\pm', '±'),
+            (r'\\times\b', '×'),
+            (r'\\cdot\b', '·'),
+            (r'\\pm\b', '±'),
+            (r'\\mp\b', '∓'),
             (r'\^\\dagger', '†'),
             (r'\^\dagger', '†'),
-            (r'\\dagger', '†'),
-            (r'\\to\b', '→'),
-            (r'\\rightarrow', '→'),
+            (r'\\dagger\b', '†'),
             (r'\\in\b', '∈'),
-            (r'\\sum', '∑'),
-            (r'\\prod', '∏'),
-            (r'\\infty', '∞'),
+            (r'\\sum\b', '∑'),
+            (r'\\prod\b', '∏'),
+            (r'\\infty\b', '∞'),
         ]
         for pattern, rep in operator_replacements:
             s = re.sub(pattern, rep, s)
 
-        # 8. Superscripts and subscripts
-        s = re.sub(r'(\w|\)|⟩)\^2\b', r'\1²', s)
-        s = re.sub(r'(\w|\)|⟩)\^\{2\}', r'\1²', s)
-        s = re.sub(r'(\w|\)|⟩)\^n\b', r'\1ⁿ', s)
-        s = re.sub(r'(\w|\)|⟩)\^\{n\}', r'\1ⁿ', s)
-        s = re.sub(r'_0\b', '₀', s)
-        s = re.sub(r'_1\b', '₁', s)
-        s = re.sub(r'_2\b', '₂', s)
-        s = re.sub(r'_i\b', 'ᵢ', s)
+        # 14. Superscripts and subscripts
+        s = re.sub(r'(\w|\)|⟩)\^2\b|(\w|\)|⟩)\^\{2\}', r'\1²', s)
+        s = re.sub(r'(\w|\)|⟩)\^n\b|(\w|\)|⟩)\^\{n\}', r'\1ⁿ', s)
+        s = re.sub(r'_0\b|_\{0\}', '₀', s)
+        s = re.sub(r'_1\b|_\{1\}', '₁', s)
+        s = re.sub(r'_2\b|_\{2\}', '₂', s)
+        s = re.sub(r'_i\b|_\{i\}', 'ᵢ', s)
 
-        # 9. Remove math mode dollar delimiters: $$...$$ and $...$
-        s = re.sub(r'\$\$(.*?)\$\$', r'\1', s)
+        # 15. Remove math mode dollar delimiters: $$...$$ and $...$
+        s = re.sub(r'\$\$([\s\S]*?)\$\$', r'\1', s)
         s = re.sub(r'\$([^$\n]+)\$', r'\1', s)
 
-        # 10. Clean up \ket and \bra
-        s = re.sub(r'\\ket\{([^}]*)\}', r'|\1⟩', s)
-        s = re.sub(r'\\bra\{([^}]*)\}', r'⟨\1|', s)
-
-        # 11. Clean up stray backslashes before plain words
+        # 16. Clean up stray backslashes before plain words
         s = re.sub(r'\\([a-zA-Z]+)', r'\1', s)
 
-        # Clean double spaces
+        # 17. Clean redundant spaces and excessive newlines
         s = re.sub(r'[ \t]+', ' ', s)
+        s = re.sub(r'\n{3,}', '\n\n', s)
 
         cleaned_parts.append(s)
 
@@ -654,21 +700,34 @@ def build_system_prompt(
 ) -> str:
     """Builds prompt with memory, student personalization, anti-hallucination guardrails, and autonomous web research evidence."""
     prompt = (
-        "You are an intelligent, versatile AI Teaching Assistant for an interactive learning platform. "
-        "You can answer general questions across programming, computing, mathematics, science, and everyday concepts naturally, concisely, and helpfully. "
-        "When explaining quantum computing, gates, circuits, and algorithms, provide deep pedagogical clarity with step-by-step intuition, analogies, and accurate mathematics.\n\n"
+        "You are an expert, insightful, and mathematically rigorous Quantum Computing AI Tutor and Computer Science Teaching Assistant. "
+        "Your mission is to deliver deeply pedagogical, scientifically accurate, clear, and engaging explanations. "
+        "For everyday science, programming (e.g. Python), and general queries, answer naturally, concisely, and helpfully like a versatile AI. "
+        "When explaining quantum mechanics, quantum gates, circuits, and algorithms, adhere strictly to established mathematical and physical truths.\n\n"
     )
 
     # Core guidelines
     prompt += (
-        "PEDAGOGICAL & ACCURACY GUIDELINES:\n"
-        "1. For general programming, science, and conversational questions (e.g. Python, recursion, algorithms, general knowledge), answer directly, naturally, and helpfully like a versatile AI assistant.\n"
-        "2. For quantum concepts: NEVER say a qubit 'is 0 and 1 at the same time' or 'exists in both states simultaneously'—that is scientifically incorrect. Explain via probability amplitudes α and β and measurement collapse.\n"
-        "3. If asked a question containing a misconception, explicitly and gently correct it.\n"
-        "4. Structure educational explanations in clear steps with concise explanations, practical examples, and relevant equations where useful.\n"
-        "5. TEXT & SYMBOL CLARITY: Present math in clean, natural plain text using readable Unicode symbols (|0⟩, |1⟩, |ψ⟩ = α|0⟩ + β|1⟩, 1/√2, ⊕). "
-        "NEVER output raw LaTeX code (do NOT write \\alpha, \\beta, \\frac, \\rangle, or surround text with dollar signs like $\\alpha$ or $|0\\rangle$). "
-        "Make your responses crystal clear, clean, and directly human-readable.\n\n"
+        "CRITICAL SCIENTIFIC ACCURACY & QUANTUM FOUNDATIONS:\n"
+        "1. SUPERPOSITION: NEVER say a qubit 'is 0 and 1 at the same time' or 'is in both states simultaneously'—that is a widespread misconception. Explain that a qubit is in a single, well-defined linear combination |ψ⟩ = α|0⟩ + β|1⟩ with complex probability amplitudes α and β satisfying |α|² + |β|² = 1.\n"
+        "2. MEASUREMENT & BORN'S RULE: Measuring in the computational basis irreversibly collapses the state to |0⟩ with probability P(0) = |α|² and to |1⟩ with probability P(1) = |β|². State probabilities clearly and derive them via Born's rule.\n"
+        "3. HADAMARD GATE (H): Always provide the exact transformations:\n"
+        "   - H|0⟩ = (|0⟩ + |1⟩)/√2 = |+⟩\n"
+        "   - H|1⟩ = (|0⟩ - |1⟩)/√2 = |-⟩  (Note the vital minus sign!)\n"
+        "   - H is unitary and self-inverse: H = H†, so H² = I. Applying H twice returns the qubit to its original state.\n"
+        "4. CNOT (CONTROLLED-NOT) GATE: 2-qubit gate acting as |c, t⟩ → |c, t ⊕ c⟩. Control is unchanged; target is flipped if and only if control is |1⟩. Maps |00⟩→|00⟩, |01⟩→|01⟩, |10⟩→|11⟩, |11⟩→|10⟩.\n"
+        "5. BELL STATE GENERATION: Starting with |00⟩, H on qubit 0 produces (|00⟩ + |10⟩)/√2. Then CNOT (control 0, target 1) yields the maximally entangled state |Φ⁺⟩ = (|00⟩ + |11⟩)/√2.\n"
+        "6. GROVER'S ALGORITHM: Achieves quadratic speedup (O(√N) queries vs classical O(N)). Optimal iterations R ≈ (π/4)√N. Stages: 1) Equal superposition via H gates, 2) Oracle phase inversion |x⟩ → (-1)^(f(x))|x⟩, 3) Diffusion operator (inversion about the average) D = 2|s⟩⟨s| - I.\n"
+        "7. NO-CLONING THEOREM & ENTANGLEMENT: Unknown quantum states cannot be cloned. Entanglement exhibits non-local correlations but CANNOT be used for faster-than-light communication (No-Communication Theorem).\n"
+        "8. PHASE KICKBACK: When target qubit is an eigenstate of gate U with eigenvalue e^(iθ) (e.g. |-⟩ for X gate has eigenvalue -1), applying controlled-U kicks the phase factor e^(iθ) back onto the control qubit.\n\n"
+        "RESPONSE STRUCTURE & FORMATTING RULES:\n"
+        "1. Structure educational explanations with clear Markdown headings (## and ###), bullet points, and numbered steps.\n"
+        "2. When comparing states, truth tables, or classical vs quantum attributes, use clean Markdown tables.\n"
+        "3. MATH PRESENTATION: Use clean Unicode quantum notation: |0⟩, |1⟩, |+⟩, |-⟩, |ψ⟩ = α|0⟩ + β|1⟩, 1/√2, √N, ⊕, ⊗, †, ≈, ∑. When writing fractions with sums or differences in the numerator, always wrap the numerator in parentheses, e.g. (|0⟩ + |1⟩)/√2 or (1/√2)(|0⟩ - |1⟩).\n"
+        "4. Avoid raw LaTeX macros like \\begin{pmatrix}, \\qquad, \\frac, \\left, or \\right. For matrices, present them in simple code blocks or clean bracket notation:\n"
+        "   H = 1/√2 * [ 1   1 ]\n"
+        "              [ 1  -1 ]\n"
+        "5. COMPLETENESS: Always conclude explanations fully. Never truncate or trail off mid-thought.\n\n"
     )
 
     # Difficulty mode adjustment
@@ -676,17 +735,17 @@ def build_system_prompt(
     if mode_normalized == "advanced":
         prompt += (
             "DIFFICULTY LEVEL: ADVANCED\n"
-            "- Provide complete mathematical rigor with Dirac notation, unitary matrices (U†U = I), statevectors, and projector operators.\n\n"
+            "- Provide complete mathematical rigor with Dirac bra-ket algebra, density matrices, projector operators, Hamiltonian time evolution, and exact matrix representations.\n\n"
         )
     elif mode_normalized == "intermediate":
         prompt += (
             "DIFFICULTY LEVEL: INTERMEDIATE\n"
-            "- Use Dirac notation (|0⟩, |1⟩, |ψ⟩ = α|0⟩ + β|1⟩), probability amplitudes, and Born's rule.\n\n"
+            "- Use Dirac notation (|0⟩, |1⟩, |ψ⟩), statevectors, probability amplitudes, matrix transformations, and Born's rule.\n\n"
         )
     else:
         prompt += (
             "DIFFICULTY LEVEL: BEGINNER\n"
-            "- Use plain language and real-world analogies (spinning coin for superposition, linked dancers for entanglement).\n\n"
+            "- Explain concepts intuitively with real-world analogies (e.g. spinning coin for superposition, choreographed dancers for entanglement), accompanied by basic Dirac notation.\n\n"
         )
 
     # Student progress personalization
@@ -816,8 +875,8 @@ def invoke_gemini(system_prompt: str, user_message: str) -> str:
                     }
                 ],
                 "generationConfig": {
-                    "temperature": 0.3,
-                    "maxOutputTokens": 1000
+                    "temperature": 0.2,
+                    "maxOutputTokens": 2048
                 }
             }
             data_bytes = json.dumps(payload).encode("utf-8")
@@ -908,15 +967,15 @@ def invoke_groq(
         payload = {
             "model": model,
             "messages": messages,
-            "temperature": 0.3,
-            "max_tokens": 1000
+            "temperature": 0.2,
+            "max_tokens": 2500
         }
 
         data_bytes = json.dumps(payload).encode("utf-8")
 
         try:
             req = urllib.request.Request(url, data=data_bytes, headers=headers, method="POST")
-            with urllib.request.urlopen(req, timeout=12) as resp:
+            with urllib.request.urlopen(req, timeout=25) as resp:
                 resp_data = json.loads(resp.read().decode("utf-8"))
                 choices = resp_data.get("choices", [])
                 if choices:
