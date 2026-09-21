@@ -14,7 +14,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from app.quantum_sim import simulate_hadamard_circuit, validate_circuit, build_and_simulate
 from app.algorithms import DEUTSCH_ORACLES, run_deutsch_jozsa, run_grover
-from app.tutor import ask_tutor
 from app.gemini_tutor import (
     check_rate_limit,
     validate_and_sanitize_message,
@@ -179,9 +178,18 @@ def simulate_grover(request: GroverRequest):
 
 @app.post("/api/tutor")
 def tutor_endpoint(request: TutorRequest):
-    """Context-aware AI Tutor endpoint."""
+    """Context-aware AI Tutor endpoint (backwards-compatible)."""
     try:
-        return ask_tutor(request.question, request.context.model_dump())
+        ctx = request.context.model_dump()
+        res = process_tutor_chat(
+            message=request.question,
+            circuit_context=ctx
+        )
+        first_source = res.get("sources", [{}])[0].get("name") if res.get("sources") else "Quantum Platform AI Tutor"
+        return {
+            "answer": res["reply"],
+            "source": first_source
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail={"message": "Tutor request failed", "errors": [str(e)]})
 

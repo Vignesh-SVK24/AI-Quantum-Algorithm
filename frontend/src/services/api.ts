@@ -549,46 +549,6 @@ export async function runGrover(targetState: string, shots = 1024): Promise<Grov
   };
 }
 
-export async function askAITutor(question: string, context: TutorContext): Promise<TutorResponse> {
-  try {
-    const chatRes = await sendTutorChat(question, 'beginner', context);
-    return {
-      answer: chatRes.reply,
-      source: chatRes.sources && chatRes.sources.length > 0 ? chatRes.sources[0].name : 'Gemini Quantum Knowledge Engine'
-    };
-  } catch {
-    // Graceful offline fallback
-  }
-
-  // Intelligent Context-Aware Socratic Response
-  const circuit = context.circuit || [];
-  const qLower = question.toLowerCase();
-
-  let answer = '';
-
-  if (qLower.includes('why') || qLower.includes('happen') || qLower.includes('result')) {
-    if (circuit.length === 0) {
-      answer = 'Your circuit is currently empty! In the computational ground state $|0\\rangle$, measurement will yield 0 with 100% certainty. Place gates (such as an $H$ gate) onto the wire to observe quantum superposition and interference!';
-    } else if (circuit.some(g => g.type === 'CNOT')) {
-      answer = '### Entanglement in Action\nYour circuit uses the **CNOT** gate! When paired with an $H$ gate, CNOT establishes quantum entanglement (such as a Bell state $\\frac{|00\\rangle + |11\\rangle}{\\sqrt{2}}$). Neither qubit has an independent state; measuring one instantly defines the other with 100% correlation.';
-    } else if (circuit.some(g => g.type === 'H')) {
-      answer = '### Hadamard Transform Explanation\n1. **Ground State**: The qubit began in $|0\\rangle$.\n2. **Superposition**: Applying the **$H$ gate** created equal probability amplitudes: $$|\\psi\\rangle = \\frac{|0\\rangle + |1\\rangle}{\\sqrt{2}}$$\n3. **Measurement**: By Born\'s rule, $P(|0\\rangle) = |1/\\sqrt{2}|^2 = 50\\%$, and $P(|1\\rangle) = 50\\%$. In the 1,024-shot histogram, each outcome receives approximately ~512 shots.';
-    } else {
-      answer = `You have placed ${circuit.length} gate(s). Each unitary matrix modifies the probability amplitudes of the quantum state. Check the **State Transformation** card to see the exact before-and-after evolution!`;
-    }
-  } else if (qLower.includes('superposition')) {
-    answer = '### What is Superposition?\nSuperposition means a qubit is described by a linear combination of basis states: $$|\\psi\\rangle = \\alpha|0\\rangle + \\beta|1\\rangle$$\nwhere $\\alpha$ and $\\beta$ are complex numbers. Crucially, a qubit is **not** "0 and 1 at the same time"; rather, it is in a single definite quantum state whose amplitudes determine the measurement probabilities: $P(0) = |\\alpha|^2, P(1) = |\\beta|^2$.';
-  } else if (qLower.includes('bloch') || qLower.includes('sphere')) {
-    answer = '### The Bloch Sphere\nThe Bloch sphere is a geometric representation of a single qubit. The North pole represents $|0\\rangle$, the South pole represents $|1\\rangle$, and the equator represents equal superpositions with varying phase. Single-qubit quantum gates act as 3D rotations of this state vector.';
-  } else {
-    answer = `That is a great quantum computing question! In your current context (${context.page || 'Quantum Lab'}), quantum mechanics operates through probability amplitudes, unitary transformations, and measurement collapse. Try building a 2-qubit Bell state circuit to explore entanglement!`;
-  }
-
-  return {
-    answer,
-    source: 'in-browser-quantum-mentor'
-  };
-}
 
 export async function getTutorConnectionStatus(): Promise<{
   mode: 'backend' | 'direct_gemini' | 'offline';

@@ -275,7 +275,7 @@ const FormattedTextChunk: React.FC<{ text: string }> = ({ text }) => {
         }
 
         // Horizontal dividers (--- or ***)
-        if (/^(\-{3,}|\*{3,})$/.test(trimmed)) {
+        if (/^(-{3,}|\*{3,})$/.test(trimmed)) {
           return <hr key={cIdx} className="my-2.5 border-white/10" />;
         }
 
