@@ -66,7 +66,7 @@ export const Navbar: React.FC = () => {
     if (guest || provider === 'anonymous') return 'Guest Account';
     if (provider === 'google') return 'Google Account';
     if (provider === 'email') return 'Email / Password';
-    return provider ? provider.toUpperCase() : 'Supabase Auth';
+    return provider ? provider.toUpperCase() : 'Verified Account';
   };
 
   return (
@@ -84,7 +84,7 @@ export const Navbar: React.FC = () => {
                 Quantum<span className="text-olive-mist font-medium">Platform</span>
               </span>
               <span className="text-[10px] uppercase tracking-widest text-olive-mist font-mono -mt-1">
-                Botanical Noir EdTech
+                Interactive Learning
               </span>
             </div>
           </Link>

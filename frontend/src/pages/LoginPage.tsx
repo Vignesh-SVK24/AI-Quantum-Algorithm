@@ -318,7 +318,7 @@ export const LoginPage: React.FC = () => {
                   QuantumPlatform
                 </span>
                 <span className="text-[10px] text-soft-slate block -mt-0.5">
-                  Production Supabase Auth
+                  Student Portal
                 </span>
               </div>
             </div>
@@ -654,10 +654,10 @@ export const LoginPage: React.FC = () => {
           </div>
         )}
 
-        {/* Security & RLS Compliance Note */}
+        {/* Security & Cryptographic Note */}
         <div className="pt-2 text-center border-t border-soft-slate/30 text-[10px] text-muted-sage/70 flex items-center justify-center gap-1.5">
           <ShieldCheck className="w-3.5 h-3.5 text-muted-sage" />
-          <span>Protected with Supabase Auth &middot; Row Level Security Enabled</span>
+          <span>Secure Cryptographic Authentication &middot; Privacy Protected</span>
         </div>
 
       </div>

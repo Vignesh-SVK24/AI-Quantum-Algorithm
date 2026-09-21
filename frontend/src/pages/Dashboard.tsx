@@ -117,7 +117,7 @@ export const Dashboard: React.FC = () => {
           reason: 'Accuracy in practice was below 60%. Reinforce foundational concepts.',
           type: 'weak_topic',
           actionLabel: 'Review in Encyclopedia',
-          actionPath: '/home',
+          actionPath: '/',
           tag: 'Needs Reinforcement'
         });
       });
@@ -286,7 +286,7 @@ export const Dashboard: React.FC = () => {
                 </span>
                 <span className="text-soft-sand">•</span>
                 <span className="font-mono text-[11px]">
-                  Auth Provider: {profile?.auth_provider ? profile.auth_provider.toUpperCase() : (isGuest ? 'ANONYMOUS' : 'SUPABASE')}
+                  Account: {isGuest ? 'Guest Scholar' : profile?.auth_provider === 'google' ? 'Google Account' : 'Verified Student'}
                 </span>
               </div>
             </div>
@@ -303,7 +303,7 @@ export const Dashboard: React.FC = () => {
             ) : (
               <div className="text-right hidden sm:block">
                 <span className="text-[10px] uppercase font-bold tracking-wider text-muted-sage block">Account State</span>
-                <span className="text-xs font-medium text-black-olive">Active Supabase Session</span>
+                <span className="text-xs font-medium text-black-olive">Active Verified Session</span>
               </div>
             )}
           </div>
@@ -363,11 +363,11 @@ export const Dashboard: React.FC = () => {
             </div>
 
             <div className="p-4 rounded-2xl bg-deep-olive/60 border border-olive-mist/20 space-y-2">
-              <span className="text-[10px] uppercase font-bold text-muted-sage tracking-wider">Storage Engine</span>
+              <span className="text-[10px] uppercase font-bold text-muted-sage tracking-wider">Curriculum Progress</span>
               <div className="text-sm font-bold text-warm-gold font-mono flex items-center gap-1.5 pt-1">
-                <CheckCircle2 className="w-4 h-4 text-muted-sage" /> Local Persistence
+                <CheckCircle2 className="w-4 h-4 text-muted-sage" /> 4 Active Modules
               </div>
-              <div className="text-[11px] text-floral-white/60">Zero cloud latency</div>
+              <div className="text-[11px] text-floral-white/60">Basics &bull; Circuits &bull; Algorithms</div>
             </div>
 
             <div className="p-4 rounded-2xl bg-deep-olive/60 border border-olive-mist/20 space-y-2">

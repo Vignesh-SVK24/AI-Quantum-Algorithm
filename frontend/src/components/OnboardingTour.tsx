@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Sparkles, 
   Search, 
@@ -25,16 +25,16 @@ interface TourStep {
 const TOUR_STEPS: TourStep[] = [
   {
     title: "Welcome to QuantumPlatform",
-    subtitle: "SIH 2026 Quantum Algorithm Learning Environment",
+    subtitle: "Interactive Quantum Algorithm Learning Environment",
     description: "An interactive, mathematically rigorous quantum education system combining classical-to-quantum progression, deterministic retrieval, and interactive 3D visualizations.",
-    highlight: "Designed with Botanical Noir aesthetics and zero LLM hallucination in foundational concepts.",
+    highlight: "Designed with rich visual simulations and verified, scientifically grounded quantum concepts.",
     icon: Sparkles,
     tag: "Getting Started"
   },
   {
     title: "Trilingual Deterministic Search",
     subtitle: "English • हिन्दी • தமிழ்",
-    description: "Search topics, theorems, and gates with instant keyword matching. Our dual-mode catalog provides 100% offline verification in three languages without latency or hallucination.",
+    description: "Search topics, theorems, and gates with instant keyword matching. Our dual-mode catalog provides 100% offline verification in three languages with instant retrieval.",
     highlight: "Try searching 'Superposition', 'सुपरपोजिशन', or 'க்யூபிட்' directly from the home bar.",
     icon: Search,
     tag: "Deterministic KB"
@@ -66,7 +66,7 @@ const TOUR_STEPS: TourStep[] = [
   {
     title: "Practice & Verifiable Certificates",
     subtitle: "Mastery Challenges & Printable Credentials",
-    description: "Test your understanding with 4 graded tiers of quantum problems. Complete challenges to earn an official SIH 2026 Certificate of Quantum Proficiency.",
+    description: "Test your understanding with 4 graded tiers of quantum problems. Complete challenges to earn an official Certificate of Quantum Proficiency.",
     highlight: "Print or save high-resolution certificates complete with cryptographic credential verification IDs.",
     icon: Award,
     tag: "Certification"

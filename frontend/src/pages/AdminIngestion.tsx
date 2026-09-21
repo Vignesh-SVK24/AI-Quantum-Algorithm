@@ -79,7 +79,7 @@ export const AdminIngestion: React.FC = () => {
               Admin Knowledge Ingestion
             </h2>
             <p className="text-xs text-olive-mist mt-1">
-              Audit log and pipeline inspection for SIH 2026 reviewers.
+              Audit log and knowledge base pipeline inspection.
             </p>
           </div>
 

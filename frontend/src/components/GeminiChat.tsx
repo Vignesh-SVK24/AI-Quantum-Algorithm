@@ -388,7 +388,7 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
               <h2 className="text-sm font-bold text-floral-white">Quantum AI Teaching Assistant</h2>
               <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-glow border border-muted-sage/40 text-muted-sage">
                 <ShieldCheck className="w-3 h-3 text-muted-sage" />
-                Anti-Hallucination Grounded
+                Scientifically Verified
               </span>
             </div>
             <p className="text-[11px] text-warm-ivory/70">
@@ -817,7 +817,7 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
         <div className="mt-2 flex items-center justify-between text-[10px] text-warm-ivory/50 px-2 font-mono">
           <span className="flex items-center gap-1.5">
             <ShieldCheck className="w-3.5 h-3.5 text-muted-sage" />
-            <span>Anti-hallucination grounded in IBM Quantum &amp; Qiskit</span>
+            <span>Scientifically grounded in IBM Quantum &amp; Qiskit</span>
           </span>
           <span>{input.length}/2500</span>
         </div>

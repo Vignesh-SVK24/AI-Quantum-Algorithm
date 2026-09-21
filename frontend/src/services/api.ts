@@ -1773,7 +1773,7 @@ export async function fetchAdminIngestionJobs(): Promise<IngestionJobsResponse> 
         parsed_fields: { topic_name: 'Superposition', category: 'Fundamentals', slug: 'superposition' },
         quality_score: 0.98,
         quality_report: { hallucination_check: 'passed (0% deviation)', dirac_notation_valid: true, trilingual_coverage: ['en', 'hi', 'ta'] },
-        admin_notes: 'SIH 2026 verification review passed',
+        admin_notes: 'Curriculum verification review passed',
         submitted_at: '2026-09-15T09:00:00Z',
         reviewed_at: '2026-09-16T14:30:00Z',
         published_at: '2026-09-16T15:00:00Z'
@@ -1787,7 +1787,7 @@ export async function fetchAdminIngestionJobs(): Promise<IngestionJobsResponse> 
         parsed_fields: { topic_name: 'Qubit', category: 'Fundamentals', slug: 'qubit' },
         quality_score: 0.97,
         quality_report: { hallucination_check: 'passed (0% deviation)', dirac_notation_valid: true, trilingual_coverage: ['en', 'hi', 'ta'] },
-        admin_notes: 'SIH 2026 verification review passed',
+        admin_notes: 'Curriculum verification review passed',
         submitted_at: '2026-09-15T09:10:00Z',
         reviewed_at: '2026-09-16T14:35:00Z',
         published_at: '2026-09-16T15:00:00Z'
@@ -1801,7 +1801,7 @@ export async function fetchAdminIngestionJobs(): Promise<IngestionJobsResponse> 
         parsed_fields: { topic_name: "Grover's Algorithm", category: 'Algorithms', slug: 'grovers-algorithm' },
         quality_score: 0.99,
         quality_report: { hallucination_check: 'passed (0% deviation)', dirac_notation_valid: true, trilingual_coverage: ['en', 'hi', 'ta'] },
-        admin_notes: 'SIH 2026 verification review passed',
+        admin_notes: 'Curriculum verification review passed',
         submitted_at: '2026-09-15T09:20:00Z',
         reviewed_at: '2026-09-16T14:40:00Z',
         published_at: '2026-09-16T15:00:00Z'
@@ -1815,7 +1815,7 @@ export async function fetchAdminIngestionJobs(): Promise<IngestionJobsResponse> 
         parsed_fields: { topic_name: 'Deutsch-Jozsa Algorithm', category: 'Algorithms', slug: 'deutsch-jozsa-algorithm' },
         quality_score: 0.96,
         quality_report: { hallucination_check: 'passed (0% deviation)', dirac_notation_valid: true, trilingual_coverage: ['en', 'hi', 'ta'] },
-        admin_notes: 'SIH 2026 verification review passed',
+        admin_notes: 'Curriculum verification review passed',
         submitted_at: '2026-09-15T09:30:00Z',
         reviewed_at: '2026-09-16T14:45:00Z',
         published_at: '2026-09-16T15:00:00Z'
@@ -1829,7 +1829,7 @@ export async function fetchAdminIngestionJobs(): Promise<IngestionJobsResponse> 
         parsed_fields: { topic_name: 'Hadamard Gate', category: 'Quantum Gates', slug: 'hadamard-gate' },
         quality_score: 0.98,
         quality_report: { hallucination_check: 'passed (0% deviation)', dirac_notation_valid: true, trilingual_coverage: ['en', 'hi', 'ta'] },
-        admin_notes: 'SIH 2026 verification review passed',
+        admin_notes: 'Curriculum verification review passed',
         submitted_at: '2026-09-15T09:40:00Z',
         reviewed_at: '2026-09-16T14:50:00Z',
         published_at: '2026-09-16T15:00:00Z'

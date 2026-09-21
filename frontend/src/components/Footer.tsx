@@ -23,7 +23,7 @@ export const Footer: React.FC = () => {
               <span>•</span>
               <span>FastAPI Engine</span>
               <span>•</span>
-              <span>Quantum Botanical Noir</span>
+              <span>Interactive 3D Visualizer</span>
             </div>
           </div>
 

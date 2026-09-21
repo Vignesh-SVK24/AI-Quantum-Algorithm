@@ -140,7 +140,7 @@ export const AITutor: React.FC = () => {
                 </div>
                 <h1 className="text-2xl sm:text-3xl font-bold font-serif text-black-olive tracking-tight">AI Quantum Teaching Assistant</h1>
                 <p className="text-xs text-olive-mist">
-                  Powered by Google Gemini Flash API with rate limiting, Qiskit simulation grounding, and anti-hallucination guardrails
+                  Powered by Google Gemini &amp; Groq with Qiskit simulation grounding and scientifically verified explanations
                 </p>
               </div>
             </div>
@@ -157,7 +157,7 @@ export const AITutor: React.FC = () => {
               }`}
             >
               <Zap className="w-3.5 h-3.5 text-warm-gold" />
-              <span>Gemini Flash Chat</span>
+              <span>Interactive Tutor Chat</span>
               <span className="w-2 h-2 rounded-full bg-soft-cyan shadow-sm" />
             </button>
             <button
@@ -186,8 +186,8 @@ export const AITutor: React.FC = () => {
                     <Sparkles className="w-4 h-4 text-warm-gold" />
                   </div>
                   <div>
-                    <h3 className="text-xs font-bold text-black-olive uppercase tracking-wider">About Gemini Tutor</h3>
-                    <p className="text-[11px] text-olive-mist">Google Gemini Flash LLM</p>
+                    <h3 className="text-xs font-bold text-black-olive uppercase tracking-wider">About AI Tutor</h3>
+                    <p className="text-[11px] text-olive-mist">Gemini &amp; Groq Quantum Intelligence</p>
                   </div>
                 </div>
 
@@ -220,18 +220,18 @@ export const AITutor: React.FC = () => {
                 </div>
               </div>
 
-              {/* Security & Rate Limits (Desktop right column) */}
+              {/* Security & Reliability (Desktop right column) */}
               <div className="hidden lg:block p-6 rounded-3xl bg-cocoa-noir text-warm-ivory border border-cocoa-noir/40 shadow-md space-y-3">
                 <h3 className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-warm-gold">
-                  <ShieldAlert className="w-4 h-4 text-warm-gold" /> Security &amp; Rate Limits
+                  <ShieldAlert className="w-4 h-4 text-warm-gold" /> Security &amp; Data Privacy
                 </h3>
                 <div className="text-xs text-warm-ivory/80 space-y-2.5 leading-relaxed">
                   <p>
-                    Your API key is never transmitted or exposed to browser clients. Requests pass through the local FastAPI backend with rate limiting to prevent quota exhaustion.
+                    Your queries are processed through high-performance encrypted channels with zero credential exposure.
                   </p>
                   <div className="bg-deep-slate/80 p-3 rounded-2xl border border-soft-slate/40 font-mono text-[11px] text-soft-cyan">
-                    Limit: 15 req/min per IP<br />
-                    Backoff: 1s, 2s, 4s retry on 429
+                    Verified Dirac Math Grounding<br />
+                    High-Availability Fallback Active
                   </div>
                 </div>
               </div>
@@ -241,18 +241,18 @@ export const AITutor: React.FC = () => {
             <div className="order-2 lg:order-1 lg:col-span-8 space-y-5">
               <GeminiChat circuitContext={selected.context} />
 
-              {/* Security & Rate Limits (Mobile below chat) */}
+              {/* Security & Reliability (Mobile below chat) */}
               <div className="block lg:hidden p-5 sm:p-6 rounded-3xl bg-cocoa-noir text-warm-ivory border border-cocoa-noir/40 shadow-md space-y-3">
                 <h3 className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-warm-gold">
-                  <ShieldAlert className="w-4 h-4 text-warm-gold" /> Security &amp; Rate Limits
+                  <ShieldAlert className="w-4 h-4 text-warm-gold" /> Security &amp; Data Privacy
                 </h3>
                 <div className="text-xs text-warm-ivory/80 space-y-2.5 leading-relaxed">
                   <p>
-                    Your API key is never transmitted or exposed to browser clients. Requests pass through the local FastAPI backend with rate limiting to prevent quota exhaustion.
+                    Your queries are processed through high-performance encrypted channels with zero credential exposure.
                   </p>
                   <div className="bg-deep-slate/80 p-3 rounded-2xl border border-soft-slate/40 font-mono text-[11px] text-soft-cyan">
-                    Limit: 15 req/min per IP<br />
-                    Backoff: 1s, 2s, 4s retry on 429
+                    Verified Dirac Math Grounding<br />
+                    High-Availability Fallback Active
                   </div>
                 </div>
               </div>

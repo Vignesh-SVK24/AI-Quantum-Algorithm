@@ -173,7 +173,7 @@ export const About: React.FC = () => (
           <span className="text-warm-ivory/80">React 19 + TypeScript + Vite + Tailwind CSS v4 | Python 3.11 + FastAPI + Qiskit Statevector</span>
         </div>
         <span className="text-[11px] font-mono text-warm-gold bg-black-olive/80 border border-warm-gold/40 px-3.5 py-1.5 rounded-xl font-bold">
-          Hackathon Release v1.0
+          Release v1.0
         </span>
       </div>
 

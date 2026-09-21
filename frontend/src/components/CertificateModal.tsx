@@ -34,7 +34,7 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
     day: 'numeric'
   });
 
-  const credentialId = `SIH26-QC-${Math.abs(
+  const credentialId = `QC-${Math.abs(
     studentName.split('').reduce((acc, char) => (acc << 5) - acc + char.charCodeAt(0), 0)
   ).toString(16).toUpperCase()}-VERIFIED`;
 
@@ -90,7 +90,7 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
                 <Award className="w-8 h-8" />
               </div>
               <span className="text-[10px] font-mono tracking-widest uppercase text-[#31372B]/60 font-bold">
-                Smart India Hackathon 2026 • Certified Track
+                Quantum Algorithm Learning Platform • Verified Track
               </span>
               <h2 className="text-2xl sm:text-3xl font-bold font-serif text-[#202C3D] tracking-tight">
                 Certificate of Quantum Mastery
@@ -148,7 +148,7 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
             <div className="pt-6 border-t border-[#E0D9C8] flex flex-col sm:flex-row items-center justify-between gap-6 text-left">
               <div className="space-y-1 text-center sm:text-left">
                 <div className="font-serif italic text-sm text-[#202C3D]">
-                  SIH 2026 Academic Advisory Committee
+                  Quantum Curriculum Academic Advisory Committee
                 </div>
                 <div className="text-[10px] text-[#31372B]/60 font-mono">
                   Verified Simulation Engine (Qiskit Statevector v2.5)
