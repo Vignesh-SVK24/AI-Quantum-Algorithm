@@ -19,7 +19,8 @@ from app.gemini_tutor import (
     check_rate_limit,
     validate_and_sanitize_message,
     call_gemini_api,
-    process_tutor_chat
+    process_tutor_chat,
+    load_dotenv
 )
 from app.services.local_search import search_quantum_db
 from app.feedback import FeedbackPayload, record_feedback, get_feedback_summary
@@ -279,6 +280,43 @@ async def chat_with_tutor(req: ChatMessageRequest, request: Request):
             status_code=500,
             detail={"message": f"An error occurred while communicating with the tutor service: {str(e)}", "error_type": "internal_error"}
         )
+
+
+@app.get("/tutor/health")
+@app.get("/api/tutor/health")
+def get_tutor_health():
+    """
+    Diagnostic status of AI Tutor providers and services.
+    Reports provider configuration and Knowledge Base readiness without exposing secrets.
+    """
+    load_dotenv(override=False)
+    groq_key = os.environ.get("GROQ_API_KEY", "").strip()
+    gemini_key = os.environ.get("GEMINI_API_KEY", "").strip()
+    primary = os.environ.get("PRIMARY_AI_PROVIDER", "groq").lower().strip()
+
+    try:
+        from app.gemini_tutor import load_knowledge_base
+        kb_entries = len(load_knowledge_base())
+    except Exception:
+        kb_entries = 0
+
+    return {
+        "status": "healthy",
+        "primary_provider": primary,
+        "providers": {
+            "groq": {
+                "configured": bool(groq_key and groq_key != "YOUR_GROQ_API_KEY"),
+                "model": os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
+            },
+            "gemini": {
+                "configured": bool(gemini_key and gemini_key != "your_gemini_api_key_here")
+            },
+            "knowledge_base": {
+                "available": kb_entries > 0,
+                "total_entries": kb_entries
+            }
+        }
+    }
 
 
 @app.post("/tutor/feedback")

@@ -215,14 +215,9 @@ OFF_TOPIC_PATTERNS = [
 ]
 
 def classify_question(query: str, circuit_context: dict | None = None, history: list[dict] | None = None) -> str:
-    """Classifies question into one of 7 standardized interaction intents."""
+    """Classifies question into interaction intents without blocking general inquiries."""
     q_lower = query.lower().strip()
     words = set(re.findall(r'\b[a-z0-9_\-\+]+\b', q_lower))
-
-    # Check for obvious off-topic keywords
-    for pat in OFF_TOPIC_PATTERNS:
-        if re.search(pat, q_lower) and not (words & QUANTUM_KEYWORDS):
-            return "off_topic"
 
     greeting_patterns = [
         r"^(hi|hello|hey|greetings|good\s+(morning|afternoon|evening))\b",
@@ -231,28 +226,6 @@ def classify_question(query: str, circuit_context: dict | None = None, history: 
     ]
     if any(re.search(pat, q_lower) for pat in greeting_patterns):
         return "greeting"
-
-    greetings = {"hi", "hello", "hey", "help", "who", "are", "you", "thanks", "thank"}
-    is_quantum = bool(words & QUANTUM_KEYWORDS) or any(k in q_lower for k in QUANTUM_KEYWORDS)
-    is_greeting = bool(words & greetings) and len(words) <= 6
-
-    followup_patterns = [
-        r"\b(another|different|more|next)\s+example\b",
-        r"\bgive\s+me\s+(another|a\s+different)\s+example\b",
-        r"\bshow\s+(another|more)\s+example\b",
-        r"\b(explain|breakdown|clarify|detail|simply|clearly|mathematically)\b",
-        r"\b(why|how|what\s+about|tell\s+me\s+more)\b",
-        r"\b(give\s+me\s+an?\s+example|show\s+an?\s+example|example)\b"
-    ]
-    is_followup = any(re.search(pat, q_lower) for pat in followup_patterns)
-
-    if not is_quantum and not is_greeting and circuit_context is None:
-        if is_followup:
-            pass  # Valid conversational follow-up
-        elif len(words) > 2 and not any(w in ("what", "how", "why", "explain", "is", "a", "the", "example", "another", "more", "next") for w in words):
-            return "off_topic"
-        elif any(w in words for w in ("cat", "dog", "car", "travel", "flight", "hotel", "game", "song", "music")):
-            return "off_topic"
 
     # Practice / Quiz request
     if any(p in q_lower for p in ["practice question", "quiz me", "give me a question", "generate a quiz", "test my knowledge", "quiz question"]):
@@ -282,7 +255,43 @@ def classify_question(query: str, circuit_context: dict | None = None, history: 
     if any(p in q_lower for p in ["gate", "hadamard", "cnot", "pauli", "h gate", "x gate", "z gate"]):
         return "gate_circuit"
 
-    return "concept_explanation"
+    is_quantum = bool(words & QUANTUM_KEYWORDS) or any(k in q_lower for k in QUANTUM_KEYWORDS)
+    if is_quantum:
+        return "concept_explanation"
+
+    # Normal general-purpose AI query (programming, science, general questions)
+    return "general_inquiry"
+
+
+def should_retrieve_kb(
+    query: str,
+    circuit_context: dict | None = None,
+    algorithm_context: dict | None = None
+) -> bool:
+    """
+    Determines whether to query the Quantum Knowledge Base for proactive context.
+    The Knowledge Base is NOT queried for every question.
+    Only queried when:
+    1. User explicitly requests curriculum/course material ('from our learning material', 'in our curriculum', etc.)
+    2. Active circuit with placed gates is present in circuit_context
+    3. Active algorithm context is present in algorithm_context
+    Normal general or quantum questions are answered directly by the AI model.
+    """
+    q_lower = query.lower().strip()
+
+    if circuit_context and circuit_context.get("circuit"):
+        return True
+
+    if algorithm_context:
+        return True
+
+    curriculum_markers = [
+        "learning material", "our curriculum", "curriculum", "course material", 
+        "quantum learn", "according to our", "in our lesson", "in the lesson", 
+        "platform material", "syllabus", "textbook", "module notes", "course notes",
+        "according to the platform", "from our notes", "in our course"
+    ]
+    return any(marker in q_lower for marker in curriculum_markers)
 
 
 # =========================================================================
@@ -645,22 +654,21 @@ def build_system_prompt(
 ) -> str:
     """Builds prompt with memory, student personalization, anti-hallucination guardrails, and autonomous web research evidence."""
     prompt = (
-        "You are an expert Quantum Computing AI Teaching Assistant for an interactive learning platform. "
-        "Your mission is to teach quantum mechanics, gates, and algorithms with deep pedagogical clarity.\n\n"
+        "You are an intelligent, versatile AI Teaching Assistant for an interactive learning platform. "
+        "You can answer general questions across programming, computing, mathematics, science, and everyday concepts naturally, concisely, and helpfully. "
+        "When explaining quantum computing, gates, circuits, and algorithms, provide deep pedagogical clarity with step-by-step intuition, analogies, and accurate mathematics.\n\n"
     )
 
-    # Strict scientific rules
+    # Core guidelines
     prompt += (
-        "CRITICAL SCIENTIFIC ACCURACY RULES:\n"
-        "1. NEVER say a qubit 'is 0 and 1 at the same time' or 'exists in both states simultaneously'. "
-        "That is scientifically incorrect. Explain via probability amplitudes α and β and measurement collapse.\n"
-        "2. If asked a question containing a misconception, explicitly correct it.\n"
-        "3. If a question is outside the provided reference material or beyond confident consensus, "
-        "clearly state that it is outside your current reference scope rather than guessing.\n"
-        "4. Structure explanations in clear, numbered steps (Step 1: Initial state -> Step 2: Gate -> Step 3: Resulting state -> Step 4: Measurement).\n"
+        "PEDAGOGICAL & ACCURACY GUIDELINES:\n"
+        "1. For general programming, science, and conversational questions (e.g. Python, recursion, algorithms, general knowledge), answer directly, naturally, and helpfully like a versatile AI assistant.\n"
+        "2. For quantum concepts: NEVER say a qubit 'is 0 and 1 at the same time' or 'exists in both states simultaneously'—that is scientifically incorrect. Explain via probability amplitudes α and β and measurement collapse.\n"
+        "3. If asked a question containing a misconception, explicitly and gently correct it.\n"
+        "4. Structure educational explanations in clear steps with concise explanations, practical examples, and relevant equations where useful.\n"
         "5. TEXT & SYMBOL CLARITY: Present math in clean, natural plain text using readable Unicode symbols (|0⟩, |1⟩, |ψ⟩ = α|0⟩ + β|1⟩, 1/√2, ⊕). "
         "NEVER output raw LaTeX code (do NOT write \\alpha, \\beta, \\frac, \\rangle, or surround text with dollar signs like $\\alpha$ or $|0\\rangle$). "
-        "Make your responses crystal clear, clean, and directly human-readable without confusing code symbols.\n\n"
+        "Make your responses crystal clear, clean, and directly human-readable.\n\n"
     )
 
     # Difficulty mode adjustment
@@ -701,9 +709,9 @@ def build_system_prompt(
             prompt += f"{role.capitalize()}: {text}\n"
         prompt += "Use this conversational memory to resolve follow-ups like 'why?' or 'what about the other wire?'.\n\n"
 
-    # Verified knowledge base entries (RAG)
+    # Verified curriculum knowledge base entries (if proactively retrieved)
     if matched_entries:
-        prompt += "=== VERIFIED REFERENCE MATERIAL (GROUND TRUTH) ===\n"
+        prompt += "=== VERIFIED CURRICULUM REFERENCE MATERIAL ===\n"
         for idx, entry in enumerate(matched_entries, 1):
             prompt += (
                 f"[Reference {idx}: {entry.get('title')}]\n"
@@ -712,8 +720,7 @@ def build_system_prompt(
             )
         prompt += (
             "=== INSTRUCTION FOR REFERENCES ===\n"
-            "Base your explanation primarily on this reference material to remain 100% consistent with the platform. "
-            "If the question asks about something outside this reference material, say so clearly.\n\n"
+            "Incorporate these verified curriculum details where relevant to maintain alignment with the platform's lessons.\n\n"
         )
 
     # Autonomous Web Research Evidence (if present)
@@ -848,10 +855,16 @@ def invoke_gemini(system_prompt: str, user_message: str) -> str:
 # 10A. GROQ API FALLBACK INVOCATION
 # =========================================================================
 
-def invoke_groq(system_prompt: str, user_message: str, model_name: str | None = None) -> str:
+def invoke_groq(
+    system_prompt: str,
+    user_message: str,
+    model_name: str | None = None,
+    history: list[dict] | None = None
+) -> str:
     """
-    Invokes Groq Cloud Chat Completion API as high-speed fallback provider.
+    Invokes Groq Cloud Chat Completion API as high-speed AI provider.
     Uses OpenAI-compatible /v1/chat/completions endpoint with safe error mapping.
+    Supports multi-turn conversation history for contextual intelligence.
     Never exposes API keys or raw error details to client.
     """
     load_dotenv(override=False)
@@ -869,7 +882,7 @@ def invoke_groq(system_prompt: str, user_message: str, model_name: str | None = 
 
     # Ordered list of models to try in case of 404 model_not_found on specific Groq tiers
     candidate_models = [primary_model]
-    for fallback_cand in ["openai/gpt-oss-120b", "qwen/qwen3.8-27b", "openai/gpt-oss-20b", "llama-3.3-70b-versatile"]:
+    for fallback_cand in ["openai/gpt-oss-120b", "qwen/qwen3.8-27b", "openai/gpt-oss-20b", "groq/compound", "llama-3.3-70b-versatile"]:
         if fallback_cand not in candidate_models:
             candidate_models.append(fallback_cand)
 
@@ -880,14 +893,21 @@ def invoke_groq(system_prompt: str, user_message: str, model_name: str | None = 
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
 
+    # Build multi-turn conversational messages array
+    messages = [{"role": "system", "content": system_prompt}]
+    if history:
+        for turn in history[-6:]:
+            role = "assistant" if (turn.get("sender") in ("tutor", "assistant") or turn.get("role") in ("tutor", "assistant")) else "user"
+            content = turn.get("text") or turn.get("content") or ""
+            if content.strip():
+                messages.append({"role": role, "content": content.strip()})
+    messages.append({"role": "user", "content": user_message})
+
     last_error = None
     for model in candidate_models:
         payload = {
             "model": model,
-            "messages": [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_message}
-            ],
+            "messages": messages,
             "temperature": 0.3,
             "max_tokens": 1000
         }
@@ -896,7 +916,7 @@ def invoke_groq(system_prompt: str, user_message: str, model_name: str | None = 
 
         try:
             req = urllib.request.Request(url, data=data_bytes, headers=headers, method="POST")
-            with urllib.request.urlopen(req, timeout=8) as resp:
+            with urllib.request.urlopen(req, timeout=12) as resp:
                 resp_data = json.loads(resp.read().decode("utf-8"))
                 choices = resp_data.get("choices", [])
                 if choices:
@@ -925,7 +945,7 @@ def invoke_groq(system_prompt: str, user_message: str, model_name: str | None = 
             logger.warning(f"Groq API network/connection error: {ue.reason}")
             raise RuntimeError("GROQ_NETWORK_ERROR")
         except TimeoutError:
-            logger.warning("Groq API request timed out after 8s.")
+            logger.warning("Groq API request timed out after 12s.")
             raise RuntimeError("GROQ_TIMEOUT")
         except Exception as e:
             logger.warning(f"Groq API invocation failed: {e}")
@@ -941,35 +961,48 @@ def dispatch_ai_tutor(
     user_message: str,
     fallback_fn: callable,
     preferred_provider: str = "auto",
-    model_name: str | None = None
+    model_name: str | None = None,
+    history: list[dict] | None = None
 ) -> tuple[str, str]:
     """
-    Dispatches request to AI providers following the user's preference or fallback hierarchy:
-    - If preferred_provider == "groq": attempts Groq first with optional model_name, cascades to Gemini, then grounded engine.
-    - If preferred_provider == "gemini": attempts Gemini first, cascades to Groq, then grounded engine.
-    - If preferred_provider in ("auto", None): Primary Gemini -> Groq fallback -> Grounded engine.
+    Dispatches request to AI providers following primary/fallback strategy:
+    1. Primary Provider: Groq (default, or when preferred_provider == 'groq')
+       Attempts Groq first with specified/configured model and conversation history.
+       If Groq fails (rate limit, timeout, network error, 5xx), cascades to Gemini.
+    2. Secondary Fallback Provider: Google Gemini
+       Attempts Gemini API with model fallbacks.
+    3. Tertiary Fallback Provider: Verified Quantum Knowledge Base / Grounded Engine
+       If all external AI APIs fail, falls back to the local verified curriculum.
     
-    Returns:
-        tuple[str, str]: (raw_reply, provider_name) where provider_name in ("gemini", "groq", "grounded_engine")
+    If user explicitly specifies preferred_provider == 'gemini', attempts Gemini first, then Groq.
     """
+    load_dotenv(override=False)
     pref = (preferred_provider or "auto").lower().strip()
+    primary_env = os.environ.get("PRIMARY_AI_PROVIDER", "groq").lower().strip()
 
-    if pref == "groq":
-        # 1. Preferred: Groq API
+    if pref == "gemini":
+        first_provider = "gemini"
+    elif pref == "groq":
+        first_provider = "groq"
+    else:  # "auto" or None
+        if primary_env == "gemini":
+            first_provider = "gemini"
+        else:
+            first_provider = "groq"
+
+    if first_provider == "groq":
+        # 1. Primary: Groq API
         try:
             groq_key = os.environ.get("GROQ_API_KEY", "").strip()
             if groq_key and groq_key != "YOUR_GROQ_API_KEY":
-                if model_name:
-                    reply = invoke_groq(system_prompt, user_message, model_name=model_name)
-                else:
-                    reply = invoke_groq(system_prompt, user_message)
+                reply = invoke_groq(system_prompt, user_message, model_name=model_name, history=history)
                 if reply and len(reply.strip()) > 0:
-                    logger.info("Preferred provider (Groq) generated response successfully.")
+                    logger.info("Primary provider (Groq) generated response successfully.")
                     return reply, "groq"
             else:
-                logger.info("GROQ_API_KEY not configured; attempting Gemini fallback.")
+                logger.info("GROQ_API_KEY not configured or placeholder; attempting Gemini fallback.")
         except Exception as groq_err:
-            logger.warning(f"Preferred provider (Groq) failed ({groq_err}) -> cascading to Gemini fallback...")
+            logger.warning(f"Primary provider (Groq) failed ({groq_err}) -> cascading to Gemini fallback...")
 
         # 2. Fallback: Gemini API
         try:
@@ -978,10 +1011,9 @@ def dispatch_ai_tutor(
                 logger.info("Gemini fallback succeeded.")
                 return reply, "gemini"
         except Exception as gemini_err:
-            logger.warning(f"Gemini fallback failed ({gemini_err}) -> falling back to grounded engine.")
+            logger.warning(f"Gemini fallback failed ({gemini_err}) -> falling back to verified knowledge base.")
 
     else:
-        # Default ("auto") or "gemini" preferred:
         # 1. Primary: Google Gemini
         try:
             reply = invoke_gemini(system_prompt, user_message)
@@ -991,34 +1023,65 @@ def dispatch_ai_tutor(
         except Exception as gemini_err:
             logger.warning(f"Primary provider (Gemini) failed ({gemini_err}) -> attempting Groq fallback...")
 
-        # 2. Secondary Fallback: Groq API
+        # 2. Fallback: Groq API
         try:
             groq_key = os.environ.get("GROQ_API_KEY", "").strip()
             if groq_key and groq_key != "YOUR_GROQ_API_KEY":
-                if model_name:
-                    reply = invoke_groq(system_prompt, user_message, model_name=model_name)
-                else:
-                    reply = invoke_groq(system_prompt, user_message)
+                reply = invoke_groq(system_prompt, user_message, model_name=model_name, history=history)
                 if reply and len(reply.strip()) > 0:
                     logger.info("Groq fallback succeeded.")
                     return reply, "groq"
             else:
-                logger.info("GROQ_API_KEY not configured or placeholder; proceeding to autonomous grounded engine.")
+                logger.info("GROQ_API_KEY not configured or placeholder; proceeding to verified knowledge base.")
         except Exception as groq_err:
-            logger.warning(f"Groq fallback failed ({groq_err}) -> falling back to autonomous grounded engine.")
+            logger.warning(f"Groq fallback failed ({groq_err}) -> falling back to verified knowledge base.")
 
-    # 3. Tertiary: Autonomous Grounded Quantum Reasoning Engine
-    logger.info("External AI providers unavailable or unconfigured; generating grounded pedagogical response.")
+    # 3. Tertiary Emergency Fallback: Verified Knowledge Base
+    logger.info("External AI providers unavailable; executing verified Knowledge Base fallback.")
     try:
         reply = fallback_fn()
         return reply, "grounded_engine"
     except Exception as fb_err:
-        logger.error(f"Grounded synthesis encountered an error: {fb_err}")
+        logger.error(f"Grounded fallback encountered an error: {fb_err}")
         return (
             "### AI Tutor Temporarily Unavailable\n\n"
             "The AI Tutor is temporarily unavailable. Please try again in a moment.",
             "error_fallback"
         )
+
+
+def execute_database_fallback(
+    query: str,
+    mode: str = "beginner",
+    circuit_context: dict | None = None,
+    history: list[dict] | None = None
+) -> str:
+    """
+    Emergency fallback when all external AI providers (Groq and Gemini) are unavailable.
+    Searches verified Quantum Knowledge Base:
+    - If a matching topic is found -> formats and returns verified curriculum content.
+    - If no relevant topic is found -> returns friendly unavailable message.
+    """
+    matched, _ = retrieve_relevant_knowledge(query, top_k=2)
+    if matched:
+        top = matched[0]
+        title = top.get("title", "Quantum Concept")
+        summary = top.get("summary", "")
+        body = top.get("explanation") or top.get("content") or summary
+        source = top.get("source", "IBM Quantum & Qiskit Curriculum")
+
+        return (
+            f"### Verified Quantum Curriculum Reference\n\n"
+            f"*Based on the verified Quantum Learn knowledge base:*\n\n"
+            f"**{title}**\n\n"
+            f"{body}\n\n"
+            f"*(Reference: {source})*"
+        )
+
+    return (
+        "### AI Tutor Temporarily Unavailable\n\n"
+        "The AI Tutor is temporarily unavailable. Please verify your connection or try again in a moment."
+    )
 
 
 # =========================================================================
@@ -1633,25 +1696,14 @@ def process_tutor_chat(
     clean_msg = validate_and_sanitize_message(message)
     classification = classify_question(clean_msg, circuit_context, history)
 
-    # 1. Out-of-Scope Protection (Part 2)
-    if classification == "off_topic":
-        return {
-            "reply": "I'm focused on quantum computing topics for this platform — happy to help with qubits, gates, circuits, or algorithms!",
-            "classification": "off_topic",
-            "provider": "grounded_engine",
-            "model": "grounded_engine",
-            "sources": [],
-            "circuit_data": None,
-            "qiskit_code": None,
-            "qiskit_verified": None,
-            "practice_question": None,
-            "is_verified": True
-        }
-
-    # 2. RAG Retrieval from Curated Knowledge Base (Part 1)
-    matched_entries, sources = retrieve_relevant_knowledge(clean_msg, top_k=3)
-    for s in sources:
-        s["source_type"] = "platform"
+    # 2. Knowledge Base Retrieval: Only when genuinely useful (curriculum reference or active circuit)
+    # Does NOT search database for general AI questions (Python, recursion, general knowledge)
+    matched_entries = []
+    sources = []
+    if should_retrieve_kb(clean_msg, circuit_context, algorithm_context):
+        matched_entries, sources = retrieve_relevant_knowledge(clean_msg, top_k=2)
+        for s in sources:
+            s["source_type"] = "platform"
 
     # 3. Autonomous Web Research Decision Engine (Router)
     has_high_confidence_kb = (
@@ -1699,7 +1751,7 @@ def process_tutor_chat(
     if classification in ("circuit_generation", "code_request"):
         circuit_data, qiskit_code, qiskit_verified = generate_circuit_and_qiskit_code(clean_msg)
 
-    # 6. Build System Prompt & Call Gemini
+    # 6. Build System Prompt & Call AI Provider
     system_prompt = build_system_prompt(
         mode=mode,
         matched_entries=matched_entries,
@@ -1710,34 +1762,22 @@ def process_tutor_chat(
         research_category=research_category
     )
 
-    provider_used = "grounded_engine"
-    if classification == "greeting":
-        raw_reply = synthesize_grounded_tutor_response(
-            query=clean_msg,
+    def grounded_fallback():
+        return execute_database_fallback(
+            clean_msg,
             mode=mode,
             circuit_context=circuit_context,
-            matched_entries=matched_entries,
-            ranked_web_sources=ranked_web_sources,
             history=history
         )
-        provider_used = "grounded_engine"
-    else:
-        def grounded_fallback():
-            return synthesize_grounded_tutor_response(
-                query=clean_msg,
-                mode=mode,
-                circuit_context=circuit_context,
-                matched_entries=matched_entries,
-                ranked_web_sources=ranked_web_sources,
-                history=history
-            )
-        raw_reply, provider_used = dispatch_ai_tutor(
-            system_prompt,
-            clean_msg,
-            grounded_fallback,
-            preferred_provider=preferred_provider,
-            model_name=model_name
-        )
+
+    raw_reply, provider_used = dispatch_ai_tutor(
+        system_prompt,
+        clean_msg,
+        grounded_fallback,
+        preferred_provider=preferred_provider,
+        model_name=model_name,
+        history=history
+    )
 
     # 7. Anti-Hallucination Self-Check Pass
     checked_reply, _ = perform_hallucination_self_check(raw_reply, clean_msg)

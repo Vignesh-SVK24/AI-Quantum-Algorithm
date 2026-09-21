@@ -31,11 +31,29 @@ class TestGroqFallback(unittest.TestCase):
         self.sample_prompt = "You are an expert Quantum Computing AI Teaching Assistant grounded in IBM Quantum."
         self.sample_query = "What is quantum superposition?"
 
-    def test_gemini_success_does_not_call_groq(self):
-        """When Gemini succeeds, Groq must NEVER be called (no dual-calling)."""
-        with patch("app.gemini_tutor.invoke_gemini", return_value="Gemini Superposition Explanation") as mock_gemini, \
-             patch("app.gemini_tutor.invoke_groq") as mock_groq:
-            
+    def test_groq_primary_success_does_not_call_gemini(self):
+        """When Groq (primary) succeeds, Gemini must NEVER be called (no dual-calling)."""
+        with patch.dict(os.environ, {"GROQ_API_KEY": "gsk_test_key", "PRIMARY_AI_PROVIDER": "groq"}), \
+             patch("app.gemini_tutor.invoke_groq", return_value="Groq Superposition Explanation") as mock_groq, \
+             patch("app.gemini_tutor.invoke_gemini") as mock_gemini:
+
+            reply, provider = dispatch_ai_tutor(
+                system_prompt=self.sample_prompt,
+                user_message=self.sample_query,
+                fallback_fn=lambda: "Grounded Explanation"
+            )
+
+            mock_groq.assert_called_once_with(self.sample_prompt, self.sample_query, model_name=None, history=None)
+            mock_gemini.assert_not_called()
+            self.assertEqual(provider, "groq")
+            self.assertEqual(reply, "Groq Superposition Explanation")
+
+    def test_groq_failure_triggers_gemini_fallback(self):
+        """When Groq fails, Gemini is called as fallback with the EXACT same context."""
+        with patch.dict(os.environ, {"GROQ_API_KEY": "gsk_test_mock_key_12345", "PRIMARY_AI_PROVIDER": "groq"}), \
+             patch("app.gemini_tutor.invoke_groq", side_effect=RuntimeError("GROQ_RATE_LIMIT")), \
+             patch("app.gemini_tutor.invoke_gemini", return_value="Gemini Fallback Explanation") as mock_gemini:
+
             reply, provider = dispatch_ai_tutor(
                 system_prompt=self.sample_prompt,
                 user_message=self.sample_query,
@@ -43,25 +61,8 @@ class TestGroqFallback(unittest.TestCase):
             )
 
             mock_gemini.assert_called_once_with(self.sample_prompt, self.sample_query)
-            mock_groq.assert_not_called()
             self.assertEqual(provider, "gemini")
-            self.assertEqual(reply, "Gemini Superposition Explanation")
-
-    def test_gemini_failure_triggers_groq_fallback_with_same_context(self):
-        """When Gemini fails, Groq is called as fallback with the EXACT same context."""
-        with patch("app.gemini_tutor.invoke_gemini", side_effect=RuntimeError("GEMINI_RATE_LIMIT")), \
-             patch.dict(os.environ, {"GROQ_API_KEY": "gsk_test_mock_key_12345", "GROQ_MODEL": "llama-3.3-70b-versatile"}), \
-             patch("app.gemini_tutor.invoke_groq", return_value="Groq Superposition Explanation") as mock_groq:
-
-            reply, provider = dispatch_ai_tutor(
-                system_prompt=self.sample_prompt,
-                user_message=self.sample_query,
-                fallback_fn=lambda: "Grounded Explanation"
-            )
-
-            mock_groq.assert_called_once_with(self.sample_prompt, self.sample_query)
-            self.assertEqual(provider, "groq")
-            self.assertEqual(reply, "Groq Superposition Explanation")
+            self.assertEqual(reply, "Gemini Fallback Explanation")
 
     def test_groq_missing_or_placeholder_key_falls_back_to_grounded_engine(self):
         """If GROQ_API_KEY is missing or placeholder, gracefully fall back to grounded engine without crashing."""
@@ -176,6 +177,32 @@ class TestGroqFallback(unittest.TestCase):
             mock_groq.assert_not_called()
             self.assertEqual(result["provider"], "gemini")
             self.assertEqual(result["model"], "gemini-2.5-flash")
+
+    def test_general_ai_question_no_database_search(self):
+        """General questions (e.g. Python, recursion) must NOT search the Knowledge Base and must answer via Groq."""
+        with patch.dict(os.environ, {"GROQ_API_KEY": "gsk_test_key", "PRIMARY_AI_PROVIDER": "groq"}), \
+             patch("app.gemini_tutor.invoke_groq", return_value="Python is a versatile programming language.") as mock_groq, \
+             patch("app.gemini_tutor.retrieve_relevant_knowledge") as mock_kb:
+
+            result = process_tutor_chat("What is Python?")
+
+            # Knowledge Base must NOT be queried for general questions
+            mock_kb.assert_not_called()
+            self.assertEqual(result["provider"], "groq")
+            self.assertEqual(result["sources"], [])
+            self.assertIn("Python is a versatile programming language.", result["reply"])
+
+    def test_database_fallback_when_both_ai_providers_fail(self):
+        """When both Groq and Gemini fail, local verified curriculum is used as emergency fallback."""
+        with patch.dict(os.environ, {"GROQ_API_KEY": "gsk_test_key", "PRIMARY_AI_PROVIDER": "groq"}), \
+             patch("app.gemini_tutor.invoke_groq", side_effect=RuntimeError("GROQ_DOWN")), \
+             patch("app.gemini_tutor.invoke_gemini", side_effect=RuntimeError("GEMINI_DOWN")):
+
+            result = process_tutor_chat("What is quantum superposition?")
+
+            self.assertEqual(result["provider"], "grounded_engine")
+            self.assertIn("Verified Quantum Curriculum Reference", result["reply"])
+            self.assertIn("Based on the verified Quantum Learn knowledge base", result["reply"])
 
 
 if __name__ == "__main__":

@@ -166,9 +166,9 @@ def analyze_research_decision(query: str, has_high_confidence_kb_match: bool = F
             "Stable foundational quantum concept fully covered by platform's verified curriculum."
         )
         
-    # G. Fallback: If not foundational and not explicitly covered, trigger web research
+    # G. Standard educational / conceptual / general inquiry
     return (
-        "WEB_RESEARCH_REQUIRED",
-        True,
-        "Query extends beyond core educational curriculum; external verification needed."
+        "INTERNAL_KNOWLEDGE",
+        False,
+        "Standard educational or general conceptual query; handled directly by AI model."
     )
