@@ -498,37 +498,37 @@ export const Practice: React.FC = () => {
                       <Icon className="w-4 h-4" />
                     </div>
                     {completed ? (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-mono font-bold px-2 py-0.5 rounded-full bg-warm-gold text-deep-olive shadow-sm">
-                        <Check className="w-3 h-3 text-deep-olive" /> Passed
+                      <span className="inline-flex items-center gap-1 text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-warm-gold text-deep-olive shadow-sm">
+                        <Check className="w-3.5 h-3.5 text-deep-olive" /> Passed
                       </span>
                     ) : unlocked ? (
-                      <span className={`text-[10px] font-mono uppercase font-semibold px-2 py-0.5 rounded-full ${badgeStyle}`}>
+                      <span className={`text-xs font-mono uppercase font-semibold px-2.5 py-1 rounded-full ${badgeStyle}`}>
                         30 Questions
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-mono opacity-60 px-2 py-0.5 rounded-full border border-current">
-                        <Lock className="w-3 h-3" /> Locked
+                      <span className="inline-flex items-center gap-1 text-xs font-mono opacity-70 px-2.5 py-1 rounded-full border border-current">
+                        <Lock className="w-3.5 h-3.5" /> Locked
                       </span>
                     )}
                   </div>
 
                   <div>
-                    <h3 className={`text-base font-bold ${textPrimary}`}>{cfg.name}</h3>
-                    <p className={`text-xs font-semibold ${textSecondary}`}>{cfg.tagline}</p>
+                    <h3 className={`text-base sm:text-lg font-bold ${textPrimary}`}>{cfg.name}</h3>
+                    <p className={`text-sm font-semibold ${textSecondary}`}>{cfg.tagline}</p>
                   </div>
                   
-                  <p className={`text-[11px] leading-relaxed line-clamp-2 ${cfg.id === 'beginner' ? 'text-black-olive/75' : 'text-floral-white/75'}`}>
+                  <p className={`text-xs sm:text-sm leading-relaxed line-clamp-2 ${cfg.id === 'beginner' ? 'text-black-olive/80' : 'text-floral-white/80'}`}>
                     {cfg.description}
                   </p>
                 </div>
 
                 {/* Progress bar per level */}
                 <div className="mt-4 pt-3 border-t border-current border-opacity-10">
-                  <div className="flex justify-between text-[10px] font-mono opacity-70 mb-1">
+                  <div className="flex justify-between text-xs font-mono opacity-80 mb-1.5">
                     <span>Round Progress</span>
                     <span>{(progress.unlockedRounds[cfg.id] || 1)} / 3 Rounds</span>
                   </div>
-                  <div className={`h-1.5 ${barBg} rounded-full overflow-hidden p-0.5`}>
+                  <div className={`h-2 ${barBg} rounded-full overflow-hidden p-0.5`}>
                     <div 
                       className={`h-full ${barFill} rounded-full transition-all`}
                       style={{ width: `${Math.min(100, ((progress.unlockedRounds[cfg.id] || 1) / 3) * 100)}%` }}
@@ -564,7 +564,7 @@ export const Practice: React.FC = () => {
                   key={r}
                   onClick={() => handleSelectRound(r)}
                   disabled={!unlocked}
-                  className={`flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all flex items-center justify-center gap-2 ${
+                  className={`flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-sm font-mono font-bold transition-all flex items-center justify-center gap-2 ${
                     isCurrent
                       ? 'bg-floral-white shadow-neu-pressed border-2 border-slate-gray text-slate-gray'
                       : unlocked
@@ -574,9 +574,9 @@ export const Practice: React.FC = () => {
                 >
                   <span>Round {r}</span>
                   {roundData?.passed ? (
-                    <CheckCircle2 className="w-3.5 h-3.5 text-slate-gray" />
+                    <CheckCircle2 className="w-4 h-4 text-slate-gray" />
                   ) : !unlocked ? (
-                    <Lock className="w-3 h-3 text-black-olive/40" />
+                    <Lock className="w-3.5 h-3.5 text-black-olive/40" />
                   ) : null}
                 </button>
               );
@@ -585,20 +585,15 @@ export const Practice: React.FC = () => {
         </div>
 
         {apiError && (
-          <div className="p-3.5 rounded-2xl bg-floral-white shadow-neu-pressed text-xs text-black-olive/80 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-slate-gray flex-shrink-0" />
-              <span>{apiError}</span>
-            </div>
-            <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-floral-white shadow-neu-sm-raised text-slate-gray font-bold">
-              Autonomous Offline
-            </span>
+          <div className="p-3.5 rounded-2xl bg-floral-white shadow-neu-pressed text-sm text-black-olive/85 flex items-center gap-2.5">
+            <AlertCircle className="w-4 h-4 text-warm-gold flex-shrink-0" />
+            <span>{apiError}</span>
           </div>
         )}
 
         {isLoadingQuestions && (
-          <div className="text-center py-2 text-xs font-mono text-slate-gray">
-            Syncing question repository...
+          <div className="text-center py-2 text-sm font-medium text-black-olive/70">
+            Loading questions...
           </div>
         )}
 
@@ -610,7 +605,7 @@ export const Practice: React.FC = () => {
             
             {/* Header: Progress, Level, Round & Question Indicator */}
             <div className="space-y-2">
-              <div className="flex flex-wrap justify-between items-center text-xs font-mono text-olive-mist gap-2">
+              <div className="flex flex-wrap justify-between items-center text-xs sm:text-sm font-mono text-black-olive/80 gap-2">
                 <span className="font-bold text-deep-olive">
                   {selectedLevel.toUpperCase()} — Round {selectedRound} of 3 — Question {currentIdx + 1} of {currentQuestions.length}
                 </span>
@@ -628,16 +623,16 @@ export const Practice: React.FC = () => {
             {q && (
               <div className="p-6 md:p-8 rounded-3xl bg-[#FFFDF7] border border-soft-sand shadow-sm space-y-6">
                 
-                <div className="space-y-2.5">
+                <div className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono uppercase tracking-wider px-3 py-1 rounded-full bg-warm-ivory border border-soft-sand text-deep-olive font-bold">
+                    <span className="text-xs font-mono uppercase tracking-wider px-3 py-1 rounded-full bg-warm-ivory border border-soft-sand text-deep-olive font-bold">
                       {q.questionType.replace('_', ' ')}
                     </span>
-                    <span className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-warm-ivory border border-soft-sand text-olive-mist">
+                    <span className="text-xs font-mono px-3 py-1 rounded-full bg-warm-ivory border border-soft-sand text-black-olive/70 font-medium">
                       Level: {q.level}
                     </span>
                   </div>
-                  <h2 className="text-lg md:text-xl font-bold text-black-olive leading-snug">
+                  <h2 className="text-xl md:text-2xl font-bold text-black-olive leading-relaxed">
                     {q.question}
                   </h2>
                 </div>
@@ -665,10 +660,10 @@ export const Practice: React.FC = () => {
                         key={idx}
                         onClick={() => handleSelectOption(idx)}
                         disabled={hasAnsweredCurrent}
-                        className={`w-full p-4 rounded-2xl text-left text-sm font-medium transition-all flex items-center justify-between gap-3 ${btnStyle}`}
+                        className={`w-full p-4 rounded-2xl text-left text-base font-medium transition-all flex items-center justify-between gap-3 ${btnStyle}`}
                       >
                         <div className="flex items-center gap-3">
-                          <span className="w-6 h-6 rounded-lg bg-floral-white border border-soft-sand flex items-center justify-center font-mono text-xs text-black-olive font-bold flex-shrink-0 shadow-sm">
+                          <span className="w-7 h-7 rounded-lg bg-floral-white border border-soft-sand flex items-center justify-center font-mono text-sm text-black-olive font-bold flex-shrink-0 shadow-sm">
                             {String.fromCharCode(65 + idx)}
                           </span>
                           <span className="leading-snug">{option}</span>
@@ -681,23 +676,23 @@ export const Practice: React.FC = () => {
 
                 {/* Immediate Feedback Box Grounded in DB Explanation */}
                 {hasAnsweredCurrent && (
-                  <div className="p-4 rounded-2xl bg-warm-ivory border border-soft-sand text-xs leading-relaxed space-y-1.5 transition-all">
-                    <div className={`font-bold flex items-center gap-1.5 ${
+                  <div className="p-4 sm:p-5 rounded-2xl bg-warm-ivory border border-soft-sand text-sm sm:text-base leading-relaxed space-y-2 transition-all">
+                    <div className={`font-bold flex items-center gap-2 ${
                       selectedAnswer === q.correctIndex ? 'text-deep-olive' : 'text-cocoa-noir'
                     }`}>
                       {selectedAnswer === q.correctIndex ? (
                         <>
-                          <Check className="w-4 h-4 text-muted-sage" />
+                          <Check className="w-5 h-5 text-muted-sage" />
                           <span>Correct! Excellent scientific reasoning.</span>
                         </>
                       ) : (
                         <>
-                          <XCircle className="w-4 h-4 text-warm-gold" />
-                          <span>Incorrect — Conceptual Grounding:</span>
+                          <XCircle className="w-5 h-5 text-warm-gold" />
+                          <span>Incorrect — Explanation:</span>
                         </>
                       )}
                     </div>
-                    <p className="text-black-olive/80">{q.explanation}</p>
+                    <p className="text-black-olive/90 leading-relaxed">{q.explanation}</p>
                   </div>
                 )}
 
@@ -706,7 +701,7 @@ export const Practice: React.FC = () => {
                   <div className="flex justify-end pt-2">
                     <button
                       onClick={handleNextQuestion}
-                      className="px-6 py-3 rounded-xl bg-black-olive text-floral-white font-semibold text-xs shadow-sm hover:bg-deep-olive hover:shadow-md transition-all flex items-center gap-2"
+                      className="px-7 py-3 rounded-xl bg-black-olive text-floral-white font-semibold text-sm shadow-sm hover:bg-deep-olive hover:shadow-md transition-all flex items-center gap-2"
                     >
                       <span>
                         {currentIdx === currentQuestions.length - 1 
@@ -741,13 +736,13 @@ export const Practice: React.FC = () => {
               <p className="text-sm text-black-olive/70">
                 You scored <strong className="text-slate-gray font-bold">{roundResultData.score} out of {roundResultData.total}</strong> ({Math.round((roundResultData.score / roundResultData.total) * 100)}%).
               </p>
-              <p className="text-xs text-black-olive/60">
+              <p className="text-sm text-black-olive/75">
                 Passing requirement: {PASSING_THRESHOLD_PCT}% (7 out of 10 questions).
               </p>
             </div>
 
             {/* Threshold Feedback Panel */}
-            <div className="max-w-md mx-auto p-5 rounded-2xl bg-floral-white shadow-neu-pressed text-xs text-black-olive/80 leading-relaxed text-left space-y-2">
+            <div className="max-w-md mx-auto p-5 rounded-2xl bg-floral-white shadow-neu-pressed text-sm text-black-olive/85 leading-relaxed text-left space-y-2">
               {roundResultData.passed ? (
                 <>
                   <p className="font-bold text-slate-gray flex items-center gap-1.5">
@@ -775,7 +770,7 @@ export const Practice: React.FC = () => {
             <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
               <button
                 onClick={handleRetryRound}
-                className="px-6 py-3 rounded-2xl bg-floral-white text-black-olive font-semibold text-xs shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-2"
+                className="px-6 py-3 rounded-2xl bg-floral-white text-black-olive font-semibold text-sm shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-2"
               >
                 <RotateCcw className="w-4 h-4" /> Retry Round {selectedRound}
               </button>
@@ -783,7 +778,7 @@ export const Practice: React.FC = () => {
               {roundResultData.passed && (
                 <button
                   onClick={handleProceedNextRound}
-                  className="px-6 py-3 rounded-2xl bg-slate-gray text-floral-white font-semibold text-xs shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-2"
+                  className="px-6 py-3 rounded-2xl bg-slate-gray text-floral-white font-semibold text-sm shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-2"
                 >
                   <span>
                     {selectedRound < 3 
@@ -820,39 +815,39 @@ export const Practice: React.FC = () => {
               
               {/* Strong Areas Card */}
               <div className="p-4 rounded-2xl bg-floral-white shadow-neu-pressed space-y-2">
-                <div className="flex items-center gap-2 font-bold text-xs text-slate-gray">
+                <div className="flex items-center gap-2 font-bold text-sm text-slate-gray">
                   <ShieldCheck className="w-4 h-4 text-slate-gray" />
                   <span>Strong Areas (≥80%):</span>
                 </div>
                 {strongTopicsList.length > 0 ? (
-                  <ul className="space-y-1 text-xs text-black-olive/80 pl-2">
+                  <ul className="space-y-1.5 text-sm text-black-olive/85 pl-2">
                     {strongTopicsList.map((t, idx) => (
                       <li key={idx} className="flex items-center gap-1.5">
-                        <Check className="w-3 h-3 text-slate-gray" /> {t}
+                        <Check className="w-3.5 h-3.5 text-slate-gray" /> {t}
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-[11px] text-black-olive/60 italic">Complete more attempts to identify top mastery areas.</p>
+                  <p className="text-xs sm:text-sm text-black-olive/70 italic">Complete more attempts to identify top mastery areas.</p>
                 )}
               </div>
 
               {/* Needs Practice Card */}
               <div className="p-4 rounded-2xl bg-floral-white shadow-neu-pressed space-y-2">
-                <div className="flex items-center gap-2 font-bold text-xs text-black-olive">
+                <div className="flex items-center gap-2 font-bold text-sm text-black-olive">
                   <AlertCircle className="w-4 h-4 text-black-olive/70" />
                   <span>Needs Practice (&lt;70%):</span>
                 </div>
                 {weakTopicsList.length > 0 ? (
-                  <ul className="space-y-1 text-xs text-black-olive/80 pl-2">
+                  <ul className="space-y-1.5 text-sm text-black-olive/85 pl-2">
                     {weakTopicsList.map((t, idx) => (
                       <li key={idx} className="flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-slate-gray" /> {t}
+                        <span className="w-2 h-2 rounded-full bg-slate-gray" /> {t}
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-[11px] text-black-olive/60 italic">No significant weak areas identified in this level!</p>
+                  <p className="text-xs sm:text-sm text-black-olive/70 italic">No significant weak areas identified in this level!</p>
                 )}
               </div>
 
@@ -866,7 +861,7 @@ export const Practice: React.FC = () => {
                   resetRoundState();
                   setScreenMode('quiz');
                 }}
-                className="px-6 py-3 rounded-2xl bg-floral-white text-black-olive font-semibold text-xs shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-2"
+                className="px-6 py-3 rounded-2xl bg-floral-white text-black-olive font-semibold text-sm shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-2"
               >
                 <RotateCcw className="w-4 h-4" /> Retake {selectedLevel} Level
               </button>
@@ -875,7 +870,7 @@ export const Practice: React.FC = () => {
               {selectedLevel === 'beginner' && isLevelUnlocked('intermediate') && (
                 <button
                   onClick={handleUnlockAndProceedNextLevel}
-                  className="px-6 py-3 rounded-2xl bg-slate-gray text-floral-white font-semibold text-xs shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-2"
+                  className="px-6 py-3 rounded-2xl bg-slate-gray text-floral-white font-semibold text-sm shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-2"
                 >
                   <span>Proceed to Intermediate Level</span>
                   <ArrowRight className="w-4 h-4" />
@@ -885,7 +880,7 @@ export const Practice: React.FC = () => {
               {selectedLevel === 'intermediate' && isLevelUnlocked('advanced') && (
                 <button
                   onClick={handleUnlockAndProceedNextLevel}
-                  className="px-6 py-3 rounded-2xl bg-slate-gray text-floral-white font-semibold text-xs shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-2"
+                  className="px-6 py-3 rounded-2xl bg-slate-gray text-floral-white font-semibold text-sm shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-2"
                 >
                   <span>Proceed to Advanced Level</span>
                   <ArrowRight className="w-4 h-4" />
@@ -895,14 +890,14 @@ export const Practice: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsCertModalOpen(true)}
-                className="px-6 py-3 rounded-2xl bg-warm-gold text-deep-olive font-bold text-xs shadow-gold-glow hover:brightness-105 transition-all flex items-center gap-2"
+                className="px-6 py-3 rounded-2xl bg-warm-gold text-deep-olive font-bold text-sm shadow-gold-glow hover:brightness-105 transition-all flex items-center gap-2"
               >
                 <Award className="w-4 h-4" /> View Verified Certificate
               </button>
 
               <Link
                 to="/dashboard"
-                className="px-6 py-3 rounded-2xl bg-floral-white text-slate-gray font-semibold text-xs shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-2"
+                className="px-6 py-3 rounded-2xl bg-floral-white text-slate-gray font-semibold text-sm shadow-neu-raised hover:shadow-neu-pressed transition-all flex items-center gap-2"
               >
                 <TrendingUp className="w-4 h-4" /> View Platform Progress
               </Link>

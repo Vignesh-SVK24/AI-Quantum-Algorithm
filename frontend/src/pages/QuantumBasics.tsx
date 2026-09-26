@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   ArrowLeft, 
@@ -82,14 +82,14 @@ export const QuantumBasics: React.FC = () => {
           <div className="flex items-center gap-4">
             <Link 
               to="/" 
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-warm-ivory border border-soft-sand text-xs font-semibold text-black-olive shadow-sm hover:bg-soft-sand transition-all"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-warm-ivory border border-soft-sand text-sm font-semibold text-black-olive shadow-sm hover:bg-soft-sand transition-all"
             >
               <ArrowLeft className="w-3.5 h-3.5 text-warm-gold" /> Home
             </Link>
             <div className="w-1 h-4 rounded-full bg-soft-sand" />
             <div className="flex items-center gap-2">
               <BookOpen className="w-4 h-4 text-warm-gold" />
-              <span className="text-sm font-bold text-black-olive">Quantum Basics Curriculum</span>
+              <span className="text-base font-bold text-black-olive">Quantum Basics Curriculum</span>
             </div>
           </div>
 
@@ -97,7 +97,7 @@ export const QuantumBasics: React.FC = () => {
             {/* Language Switcher */}
             <div className="flex items-center gap-1 p-1 bg-warm-ivory/80 rounded-2xl border border-soft-sand shadow-sm">
               <div className="pl-1.5 pr-0.5 text-olive-mist">
-                <Languages className="w-3.5 h-3.5" />
+                <Languages className="w-4 h-4" />
               </div>
               {SUPPORTED_LANGUAGES.map((lang) => {
                 const isSelected = language === lang.code;
@@ -106,7 +106,7 @@ export const QuantumBasics: React.FC = () => {
                     key={lang.code}
                     type="button"
                     onClick={() => handleLanguageChange(lang.code)}
-                    className={`px-2.5 py-1 rounded-xl text-xs font-semibold transition-all ${
+                    className={`px-3 py-1 rounded-xl text-sm font-semibold transition-all ${
                       isSelected
                         ? 'bg-black-olive text-floral-white shadow-xs'
                         : 'text-black-olive/70 hover:text-black-olive hover:bg-white/60'
@@ -119,7 +119,7 @@ export const QuantumBasics: React.FC = () => {
               })}
             </div>
 
-            <span className="text-xs font-mono text-olive-mist px-3 py-1.5 rounded-2xl bg-warm-ivory border border-soft-sand font-medium">
+            <span className="text-xs sm:text-sm font-mono text-black-olive/80 px-3 py-1.5 rounded-2xl bg-warm-ivory border border-soft-sand font-semibold">
               Step {currentStep + 1} of {sections.length}
             </span>
           </div>
@@ -140,18 +140,18 @@ export const QuantumBasics: React.FC = () => {
                     setCurrentStep(idx);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
-                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-medium transition-all whitespace-nowrap ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-sm font-medium transition-all whitespace-nowrap ${
                     isActive
                       ? 'bg-black-olive text-floral-white shadow-md font-bold'
                       : isCompleted
                       ? 'bg-warm-ivory border border-soft-sand text-olive-mist hover:text-black-olive'
-                      : 'bg-[#FFFDF7] border border-soft-sand/70 text-black-olive/70 hover:bg-warm-ivory hover:text-black-olive shadow-sm'
+                      : 'bg-[#FFFDF7] border border-soft-sand/70 text-black-olive/75 hover:bg-warm-ivory hover:text-black-olive shadow-sm'
                   }`}
                 >
                   {isCompleted ? (
-                    <CheckCircle2 className="w-3.5 h-3.5 text-muted-sage" />
+                    <CheckCircle2 className="w-4 h-4 text-muted-sage" />
                   ) : (
-                    <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-warm-gold' : 'text-olive-mist'}`} />
+                    <Icon className={`w-4 h-4 ${isActive ? 'text-warm-gold' : 'text-olive-mist'}`} />
                   )}
                   <span className="hidden sm:inline">{sectionTrans.title}</span>
                   <span className="sm:hidden">{idx + 1}</span>
@@ -175,32 +175,32 @@ export const QuantumBasics: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-warm-gold" />
-                <h3 className="text-sm font-bold text-black-olive font-serif">
+                <h3 className="text-base font-bold text-black-olive font-serif">
                   {currentTranslation.title}
                 </h3>
               </div>
-              <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded-lg bg-soft-sand/60 text-olive-mist">
+              <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-soft-sand/70 text-black-olive/80">
                 {language === 'hi' ? 'हिन्दी अनुवाद' : 'தமிழ் வடிவம்'}
               </span>
             </div>
 
-            <p className="text-xs text-olive-mist font-medium italic">
+            <p className="text-sm text-black-olive/75 font-medium italic">
               {currentTranslation.tagline}
             </p>
 
-            <div className="space-y-2 text-xs text-black-olive/85 leading-relaxed font-sans">
+            <div className="space-y-2 text-sm text-black-olive/90 leading-relaxed font-sans">
               {currentTranslation.paragraphs.map((p, pIdx) => (
                 <p key={`p-${pIdx}`}>{p}</p>
               ))}
             </div>
 
             <div className="pt-2 border-t border-soft-sand/60">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-olive-mist block mb-1">
+              <span className="text-xs uppercase font-bold tracking-wider text-black-olive/70 block mb-1.5">
                 {language === 'hi' ? 'मुख्य बिंदु (Key Takeaways):' : 'முக்கிய கருத்துகள் (Key Takeaways):'}
               </span>
               <ul className="grid grid-cols-1 md:grid-cols-3 gap-2">
                 {currentTranslation.keyTakeaways.map((point, kIdx) => (
-                  <li key={`k-${kIdx}`} className="text-[11px] text-black-olive bg-white/70 p-2 rounded-xl border border-soft-sand/50 flex items-start gap-1.5">
+                  <li key={`k-${kIdx}`} className="text-xs sm:text-sm text-black-olive bg-white/70 p-2.5 rounded-xl border border-soft-sand/50 flex items-start gap-1.5">
                     <span className="text-warm-gold font-bold">•</span>
                     <span>{point}</span>
                   </li>
@@ -223,10 +223,10 @@ export const QuantumBasics: React.FC = () => {
         {/* Completion CTA */}
         {currentStep === sections.length - 1 && (
           <div className="mt-10 text-center p-8 rounded-3xl bg-black-olive text-floral-white shadow-xl border border-black-olive/40 max-w-xl mx-auto">
-            <p className="text-floral-white text-base font-bold mb-1">
+            <p className="text-floral-white text-lg font-bold mb-1.5">
               🎉 Congratulations on completing Quantum Basics!
             </p>
-            <p className="text-warm-ivory/80 text-xs mb-5">
+            <p className="text-warm-ivory/90 text-sm mb-5">
               You are ready to test these principles on live simulated circuits in the Quantum Lab.
             </p>
             <Link

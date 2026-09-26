@@ -504,14 +504,14 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
               >
                 {/* Tutor Status Header */}
                 {!isUser && (
-                  <div className="flex items-center justify-between pb-2 border-b border-soft-slate/30 text-[10px] text-soft-cyan">
+                  <div className="flex items-center justify-between pb-2.5 border-b border-soft-slate/30 text-xs text-soft-cyan">
                     <span className="flex items-center gap-1.5 font-mono font-semibold">
-                      <ShieldCheck className="w-3.5 h-3.5 text-muted-sage" />
+                      <ShieldCheck className="w-4 h-4 text-muted-sage" />
                       <span className="text-muted-sage">✓ Grounded &amp; Mathematically Verified</span>
                     </span>
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-2">
                       {m.provider && (
-                        <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full border shadow-sm ${
+                        <span className={`text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full border shadow-sm ${
                           m.provider === 'groq'
                             ? 'bg-amber-500/20 text-warm-gold border-amber-500/40'
                             : m.provider === 'gemini'
@@ -526,7 +526,7 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
                         </span>
                       )}
                       {m.classification && (
-                        <span className="text-warm-ivory/60 uppercase tracking-wider font-mono text-[9px] px-2 py-0.5 rounded bg-deep-slate/80 border border-soft-slate/30">
+                        <span className="text-warm-ivory/70 uppercase tracking-wider font-mono text-xs px-2.5 py-0.5 rounded bg-deep-slate/80 border border-soft-slate/30">
                           {m.classification.replace('_', ' ')}
                         </span>
                       )}
@@ -535,7 +535,7 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
                 )}
 
                 {/* Main Message Text */}
-                <div className="leading-relaxed font-sans break-words text-floral-white/95">
+                <div className="leading-relaxed font-sans break-words text-floral-white/95 text-sm sm:text-base">
                   {m.sender === 'user' ? (
                     <p className="whitespace-pre-wrap">{m.text}</p>
                   ) : (
@@ -545,15 +545,15 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
 
                 {/* Interactive Dynamic Practice Question Card */}
                 {m.practice_question && (
-                  <div className="p-4 rounded-2xl bg-deep-slate border border-soft-slate/40 space-y-3">
-                    <div className="flex items-center gap-2 text-xs font-bold text-soft-cyan">
+                  <div className="p-5 rounded-2xl bg-deep-slate border border-soft-slate/40 space-y-3.5">
+                    <div className="flex items-center gap-2 text-sm font-bold text-soft-cyan">
                       <HelpCircle className="w-4 h-4 text-soft-cyan" />
                       <span>Interactive Practice Question</span>
                     </div>
-                    <p className="text-xs text-warm-ivory font-medium">
+                    <p className="text-sm sm:text-base text-warm-ivory font-semibold leading-snug">
                       {m.practice_question.question}
                     </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
                       {m.practice_question.options.map((opt, oIdx) => {
                         const isSelected = practiceAnswers[m.id] === oIdx;
                         const isAnswered = practiceAnswers[m.id] !== undefined;
@@ -575,12 +575,12 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
                             key={oIdx}
                             disabled={isAnswered}
                             onClick={() => handlePracticeSelect(m.id, m.practice_question!, oIdx)}
-                            className={`p-3 rounded-xl text-left text-xs transition-all flex items-start gap-2 border ${btnStyle}`}
+                            className={`p-3.5 rounded-xl text-left text-sm transition-all flex items-start gap-2.5 border ${btnStyle}`}
                           >
-                            <span className="w-4 h-4 rounded-md bg-white/10 flex items-center justify-center text-[10px] font-bold flex-shrink-0">
+                            <span className="w-5 h-5 rounded-md bg-white/10 flex items-center justify-center text-xs font-bold flex-shrink-0">
                               {String.fromCharCode(65 + oIdx)}
                             </span>
-                            <span>{opt}</span>
+                            <span className="leading-snug">{opt}</span>
                           </button>
                         );
                       })}
@@ -588,12 +588,12 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
 
                     {/* Feedback result */}
                     {practiceFeedback[m.id] && (
-                      <div className="p-3.5 rounded-xl bg-slate-glow border border-soft-slate/40 text-xs space-y-1.5">
+                      <div className="p-4 rounded-xl bg-slate-glow border border-soft-slate/40 text-sm space-y-1.5">
                         <div className="font-bold flex items-center gap-1.5 text-warm-gold">
                           <Award className="w-4 h-4 text-warm-gold" />
                           <span>{practiceFeedback[m.id].correct ? 'Correct! (+5 Progress Score)' : 'Incorrect — Pedagogical Explanation:'}</span>
                         </div>
-                        <p className="text-[11px] text-warm-ivory/85 leading-relaxed">
+                        <p className="text-sm text-warm-ivory/90 leading-relaxed">
                           {practiceFeedback[m.id].explanation}
                         </p>
                       </div>
@@ -605,19 +605,19 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
                 {m.circuit_data && (
                   <div className="p-4 rounded-2xl bg-deep-slate border border-soft-slate/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div className="space-y-0.5">
-                      <div className="flex items-center gap-1.5 text-xs font-bold text-soft-cyan">
+                      <div className="flex items-center gap-1.5 text-sm font-bold text-soft-cyan">
                         <Layers className="w-4 h-4 text-soft-cyan" />
                         <span>Generated Circuit</span>
                       </div>
-                      <p className="text-[11px] text-warm-ivory/80 font-mono">
+                      <p className="text-xs sm:text-sm text-warm-ivory/80 font-mono">
                         {m.circuit_data.num_qubits} Qubits · {m.circuit_data.gates.length} Gates [{m.circuit_data.gates.map(g => g.type).join(', ')}]
                       </p>
                     </div>
                     <button
                       onClick={() => handleLoadCircuit(m.circuit_data)}
-                      className="px-4 py-2 rounded-xl bg-warm-gold text-deep-slate text-xs font-bold flex items-center gap-2 hover:bg-[#D4BA7F] transition-all shadow-sm flex-shrink-0"
+                      className="px-4 py-2 rounded-xl bg-warm-gold text-deep-slate text-sm font-bold flex items-center gap-2 hover:bg-[#D4BA7F] transition-all shadow-sm flex-shrink-0"
                     >
-                      <Layers className="w-3.5 h-3.5" />
+                      <Layers className="w-4 h-4" />
                       <span>Load into Circuit Builder</span>
                     </button>
                   </div>
@@ -627,28 +627,28 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
                 {m.qiskit_code && (
                   <div className="rounded-2xl bg-[#0f151e] border border-soft-slate/40 overflow-hidden">
                     <div className="px-4 py-2.5 bg-[#141b26] border-b border-soft-slate/30 flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-[10px] font-mono font-bold text-soft-cyan">
-                        <Code2 className="w-3.5 h-3.5 text-soft-cyan" />
+                      <div className="flex items-center gap-2 text-xs font-mono font-bold text-soft-cyan">
+                        <Code2 className="w-4 h-4 text-soft-cyan" />
                         <span>{m.qiskit_verified ? '✓ Verified with Qiskit 2.5' : 'Qiskit Python Code'}</span>
                       </div>
                       <button
                         onClick={() => handleCopyCode(m.qiskit_code!, m.id)}
-                        className="text-[11px] text-warm-ivory/70 hover:text-warm-ivory flex items-center gap-1.5 transition-colors"
+                        className="text-xs text-warm-ivory/80 hover:text-warm-ivory flex items-center gap-1.5 transition-colors font-semibold"
                       >
                         {copiedCodeId === m.id ? (
                           <>
-                            <Check className="w-3.5 h-3.5 text-muted-sage" />
+                            <Check className="w-4 h-4 text-muted-sage" />
                             <span className="text-muted-sage font-bold">Copied!</span>
                           </>
                         ) : (
                           <>
-                            <Copy className="w-3.5 h-3.5" />
+                            <Copy className="w-4 h-4" />
                             <span>Copy</span>
                           </>
                         )}
                       </button>
                     </div>
-                    <pre className="p-4 text-[11px] font-mono text-soft-cyan/95 overflow-x-auto leading-relaxed">
+                    <pre className="p-4 text-xs sm:text-sm font-mono text-soft-cyan/95 overflow-x-auto leading-relaxed">
                       <code>{m.qiskit_code}</code>
                     </pre>
                   </div>
@@ -722,9 +722,9 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
       </div>
 
       {/* Suggested Starter & Follow-up Chips */}
-      <div className="px-6 py-3 bg-deep-slate border-t border-soft-slate/30 overflow-x-auto">
+      <div className="px-6 py-3.5 bg-deep-slate border-t border-soft-slate/30 overflow-x-auto">
         <div className="flex items-center gap-2 pb-0.5">
-          <span className="text-[10px] uppercase font-bold tracking-wider text-warm-ivory/50 flex items-center gap-1 mr-1 flex-shrink-0">
+          <span className="text-xs uppercase font-bold tracking-wider text-warm-ivory/60 flex items-center gap-1 mr-1 flex-shrink-0">
             {messages.length > 1 ? 'Follow-ups:' : 'Prompts:'}
           </span>
           {messages.length > 1 && (
@@ -732,35 +732,35 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
               <button
                 onClick={() => handleSend('Give me another example')}
                 disabled={loading}
-                className="px-3.5 py-1.5 rounded-full bg-soft-cyan/15 border border-soft-cyan/40 hover:border-soft-cyan text-xs text-soft-cyan hover:text-floral-white hover:bg-soft-cyan/25 whitespace-nowrap transition-all flex items-center gap-1 disabled:opacity-40 shadow-sm"
+                className="px-4 py-2 rounded-full bg-soft-cyan/15 border border-soft-cyan/40 hover:border-soft-cyan text-sm text-soft-cyan hover:text-floral-white hover:bg-soft-cyan/25 whitespace-nowrap transition-all flex items-center gap-1.5 disabled:opacity-40 shadow-sm font-medium"
               >
                 <span>💡 Give me another example</span>
               </button>
               <button
                 onClick={() => handleSend('Explain this clearly in a structured breakdown')}
                 disabled={loading}
-                className="px-3.5 py-1.5 rounded-full bg-soft-cyan/15 border border-soft-cyan/40 hover:border-soft-cyan text-xs text-soft-cyan hover:text-floral-white hover:bg-soft-cyan/25 whitespace-nowrap transition-all flex items-center gap-1 disabled:opacity-40 shadow-sm"
+                className="px-4 py-2 rounded-full bg-soft-cyan/15 border border-soft-cyan/40 hover:border-soft-cyan text-sm text-soft-cyan hover:text-floral-white hover:bg-soft-cyan/25 whitespace-nowrap transition-all flex items-center gap-1.5 disabled:opacity-40 shadow-sm font-medium"
               >
                 <span>🔍 Explain clearly</span>
               </button>
               <button
                 onClick={() => handleSend('Explain this mathematically')}
                 disabled={loading}
-                className="px-3.5 py-1.5 rounded-full bg-slate-glow border border-soft-slate/40 hover:border-soft-cyan text-xs text-warm-ivory/80 hover:text-floral-white hover:bg-slate-glow/80 whitespace-nowrap transition-all flex items-center gap-1 disabled:opacity-40 shadow-sm"
+                className="px-4 py-2 rounded-full bg-slate-glow border border-soft-slate/40 hover:border-soft-cyan text-sm text-warm-ivory/90 hover:text-floral-white hover:bg-slate-glow/80 whitespace-nowrap transition-all flex items-center gap-1.5 disabled:opacity-40 shadow-sm font-medium"
               >
                 <span>📐 Explain mathematically</span>
               </button>
               <button
                 onClick={() => handleSend('Show me a circuit example')}
                 disabled={loading}
-                className="px-3.5 py-1.5 rounded-full bg-slate-glow border border-soft-slate/40 hover:border-soft-cyan text-xs text-warm-ivory/80 hover:text-floral-white hover:bg-slate-glow/80 whitespace-nowrap transition-all flex items-center gap-1 disabled:opacity-40 shadow-sm"
+                className="px-4 py-2 rounded-full bg-slate-glow border border-soft-slate/40 hover:border-soft-cyan text-sm text-warm-ivory/90 hover:text-floral-white hover:bg-slate-glow/80 whitespace-nowrap transition-all flex items-center gap-1.5 disabled:opacity-40 shadow-sm font-medium"
               >
                 <span>⚡ Circuit example</span>
               </button>
               <button
                 onClick={() => handleSend("Explain like I'm a beginner")}
                 disabled={loading}
-                className="px-3.5 py-1.5 rounded-full bg-slate-glow border border-soft-slate/40 hover:border-soft-cyan text-xs text-warm-ivory/80 hover:text-floral-white hover:bg-slate-glow/80 whitespace-nowrap transition-all flex items-center gap-1 disabled:opacity-40 shadow-sm"
+                className="px-4 py-2 rounded-full bg-slate-glow border border-soft-slate/40 hover:border-soft-cyan text-sm text-warm-ivory/90 hover:text-floral-white hover:bg-slate-glow/80 whitespace-nowrap transition-all flex items-center gap-1.5 disabled:opacity-40 shadow-sm font-medium"
               >
                 <span>🧸 Explain simply</span>
               </button>
@@ -771,7 +771,7 @@ export const GeminiChat: React.FC<GeminiChatProps> = ({ circuitContext, onLoadCi
               key={idx}
               onClick={() => handleSend(q)}
               disabled={loading}
-              className="px-3.5 py-1.5 rounded-full bg-slate-glow border border-soft-slate/40 hover:border-soft-cyan text-xs text-warm-ivory/80 hover:text-floral-white hover:bg-slate-glow/80 whitespace-nowrap transition-all flex items-center gap-1 disabled:opacity-40 shadow-sm"
+              className="px-4 py-2 rounded-full bg-slate-glow border border-soft-slate/40 hover:border-soft-cyan text-sm text-warm-ivory/90 hover:text-floral-white hover:bg-slate-glow/80 whitespace-nowrap transition-all flex items-center gap-1.5 disabled:opacity-40 shadow-sm font-medium"
             >
               <span>{q}</span>
             </button>

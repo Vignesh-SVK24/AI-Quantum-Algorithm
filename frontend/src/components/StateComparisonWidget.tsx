@@ -44,10 +44,10 @@ export const StateComparisonWidget: React.FC<StateComparisonWidgetProps> = ({
   return (
     <div className="p-4 rounded-2xl bg-[#FFFDF7] border border-soft-sand space-y-3.5 shadow-sm">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-bold text-black-olive uppercase tracking-wider flex items-center gap-1.5">
-          <Sparkles className="w-3.5 h-3.5 text-warm-gold" /> State Transformation
+        <span className="text-sm font-bold text-black-olive uppercase tracking-wider flex items-center gap-1.5">
+          <Sparkles className="w-4 h-4 text-warm-gold" /> State Transformation
         </span>
-        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-warm-ivory border border-soft-sand text-black-olive">
+        <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-warm-ivory border border-soft-sand text-black-olive">
           {stateTag}
         </span>
       </div>
@@ -55,49 +55,49 @@ export const StateComparisonWidget: React.FC<StateComparisonWidgetProps> = ({
       <div className="grid grid-cols-[1fr,auto,1fr] gap-2.5 items-center">
         {/* BEFORE CARD */}
         <div className="bg-warm-ivory/60 border border-soft-sand p-3.5 rounded-2xl space-y-2 shadow-sm">
-          <div className="flex items-center justify-between text-[10px] font-bold text-black-olive/80">
+          <div className="flex items-center justify-between text-xs font-bold text-black-olive">
             <span>BEFORE</span>
-            <span className="text-olive-mist text-[9px] flex items-center gap-1">
-              <CheckCircle2 className="w-3 h-3 text-muted-sage" /> Ground
+            <span className="text-olive-mist text-xs flex items-center gap-1">
+              <CheckCircle2 className="w-3.5 h-3.5 text-muted-sage" /> Ground
             </span>
           </div>
 
           <div className="text-center py-1">
-            <div className="text-base font-bold font-mono text-black-olive">{initialStateBasis}</div>
-            <div className="text-[10px] text-olive-mist mt-0.5">100% Probability</div>
+            <div className="text-base sm:text-lg font-bold font-mono text-black-olive">{initialStateBasis}</div>
+            <div className="text-xs text-olive-mist mt-0.5 font-medium">100% Probability</div>
           </div>
 
-          <div className="h-2 bg-floral-white border border-soft-sand rounded-full overflow-hidden p-0.5">
+          <div className="h-2.5 bg-floral-white border border-soft-sand rounded-full overflow-hidden p-0.5">
             <div className="h-full bg-slate-glow rounded-full w-full" />
           </div>
-          <div className="text-[9px] text-olive-mist text-center font-mono">
+          <div className="text-xs text-olive-mist text-center font-mono font-medium">
             P({initialStateBasis}) = 1.000
           </div>
         </div>
 
         {/* TRANSFORMATION ARROW */}
         <div className="flex flex-col items-center justify-center py-1">
-          <div className="w-7 h-7 rounded-xl bg-warm-ivory border border-soft-sand flex items-center justify-center text-black-olive shadow-sm">
-            <ArrowRight className="w-3.5 h-3.5 text-warm-gold" />
+          <div className="w-8 h-8 rounded-xl bg-warm-ivory border border-soft-sand flex items-center justify-center text-black-olive shadow-sm">
+            <ArrowRight className="w-4 h-4 text-warm-gold" />
           </div>
-          <span className="text-[9px] font-mono text-olive-mist mt-1">{numGates} gate{numGates === 1 ? '' : 's'}</span>
+          <span className="text-xs font-mono text-olive-mist mt-1 font-semibold">{numGates} gate{numGates === 1 ? '' : 's'}</span>
         </div>
 
         {/* AFTER CARD */}
         <div className="bg-warm-ivory/60 border border-soft-sand p-3.5 rounded-2xl space-y-2 shadow-sm">
-          <div className="flex items-center justify-between text-[10px] font-bold text-black-olive/80">
+          <div className="flex items-center justify-between text-xs font-bold text-black-olive">
             <span>AFTER</span>
-            <span className="text-olive-mist text-[9px] font-mono">{nonZeroStates.length} Active</span>
+            <span className="text-olive-mist text-xs font-mono font-semibold">{nonZeroStates.length} Active</span>
           </div>
 
           <div className="space-y-2 py-0.5">
             {nonZeroStates.slice(0, 3).map(([basis, prob]) => (
               <div key={basis} className="space-y-0.5">
-                <div className="flex justify-between text-[10px] font-mono">
+                <div className="flex justify-between text-xs font-mono">
                   <span className="text-black-olive font-bold">{basis}</span>
-                  <span className="text-olive-mist font-semibold">{(prob * 100).toFixed(1)}%</span>
+                  <span className="text-black-olive font-semibold">{(prob * 100).toFixed(1)}%</span>
                 </div>
-                <div className="h-2 bg-floral-white border border-soft-sand rounded-full overflow-hidden p-0.5">
+                <div className="h-2.5 bg-floral-white border border-soft-sand rounded-full overflow-hidden p-0.5">
                   <div
                     className="h-full bg-slate-glow rounded-full transition-all duration-300"
                     style={{ width: `${prob * 100}%` }}
@@ -106,7 +106,7 @@ export const StateComparisonWidget: React.FC<StateComparisonWidgetProps> = ({
               </div>
             ))}
             {nonZeroStates.length > 3 && (
-              <div className="text-[9px] text-olive-mist text-right">
+              <div className="text-xs text-olive-mist text-right font-medium">
                 +{nonZeroStates.length - 3} more...
               </div>
             )}
@@ -114,8 +114,8 @@ export const StateComparisonWidget: React.FC<StateComparisonWidgetProps> = ({
         </div>
       </div>
 
-      <div className="text-[11px] text-black-olive bg-warm-ivory border border-soft-sand p-3 rounded-xl flex items-start gap-2">
-        <div className="w-1.5 h-1.5 rounded-full bg-warm-gold mt-1.5 flex-shrink-0" />
+      <div className="text-xs sm:text-sm text-black-olive/90 bg-warm-ivory border border-soft-sand p-3 rounded-xl flex items-start gap-2">
+        <div className="w-1.5 h-1.5 rounded-full bg-warm-gold mt-2 flex-shrink-0" />
         <span className="leading-relaxed">{stateDesc}</span>
       </div>
     </div>

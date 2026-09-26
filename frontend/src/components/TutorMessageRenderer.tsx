@@ -282,28 +282,28 @@ const FormattedTextChunk: React.FC<{ text: string }> = ({ text }) => {
         // Heading hierarchy
         if (trimmed.startsWith('#### ')) {
           return (
-            <h5 key={cIdx} className="text-[11px] font-bold text-[#C5A86A] mt-2 mb-0.5 tracking-tight flex items-center gap-1.5">
+            <h5 key={cIdx} className="text-sm font-bold text-[#C5A86A] mt-2.5 mb-1 tracking-tight flex items-center gap-1.5">
               <span>{renderInlineFormatting(trimmed.replace(/^####\s*/, ''))}</span>
             </h5>
           );
         }
         if (trimmed.startsWith('### ')) {
           return (
-            <h4 key={cIdx} className="text-xs font-bold text-[#C5A86A] mt-2.5 mb-0.5 tracking-tight flex items-center gap-1.5">
+            <h4 key={cIdx} className="text-sm sm:text-base font-bold text-[#C5A86A] mt-3 mb-1 tracking-tight flex items-center gap-1.5">
               <span>{renderInlineFormatting(trimmed.replace(/^###\s*/, ''))}</span>
             </h4>
           );
         }
         if (trimmed.startsWith('## ')) {
           return (
-            <h3 key={cIdx} className="text-sm font-extrabold text-floral-white mt-3 mb-1 tracking-tight">
+            <h3 key={cIdx} className="text-base sm:text-lg font-extrabold text-floral-white mt-3.5 mb-1.5 tracking-tight">
               {renderInlineFormatting(trimmed.replace(/^##\s*/, ''))}
             </h3>
           );
         }
         if (trimmed.startsWith('# ')) {
           return (
-            <h2 key={cIdx} className="text-base font-black text-floral-white mt-3 mb-1.5 tracking-tight">
+            <h2 key={cIdx} className="text-lg sm:text-xl font-black text-floral-white mt-4 mb-2 tracking-tight">
               {renderInlineFormatting(trimmed.replace(/^#\s*/, ''))}
             </h2>
           );
@@ -312,7 +312,7 @@ const FormattedTextChunk: React.FC<{ text: string }> = ({ text }) => {
         // Blockquotes (> Note:)
         if (trimmed.startsWith('> ')) {
           return (
-            <div key={cIdx} className="pl-3 py-1 my-1 border-l-2 border-[#C5A86A] bg-white/5 rounded-r-lg text-[11px] text-warm-ivory/85 leading-relaxed">
+            <div key={cIdx} className="pl-3.5 py-1.5 my-1.5 border-l-2 border-[#C5A86A] bg-white/5 rounded-r-lg text-sm text-warm-ivory/90 leading-relaxed">
               {renderInlineFormatting(trimmed.replace(/^>\s*/, ''))}
             </div>
           );
@@ -322,9 +322,9 @@ const FormattedTextChunk: React.FC<{ text: string }> = ({ text }) => {
         if (/^[-*]\s+/.test(trimmed)) {
           const itemText = trimmed.replace(/^[-*]\s+/, '');
           return (
-            <div key={cIdx} className="flex items-start gap-2 pl-1 text-xs">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#C5A86A] mt-1.5 shrink-0" />
-              <div className="flex-1 leading-relaxed">{renderInlineFormatting(itemText)}</div>
+            <div key={cIdx} className="flex items-start gap-2.5 pl-1 text-sm sm:text-base">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#C5A86A] mt-2 shrink-0" />
+              <div className="flex-1 leading-relaxed text-floral-white/95">{renderInlineFormatting(itemText)}</div>
             </div>
           );
         }
@@ -334,11 +334,11 @@ const FormattedTextChunk: React.FC<{ text: string }> = ({ text }) => {
           const match = trimmed.match(/^(Step\s+\d+:|\d+\.)\s+(.*)$/i);
           if (match) {
             return (
-              <div key={cIdx} className="flex items-start gap-2 pl-0.5 mt-1 text-xs">
-                <span className="px-1.5 py-0.5 rounded-md bg-[#C5A86A]/20 text-[#C5A86A] font-mono text-[10px] font-bold shrink-0 border border-[#C5A86A]/30">
+              <div key={cIdx} className="flex items-start gap-2 pl-0.5 mt-1.5 text-sm sm:text-base">
+                <span className="px-2 py-0.5 rounded-md bg-[#C5A86A]/20 text-[#C5A86A] font-mono text-xs font-bold shrink-0 border border-[#C5A86A]/30">
                   {match[1].replace(':', '')}
                 </span>
-                <div className="flex-1 pt-0.5 leading-relaxed">{renderInlineFormatting(match[2])}</div>
+                <div className="flex-1 pt-0.5 leading-relaxed text-floral-white/95">{renderInlineFormatting(match[2])}</div>
               </div>
             );
           }
@@ -346,7 +346,7 @@ const FormattedTextChunk: React.FC<{ text: string }> = ({ text }) => {
 
         // Regular paragraph line
         return (
-          <p key={cIdx} className="leading-relaxed">
+          <p key={cIdx} className="leading-relaxed text-sm sm:text-base text-floral-white/95">
             {renderInlineFormatting(trimmed)}
           </p>
         );
@@ -362,14 +362,14 @@ const MarkdownTable: React.FC<{ rows: string[][] }> = ({ rows }) => {
   const body = rows.slice(1);
 
   return (
-    <div className="my-2.5 overflow-x-auto rounded-lg border border-white/10 bg-[#121924]/80 shadow-sm">
-      <table className="min-w-full divide-y divide-white/10 text-left text-[11px]">
+    <div className="my-3 overflow-x-auto rounded-xl border border-white/10 bg-[#121924]/80 shadow-sm">
+      <table className="min-w-full divide-y divide-white/10 text-left text-sm">
         <thead className="bg-[#17202E]">
           <tr>
             {header.map((col, hIdx) => (
               <th
                 key={hIdx}
-                className="px-2.5 py-1.5 font-semibold text-[#C5A86A] tracking-wider uppercase text-[10px]"
+                className="px-3.5 py-2 font-semibold text-[#C5A86A] tracking-wider uppercase text-xs"
               >
                 {renderInlineFormatting(col)}
               </th>
@@ -380,7 +380,7 @@ const MarkdownTable: React.FC<{ rows: string[][] }> = ({ rows }) => {
           {body.map((row, rIdx) => (
             <tr key={rIdx} className="hover:bg-white/5 transition-colors">
               {row.map((cell, cIdx) => (
-                <td key={cIdx} className="px-2.5 py-1.5 text-floral-white/90">
+                <td key={cIdx} className="px-3.5 py-2 text-floral-white/90">
                   {renderInlineFormatting(cell)}
                 </td>
               ))}
@@ -409,7 +409,7 @@ function renderInlineFormatting(lineText: string): React.ReactNode[] {
     if (part.startsWith('`') && part.endsWith('`')) {
       const codeText = part.slice(1, -1);
       return (
-        <code key={i} className="px-1 py-0.5 mx-0.5 rounded bg-black/40 border border-white/10 font-mono text-[11px] text-emerald-300">
+        <code key={i} className="px-1.5 py-0.5 mx-0.5 rounded bg-black/40 border border-white/10 font-mono text-xs sm:text-sm text-emerald-300 font-medium">
           {codeText}
         </code>
       );

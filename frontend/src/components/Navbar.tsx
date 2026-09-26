@@ -83,14 +83,14 @@ export const Navbar: React.FC = () => {
               <span className="font-bold tracking-tight text-black-olive flex items-center gap-1 text-base sm:text-lg">
                 Quantum<span className="text-olive-mist font-medium">Platform</span>
               </span>
-              <span className="text-[10px] uppercase tracking-widest text-olive-mist font-mono -mt-1">
+              <span className="text-xs uppercase tracking-widest text-olive-mist font-semibold -mt-0.5">
                 Interactive Learning
               </span>
             </div>
           </Link>
 
           {/* Desktop Nav Links */}
-          <nav className="hidden lg:flex items-center gap-1 bg-warm-ivory/60 p-1 rounded-2xl border border-soft-sand/60">
+          <nav className="hidden lg:flex items-center gap-1 bg-warm-ivory/60 p-1.5 rounded-2xl border border-soft-sand/60">
             {navLinks.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
@@ -98,13 +98,13 @@ export const Navbar: React.FC = () => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
+                  className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-sm font-semibold transition-all ${
                     isActive
                       ? 'bg-black-olive text-floral-white shadow-sm'
-                      : 'text-black-olive/75 hover:text-black-olive hover:bg-warm-ivory'
+                      : 'text-black-olive/80 hover:text-black-olive hover:bg-warm-ivory'
                   }`}
                 >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-warm-gold' : 'text-olive-mist'}`} />
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-warm-gold' : 'text-olive-mist'}`} />
                   {item.name}
                   {isActive && <span className="w-1.5 h-1.5 rounded-full bg-warm-gold ml-0.5" />}
                 </Link>
@@ -118,9 +118,9 @@ export const Navbar: React.FC = () => {
               type="button"
               onClick={() => window.dispatchEvent(new CustomEvent('quantum:start-tour'))}
               title="Interactive Platform Tour"
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-warm-ivory border border-soft-sand text-black-olive text-xs font-semibold shadow-sm hover:bg-soft-sand transition-all"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-warm-ivory border border-soft-sand text-black-olive text-sm font-semibold shadow-sm hover:bg-soft-sand transition-all"
             >
-              <Sparkles className="w-3.5 h-3.5 text-warm-gold" />
+              <Sparkles className="w-4 h-4 text-warm-gold" />
               Tour
             </button>
 
@@ -174,7 +174,7 @@ export const Navbar: React.FC = () => {
                           {profile?.full_name || (isGuest ? 'Guest Scholar' : 'Student')}
                         </div>
                         {profile?.email && (
-                          <div className="text-[11px] text-olive-mist truncate" title={profile.email}>
+                          <div className="text-xs text-olive-mist truncate" title={profile.email}>
                             {profile.email}
                           </div>
                         )}
@@ -183,10 +183,10 @@ export const Navbar: React.FC = () => {
 
                     {/* Type of Login */}
                     <div className="py-2.5 px-1 space-y-1">
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-olive-mist block">
+                      <span className="text-xs uppercase font-bold tracking-wider text-olive-mist block">
                         Type of Login
                       </span>
-                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-warm-ivory border border-soft-sand text-xs font-medium text-black-olive">
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-warm-ivory border border-soft-sand text-xs font-semibold text-black-olive">
                         <span className={`w-2 h-2 rounded-full ${isGuest ? 'bg-amber-400' : 'bg-warm-gold'}`} />
                         {getLoginTypeLabel(profile?.auth_provider, isGuest)}
                       </div>
@@ -197,9 +197,9 @@ export const Navbar: React.FC = () => {
                       <Link
                         to="/dashboard"
                         onClick={() => setProfileMenuOpen(false)}
-                        className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-black-olive hover:bg-warm-ivory transition-all"
+                        className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-black-olive hover:bg-warm-ivory transition-all"
                       >
-                        <LayoutDashboard className="w-3.5 h-3.5 text-olive-mist" />
+                        <LayoutDashboard className="w-4 h-4 text-olive-mist" />
                         Student Dashboard
                       </Link>
 
@@ -209,9 +209,9 @@ export const Navbar: React.FC = () => {
                           setProfileMenuOpen(false);
                           signOut();
                         }}
-                        className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-cocoa-noir hover:bg-rose-50 hover:text-red-700 transition-all text-left cursor-pointer"
+                        className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold text-cocoa-noir hover:bg-rose-50 hover:text-red-700 transition-all text-left cursor-pointer"
                       >
-                        <LogOut className="w-3.5 h-3.5" />
+                        <LogOut className="w-4 h-4" />
                         Sign Out
                       </button>
                     </div>
@@ -221,9 +221,9 @@ export const Navbar: React.FC = () => {
             ) : (
               <Link
                 to="/login"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-warm-ivory border border-soft-sand text-black-olive text-xs font-semibold shadow-sm hover:bg-soft-sand transition-all"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-warm-ivory border border-soft-sand text-black-olive text-sm font-semibold shadow-sm hover:bg-soft-sand transition-all"
               >
-                <LogIn className="w-3.5 h-3.5 text-warm-gold" />
+                <LogIn className="w-4 h-4 text-warm-gold" />
                 Login
               </Link>
             )}

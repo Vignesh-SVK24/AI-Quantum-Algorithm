@@ -52,9 +52,9 @@ export const LandingPage: React.FC = () => {
             
             {/* Left Column: Copy & CTAs */}
             <div className="lg:col-span-6 space-y-6 text-left">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-warm-ivory border border-soft-sand text-xs font-mono text-black-olive shadow-sm">
-                <span className="w-2 h-2 rounded-full bg-warm-gold animate-pulse" />
-                <span className="tracking-widest uppercase text-[11px] font-semibold text-olive-mist">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-warm-ivory border border-soft-sand text-xs font-mono text-black-olive shadow-sm">
+                <span className="w-2.5 h-2.5 rounded-full bg-warm-gold animate-pulse" />
+                <span className="tracking-wider uppercase text-xs font-semibold text-black-olive/80">
                   Your Quantum Learning Journey
                 </span>
               </div>
@@ -64,9 +64,9 @@ export const LandingPage: React.FC = () => {
                 <span className="text-olive-mist font-serif italic">Quantum World</span>
               </h1>
 
-              <p className="text-base sm:text-lg text-black-olive/80 font-normal leading-relaxed max-w-xl">
+              <p className="text-base sm:text-lg text-black-olive/90 font-normal leading-relaxed max-w-xl">
                 Master quantum concepts, algorithms, circuits, and practical quantum thinking. 
-                Follow our proven <span className="font-semibold text-black-olive">Learn → Build → Simulate → Visualize → Understand</span> pathway 
+                Follow our proven <span className="font-semibold text-black-olive">Learn → Build → Simulate → Understand</span> pathway 
                 grounded in live Qiskit simulation and interactive exploration.
               </p>
 
@@ -112,30 +112,30 @@ export const LandingPage: React.FC = () => {
               </div>
 
               {/* Credibility / Badges */}
-              <div className="pt-3 flex flex-wrap items-center gap-6 text-xs text-olive-mist">
-                <div className="flex items-center gap-1.5">
+              <div className="pt-3 flex flex-wrap items-center gap-6 text-sm text-black-olive/80 font-medium">
+                <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-muted-sage" />
                   <span>Exact Qiskit Simulator</span>
                 </div>
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-muted-sage" />
-                  <span>No Hardware Setup Required</span>
+                  <span>No Setup Required</span>
                 </div>
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-muted-sage" />
-                  <span>Bloch &amp; Statevector Visuals</span>
+                  <span>Interactive 3D Visuals</span>
                 </div>
               </div>
             </div>
 
             {/* Right Column: Live Interactive Bloch Demo */}
             <div className="lg:col-span-6 space-y-3">
-              <div className="text-xs font-mono text-olive-mist flex items-center justify-between px-1">
+              <div className="text-sm font-semibold text-black-olive flex items-center justify-between px-1">
                 <span className="flex items-center gap-1.5">
-                  <Cpu className="w-3.5 h-3.5 text-warm-gold" />
-                  INTERACTIVE QUANTUM TESTBENCH
+                  <Cpu className="w-4 h-4 text-warm-gold" />
+                  Interactive Circuit Preview
                 </span>
-                <span className="text-deep-olive font-semibold text-[11px] bg-warm-ivory px-2 py-0.5 rounded border border-soft-sand">
+                <span className="text-deep-olive font-semibold text-xs bg-warm-ivory px-2.5 py-1 rounded-lg border border-soft-sand">
                   Live 3D Statevector
                 </span>
               </div>
@@ -152,15 +152,14 @@ export const LandingPage: React.FC = () => {
       <section className="py-16 bg-warm-ivory/40 border-y border-soft-sand/70">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12 space-y-3">
-            <h2 className="text-xs font-mono tracking-widest text-olive-mist uppercase font-semibold">
-              Pedagogical Methodology
+            <h2 className="text-sm font-semibold tracking-wider text-olive-mist uppercase">
+              How You'll Learn
             </h2>
             <p className="text-2xl sm:text-3xl font-bold text-black-olive">
-              The 5-Stage Framework for Quantum Intuition
+              A Clear, Visual Path from Beginner to Builder
             </p>
-            <p className="text-black-olive/75 text-sm leading-relaxed">
-              Traditional linear algebra courses overwhelm learners with formal matrix math. 
-              Our platform grounds every equation in tangible circuit operations and instant visual feedback.
+            <p className="text-black-olive/85 text-base leading-relaxed">
+              Learn quantum computing through interactive visual circuits, instant simulation feedback, and guided AI explanations.
             </p>
           </div>
 
@@ -179,8 +178,8 @@ export const LandingPage: React.FC = () => {
                       <ChevronRight className="w-4 h-4 text-soft-sand hidden md:block" />
                     )}
                   </div>
-                  <h3 className="text-base font-bold text-black-olive mb-1.5">{step.title}</h3>
-                  <p className="text-xs text-black-olive/70 leading-relaxed">{step.desc}</p>
+                  <h3 className="text-lg font-bold text-black-olive mb-1.5">{step.title}</h3>
+                  <p className="text-sm text-black-olive/80 leading-relaxed">{step.desc}</p>
                 </div>
               </div>
             ))}
@@ -193,7 +192,7 @@ export const LandingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
             <div>
-              <h2 className="text-xs font-mono tracking-widest text-olive-mist uppercase font-semibold mb-2">
+              <h2 className="text-sm font-semibold tracking-wider text-olive-mist uppercase mb-2">
                 Core Modules
               </h2>
               <p className="text-2xl sm:text-3xl font-bold text-black-olive">
@@ -202,9 +201,9 @@ export const LandingPage: React.FC = () => {
             </div>
             <Link 
               to="/lab" 
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-black-olive hover:text-deep-olive hover:underline transition-colors"
+              className="inline-flex items-center gap-1.5 text-sm font-bold text-black-olive hover:text-deep-olive hover:underline transition-colors"
             >
-              Explore all modules <ArrowRight className="w-3.5 h-3.5" />
+              Explore all modules <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
@@ -216,7 +215,7 @@ export const LandingPage: React.FC = () => {
                   <FlaskConical className="w-6 h-6 text-soft-cyan" />
                 </div>
                 <h3 className="text-xl font-bold text-black-olive">Quantum Lab</h3>
-                <p className="text-xs text-black-olive/70 leading-relaxed">
+                <p className="text-sm text-black-olive/85 leading-relaxed">
                   Drag-and-drop quantum circuit workbench. Place Hadamard, Pauli, Phase, and entangling CNOT gates 
                   with real-time statevector evolution and 3D Bloch sphere projections.
                 </p>
@@ -224,9 +223,9 @@ export const LandingPage: React.FC = () => {
               <div className="pt-6">
                 <Link 
                   to="/lab" 
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-warm-ivory border border-soft-sand text-black-olive font-semibold text-xs hover:bg-soft-sand transition-all"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-warm-ivory border border-soft-sand text-black-olive font-bold text-sm hover:bg-soft-sand transition-all"
                 >
-                  Enter Circuit Lab <ArrowRight className="w-3.5 h-3.5" />
+                  Enter Circuit Lab <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
             </div>
@@ -239,21 +238,20 @@ export const LandingPage: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <h3 className="text-xl font-bold text-floral-white">AI Quantum Tutor</h3>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-soft-cyan/20 text-soft-cyan border border-soft-cyan/30">
+                  <span className="text-xs font-semibold px-2.5 py-1 rounded bg-soft-cyan/20 text-soft-cyan border border-soft-cyan/30">
                     Dual Engine
                   </span>
                 </div>
-                <p className="text-xs text-floral-white/80 leading-relaxed">
-                  Context-aware tutor powered by Gemini and backed by the 55-topic local database. 
-                  Explains probability amplitudes, Dirac bra-ket formalism, and scientific distinctions.
+                <p className="text-sm text-floral-white/90 leading-relaxed">
+                  Ask any quantum question. Get instant, mathematically grounded explanations, Dirac notation breakdowns, and circuit examples.
                 </p>
               </div>
               <div className="pt-6">
                 <Link 
                   to="/tutor" 
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-deep-slate text-soft-cyan border border-soft-cyan/30 font-semibold text-xs hover:bg-soft-cyan hover:text-deep-slate transition-all"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-deep-slate text-soft-cyan border border-soft-cyan/30 font-bold text-sm hover:bg-soft-cyan hover:text-deep-slate transition-all"
                 >
-                  Consult AI Tutor <ArrowRight className="w-3.5 h-3.5" />
+                  Consult AI Tutor <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
             </div>
@@ -266,21 +264,20 @@ export const LandingPage: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <h3 className="text-xl font-bold text-floral-white">Practice Arena</h3>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-warm-gold/20 text-warm-gold border border-warm-gold/30">
+                  <span className="text-xs font-semibold px-2.5 py-1 rounded bg-warm-gold/20 text-warm-gold border border-warm-gold/30">
                     3 Levels
                   </span>
                 </div>
-                <p className="text-xs text-floral-white/80 leading-relaxed">
-                  Master quantum concepts through a 3-level progressive system: 9 rounds, 90 curated questions, 
-                  with a 70% passing threshold and immediate scientific feedback.
+                <p className="text-sm text-floral-white/90 leading-relaxed">
+                  Test your intuition across 3 progressive difficulty levels with instant feedback, step-by-step solutions, and progress tracking.
                 </p>
               </div>
               <div className="pt-6">
                 <Link 
                   to="/practice" 
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-deep-olive text-warm-gold border border-warm-gold/30 font-semibold text-xs hover:bg-warm-gold hover:text-deep-olive transition-all"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-deep-olive text-warm-gold border border-warm-gold/30 font-bold text-sm hover:bg-warm-gold hover:text-deep-olive transition-all"
                 >
-                  Enter Practice <ArrowRight className="w-3.5 h-3.5" />
+                  Enter Practice <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
             </div>
@@ -297,15 +294,15 @@ export const LandingPage: React.FC = () => {
             <div className="absolute -left-16 -top-16 w-64 h-64 rounded-full border border-soft-cyan/15 pointer-events-none" />
 
             <div className="relative z-10 space-y-4">
-              <span className="text-xs font-mono tracking-widest text-warm-gold uppercase font-semibold">
+              <span className="text-sm font-bold tracking-wider text-warm-gold uppercase">
                 Start Building Now
               </span>
               <h2 className="text-2xl sm:text-4xl font-bold text-floral-white tracking-tight">
                 Ready to construct your first quantum superposition?
               </h2>
-              <p className="text-floral-white/75 text-sm max-w-xl mx-auto leading-relaxed">
+              <p className="text-floral-white/90 text-base max-w-xl mx-auto leading-relaxed">
                 Initialize your qubit in $|0\rangle$, apply the Hadamard transformation, and inspect 
-                the resulting statevector $(|0\rangle + |1\rangle)/\sqrt{2}$ in real time.
+                the resulting statevector in real time.
               </p>
               <div className="pt-3">
                 <Link

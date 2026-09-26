@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Bot, ArrowLeft, Sparkles, Layers, Cpu, Compass, BookOpen, Zap, ShieldAlert } from 'lucide-react';
+import { Bot, ArrowLeft, Sparkles, Layers, Cpu, Compass, BookOpen, Zap } from 'lucide-react';
 import { AITutorPanel } from '../components/AITutorPanel';
 import { GeminiChat } from '../components/GeminiChat';
 import { type TutorContext } from '../services/api';
@@ -124,23 +124,23 @@ export const AITutor: React.FC = () => {
           <div className="space-y-2">
             <Link 
               to="/" 
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-warm-ivory border border-soft-sand text-xs font-semibold text-black-olive hover:bg-soft-sand transition-all shadow-sm"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-warm-ivory border border-soft-sand text-sm font-semibold text-black-olive hover:bg-soft-sand transition-all shadow-sm"
             >
-              <ArrowLeft className="w-3.5 h-3.5 text-olive-mist" /> Back to Home
+              <ArrowLeft className="w-4 h-4 text-olive-mist" /> Back to Home
             </Link>
             <div className="flex items-center gap-3 pt-1">
-              <div className="w-11 h-11 rounded-2xl bg-slate-glow text-soft-cyan border border-soft-cyan/30 shadow-md flex items-center justify-center">
-                <Bot className="w-6 h-6" />
+              <div className="w-12 h-12 rounded-2xl bg-slate-glow text-soft-cyan border border-soft-cyan/30 shadow-md flex items-center justify-center">
+                <Bot className="w-7 h-7" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] uppercase font-mono tracking-widest px-2.5 py-0.5 rounded-full bg-muted-sage/20 text-black-olive font-bold border border-muted-sage/40">
-                    Grounded Dirac Assistant
+                  <span className="text-xs uppercase font-mono tracking-wider px-3 py-1 rounded-full bg-muted-sage/20 text-black-olive font-bold border border-muted-sage/40">
+                    AI Quantum Assistant
                   </span>
                 </div>
-                <h1 className="text-2xl sm:text-3xl font-bold font-serif text-black-olive tracking-tight">AI Quantum Teaching Assistant</h1>
-                <p className="text-xs text-olive-mist">
-                  Powered by Google Gemini &amp; Groq with Qiskit simulation grounding and scientifically verified explanations
+                <h1 className="text-2xl sm:text-3xl font-bold font-serif text-black-olive tracking-tight mt-0.5">AI Quantum Teaching Assistant</h1>
+                <p className="text-sm text-black-olive/80 font-medium">
+                  Ask questions, explore quantum circuits, and get instant verified explanations.
                 </p>
               </div>
             </div>
@@ -150,31 +150,31 @@ export const AITutor: React.FC = () => {
           <div className="flex items-center bg-black-olive p-1.5 rounded-2xl shadow-md border border-black-olive/40 self-start md:self-auto">
             <button
               onClick={() => setActiveTab('chat')}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${
                 activeTab === 'chat'
                   ? 'bg-slate-glow text-soft-cyan border border-soft-cyan/40 shadow-sm'
-                  : 'text-warm-ivory/70 hover:text-warm-ivory'
+                  : 'text-warm-ivory/80 hover:text-warm-ivory'
               }`}
             >
-              <Zap className="w-3.5 h-3.5 text-warm-gold" />
+              <Zap className="w-4 h-4 text-warm-gold" />
               <span>Interactive Tutor Chat</span>
               <span className="w-2 h-2 rounded-full bg-soft-cyan shadow-sm" />
             </button>
             <button
               onClick={() => setActiveTab('circuit')}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${
                 activeTab === 'circuit'
                   ? 'bg-slate-glow text-soft-cyan border border-soft-cyan/40 shadow-sm'
-                  : 'text-warm-ivory/70 hover:text-warm-ivory'
+                  : 'text-warm-ivory/80 hover:text-warm-ivory'
               }`}
             >
-              <BookOpen className="w-3.5 h-3.5 text-muted-sage" />
+              <BookOpen className="w-4 h-4 text-muted-sage" />
               <span>Circuit Context Assistant</span>
             </button>
           </div>
         </div>
 
-        {/* Tab 1: Gemini Flash Direct AI Chat */}
+        {/* Tab 1: Gemini & Groq Direct AI Chat */}
         {activeTab === 'chat' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* About Card with AI Tutor Video (Order 2 on mobile, Col-span-4 on desktop) */}
@@ -182,17 +182,17 @@ export const AITutor: React.FC = () => {
               {/* About Card (Light Surface #FFFDF7) */}
               <div className="p-5 sm:p-6 rounded-3xl bg-[#FFFDF7] border border-soft-sand shadow-sm space-y-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-warm-ivory border border-soft-sand flex items-center justify-center text-black-olive shadow-sm">
-                    <Sparkles className="w-4 h-4 text-warm-gold" />
+                  <div className="w-10 h-10 rounded-xl bg-warm-ivory border border-soft-sand flex items-center justify-center text-black-olive shadow-sm">
+                    <Sparkles className="w-5 h-5 text-warm-gold" />
                   </div>
                   <div>
-                    <h3 className="text-xs font-bold text-black-olive uppercase tracking-wider">About AI Tutor</h3>
-                    <p className="text-[11px] text-olive-mist">Gemini &amp; Groq Quantum Intelligence</p>
+                    <h3 className="text-sm font-bold text-black-olive uppercase tracking-wider">About AI Tutor</h3>
+                    <p className="text-xs text-olive-mist font-medium">Smart Quantum Assistant</p>
                   </div>
                 </div>
 
-                <p className="text-xs text-black-olive/80 leading-relaxed">
-                  The AI Tutor acts as a quantum computing teaching assistant for beginners, grounded in Dirac bra-ket notation, probability amplitudes, and quantum logic gates.
+                <p className="text-sm text-black-olive/85 leading-relaxed">
+                  Your personalized quantum computing guide. Ask questions about superposition, bra-ket notation, quantum gates, or algorithms, and receive clear, step-by-step explanations.
                 </p>
 
                 {/* AI Tutor Video Demonstration (Mobile-Optimized & Autoplay Safe) */}
@@ -219,43 +219,11 @@ export const AITutor: React.FC = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Security & Reliability (Desktop right column) */}
-              <div className="hidden lg:block p-6 rounded-3xl bg-cocoa-noir text-warm-ivory border border-cocoa-noir/40 shadow-md space-y-3">
-                <h3 className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-warm-gold">
-                  <ShieldAlert className="w-4 h-4 text-warm-gold" /> Security &amp; Data Privacy
-                </h3>
-                <div className="text-xs text-warm-ivory/80 space-y-2.5 leading-relaxed">
-                  <p>
-                    Your queries are processed through high-performance encrypted channels with zero credential exposure.
-                  </p>
-                  <div className="bg-deep-slate/80 p-3 rounded-2xl border border-soft-slate/40 font-mono text-[11px] text-soft-cyan">
-                    Verified Dirac Math Grounding<br />
-                    High-Availability Fallback Active
-                  </div>
-                </div>
-              </div>
             </div>
 
             {/* Main Chat: Order 1 on mobile, Col-span-8 on desktop */}
             <div className="order-1 lg:order-1 lg:col-span-8 space-y-5">
               <GeminiChat circuitContext={selected.context} />
-
-              {/* Security & Reliability (Mobile below chat) */}
-              <div className="block lg:hidden p-5 sm:p-6 rounded-3xl bg-cocoa-noir text-warm-ivory border border-cocoa-noir/40 shadow-md space-y-3">
-                <h3 className="text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-warm-gold">
-                  <ShieldAlert className="w-4 h-4 text-warm-gold" /> Security &amp; Data Privacy
-                </h3>
-                <div className="text-xs text-warm-ivory/80 space-y-2.5 leading-relaxed">
-                  <p>
-                    Your queries are processed through high-performance encrypted channels with zero credential exposure.
-                  </p>
-                  <div className="bg-deep-slate/80 p-3 rounded-2xl border border-soft-slate/40 font-mono text-[11px] text-soft-cyan">
-                    Verified Dirac Math Grounding<br />
-                    High-Availability Fallback Active
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         )}
@@ -268,15 +236,15 @@ export const AITutor: React.FC = () => {
             <div className="lg:col-span-5 space-y-5">
               <div className="p-6 rounded-3xl bg-[#FFFDF7] border border-soft-sand shadow-sm space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-bold text-black-olive uppercase tracking-wider flex items-center gap-2">
-                    <BookOpen className="w-4 h-4 text-olive-mist" /> Active Learning Scenario
+                  <h3 className="text-sm font-bold text-black-olive uppercase tracking-wider flex items-center gap-2">
+                    <BookOpen className="w-4 h-4 text-olive-mist" /> Learning Scenarios
                   </h3>
-                  <span className="text-[10px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-warm-ivory border border-soft-sand text-black-olive">
-                    Real Circuit Context
+                  <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded-full bg-warm-ivory border border-soft-sand text-black-olive">
+                    Live Circuit Context
                   </span>
                 </div>
                 
-                <p className="text-xs text-olive-mist leading-relaxed">
+                <p className="text-sm text-black-olive/80 leading-relaxed">
                   Select a simulated quantum scenario to load its exact circuit wires, gates, and simulation results into the AI tutor:
                 </p>
 
@@ -294,13 +262,13 @@ export const AITutor: React.FC = () => {
                             : 'bg-warm-ivory/70 border-soft-sand hover:border-olive-mist text-black-olive hover:bg-warm-ivory'
                         }`}
                       >
-                        <div className="flex items-center gap-2.5 mb-1">
-                          <div className={`w-7 h-7 rounded-xl flex items-center justify-center ${isActive ? 'bg-soft-cyan text-deep-slate font-bold' : 'bg-floral-white border border-soft-sand text-black-olive'}`}>
-                            <Icon className="w-3.5 h-3.5" />
+                        <div className="flex items-center gap-2.5 mb-1.5">
+                          <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${isActive ? 'bg-soft-cyan text-deep-slate font-bold' : 'bg-floral-white border border-soft-sand text-black-olive'}`}>
+                            <Icon className="w-4 h-4" />
                           </div>
-                          <span className={`text-xs font-bold ${isActive ? 'text-floral-white' : 'text-black-olive'}`}>{scen.name}</span>
+                          <span className={`text-sm font-bold ${isActive ? 'text-floral-white' : 'text-black-olive'}`}>{scen.name}</span>
                         </div>
-                        <p className={`text-[11px] pl-9.5 ${isActive ? 'text-warm-ivory/80' : 'text-black-olive/70'}`}>{scen.desc}</p>
+                        <p className={`text-xs pl-10 leading-relaxed ${isActive ? 'text-warm-ivory/85' : 'text-black-olive/75'}`}>{scen.desc}</p>
                       </button>
                     );
                   })}

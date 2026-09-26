@@ -19,10 +19,10 @@ export const BlochSphereWidget: React.FC<BlochSphereWidgetProps> = ({ statevecto
         <div className="flex items-center justify-center gap-2 text-olive-mist text-xs font-semibold uppercase tracking-wider">
           <Globe2 className="w-4 h-4 text-olive-mist" /> Bloch Sphere (Single Qubit)
         </div>
-        <p className="text-xs text-black-olive/75 leading-relaxed">
+        <p className="text-sm text-black-olive/85 leading-relaxed">
           The Bloch sphere represents <strong>single-qubit pure states</strong>. For {numQubits}-qubit circuits (such as entangled Bell states), the global state exists in a higher-dimensional Hilbert space (2^{numQubits} = {Math.pow(2, numQubits)} dimensions).
         </p>
-        <div className="text-[11px] font-mono text-black-olive/80 bg-warm-ivory border border-soft-sand p-2.5 rounded-xl">
+        <div className="text-xs sm:text-sm font-medium text-black-olive/90 bg-warm-ivory border border-soft-sand p-2.5 rounded-xl">
           Tip: Switch to 1 Qubit in the circuit builder to explore single-qubit Bloch rotations!
         </div>
       </div>
@@ -67,10 +67,10 @@ export const BlochSphereWidget: React.FC<BlochSphereWidgetProps> = ({ statevecto
   return (
     <div className="p-4 rounded-2xl bg-[#FFFDF7] border border-soft-sand space-y-3 shadow-sm">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-bold text-black-olive uppercase tracking-wider flex items-center gap-1.5">
-          <Globe2 className="w-3.5 h-3.5 text-olive-mist" /> Bloch Sphere
+        <span className="text-sm font-bold text-black-olive uppercase tracking-wider flex items-center gap-1.5">
+          <Globe2 className="w-4 h-4 text-olive-mist" /> Bloch Sphere
         </span>
-        <div className="flex gap-2 text-[10px] font-mono text-olive-mist">
+        <div className="flex gap-2 text-xs font-mono font-semibold text-black-olive/80">
           <span>&theta; = {thetaDeg}&deg;</span>
           <span>&phi; = {phiDeg}&deg;</span>
         </div>
@@ -86,8 +86,8 @@ export const BlochSphereWidget: React.FC<BlochSphereWidgetProps> = ({ statevecto
 
           {/* Z Axis (|0> North, |1> South) */}
           <line x1={cx} y1={cy - r - 14} x2={cx} y2={cy + r + 14} stroke="#31372B" strokeWidth="1" strokeDasharray="2 2" strokeOpacity="0.35" />
-          <text x={cx} y={cy - r - 16} textAnchor="middle" fill="#31372B" fontSize="11" fontWeight="bold" fontFamily="monospace">|0⟩</text>
-          <text x={cx} y={cy + r + 24} textAnchor="middle" fill="#31372B" fontSize="11" fontWeight="bold" fontFamily="monospace">|1⟩</text>
+          <text x={cx} y={cy - r - 16} textAnchor="middle" fill="#31372B" fontSize="12" fontWeight="bold" fontFamily="monospace">|0⟩</text>
+          <text x={cx} y={cy + r + 24} textAnchor="middle" fill="#31372B" fontSize="12" fontWeight="bold" fontFamily="monospace">|1⟩</text>
 
           {/* X Axis */}
           <line
@@ -100,8 +100,8 @@ export const BlochSphereWidget: React.FC<BlochSphereWidgetProps> = ({ statevecto
             strokeDasharray="2 2"
             strokeOpacity="0.25"
           />
-          <text x={cx + (r + 20) * cosA} y={cy + (r + 20) * sinA + 3} textAnchor="middle" fill="#31372B" fontSize="10" fontWeight="bold" fontFamily="monospace">|+⟩</text>
-          <text x={cx - (r + 20) * cosA} y={cy - (r + 20) * sinA - 2} textAnchor="middle" fill="#31372B" opacity="0.6" fontSize="10" fontFamily="monospace">|−⟩</text>
+          <text x={cx + (r + 20) * cosA} y={cy + (r + 20) * sinA + 3} textAnchor="middle" fill="#31372B" fontSize="11" fontWeight="bold" fontFamily="monospace">|+⟩</text>
+          <text x={cx - (r + 20) * cosA} y={cy - (r + 20) * sinA - 2} textAnchor="middle" fill="#31372B" opacity="0.75" fontSize="11" fontFamily="monospace">|−⟩</text>
 
           {/* Center reference dot */}
           <circle cx={cx} cy={cy} r={2.5} fill="#31372B" opacity="0.4" />
@@ -122,16 +122,16 @@ export const BlochSphereWidget: React.FC<BlochSphereWidgetProps> = ({ statevecto
         </svg>
       </div>
 
-      <div className="bg-warm-ivory border border-soft-sand p-3 rounded-xl text-[11px] font-mono text-black-olive/80 space-y-1.5 shadow-sm">
-        <div className="flex justify-between">
-          <span className="text-olive-mist">Coordinates:</span>
+      <div className="bg-warm-ivory border border-soft-sand p-3 rounded-xl text-xs sm:text-sm font-mono text-black-olive/90 space-y-1.5 shadow-sm">
+        <div className="flex justify-between items-center">
+          <span className="text-black-olive/70 font-sans font-medium text-xs">Coordinates:</span>
           <span className="text-black-olive font-bold">
             ({Math.sin(theta) * Math.cos(phi) >= 0 ? '+' : ''}{(Math.sin(theta) * Math.cos(phi)).toFixed(2)},{' '}
             {Math.sin(theta) * Math.sin(phi) >= 0 ? '+' : ''}{(Math.sin(theta) * Math.sin(phi)).toFixed(2)},{' '}
             {Math.cos(theta) >= 0 ? '+' : ''}{(Math.cos(theta)).toFixed(2)})
           </span>
         </div>
-        <div className="text-[10px] text-olive-mist text-center pt-1 border-t border-soft-sand">
+        <div className="text-xs text-black-olive/80 text-center pt-1.5 border-t border-soft-sand font-medium font-sans">
           |ψ⟩ = cos(θ/2)|0⟩ + e^(iφ)sin(θ/2)|1⟩
         </div>
       </div>
